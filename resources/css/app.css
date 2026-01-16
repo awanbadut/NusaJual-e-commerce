@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    /* 1. Definisi Font Utama */
+    --font-primary: "Plus Jakarta Sans", "Inter", sans-serif;
+    --font-sans: var(--font-primary);
+
+    /* 2. Definisi Typography (Title) */
+    /* Title-1 */
+    --text-title-1: 72px;
+    --text-title-1--line-height: 88px;
+    --text-title-1--letter-spacing: -0.8px;
+
+    /* Title-2 */
+    --text-title-2: 64px;
+    --text-title-2--line-height: 76px;
+    --text-title-2--letter-spacing: -0.8px;
+
+    /* Title-3 */
+    --text-title-3: 56px;
+    --text-title-3--line-height: 68px;
+    --text-title-3--letter-spacing: -0.6px;
+
+    /* Heading: H1 */
+    --text-h1: 56px;
+    --text-h1--line-height: 68px;
+    --text-h1--letter-spacing: -0.5px;
+
+    /* Heading: H2 */
+    --text-h2: 48px;
+    --text-h2--line-height: 58px;
+    --text-h2--letter-spacing: -0.4px;
+
+    /* Heading: H3 */
+    --text-h3: 40px;
+    --text-h3--line-height: 48px;
+    --text-h3--letter-spacing: -0.3px;
+
+    /* Heading: H4 */
+    --text-h4: 32px;
+    --text-h4--line-height: 38px;
+    --text-h4--letter-spacing: -0.2px;
+
+    /* Heading: H5 */
+    --text-h5: 24px;
+    --text-h5--line-height: 30px;
+    --text-h5--letter-spacing: -0.15px;
+
+    /* Heading: H6 (SUDAH DIPERBAIKI DARI H5) */
+    --text-h6: 20px;
+    --text-h6--line-height: 24px;
+    --text-h6--letter-spacing: 0;
+
+    /* Label 1 */
+    --text-label-1: 16px;
+    --text-label-1--line-height: 22px;
+    --text-label-1--letter-spacing: -0.18px;
+
+    /* Label 2 */
+    --text-label-2: 14px;
+    --text-label-2--line-height: 20px;
+    --text-label-2--letter-spacing: -0.16px;
+
+    /* Label 3 */
+    --text-label-3: 12px;
+    --text-label-3--line-height: 16px;
+    --text-label-3--letter-spacing: -0.12px;
+
+    /* Body 1 */
+    --text-body-1: 18px;
+    --text-body-1--line-height: 28px;
+    --text-body-1--letter-spacing: 0px;
+
+    /* Body 2 */
+    --text-body-2: 16px;
+    --text-body-2--line-height: 24px;
+    --text-body-2--letter-spacing: 0px;
+
+    /* Body 3 */
+    --text-body-3: 14px;
+    --text-body-3--line-height: 20px;
+    --text-body-3--letter-spacing: 0px;
+
+    /* Body 4 */
+    --text-body-4: 12px;
+    --text-body-4--line-height: 16px;
+    --text-body-4--letter-spacing: 0px;
+
+    /* Caption 1 */
+    --text-caption-1: 10px;
+    --text-caption-1--line-height: 12px;
+    --text-caption-1--letter-spacing: 0px;
+
+    /* Caption 2 */
+    --text-caption-2: 9px;
+    --text-caption-2--line-height: 10px;
+    --text-caption-2--letter-spacing: 0px;
+
+    /* 3. Font Weights */
+    --font-weight-thin: 100;
+    --font-weight-extralight: 200;
+    --font-weight-light: 300;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+    --font-weight-black: 900;
+}
