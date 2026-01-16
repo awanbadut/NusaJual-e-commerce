@@ -4,7 +4,23 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
+
+Route::get('/katalog', function () {
+    return view('catalog');
+})->name('katalog');
+
+Route::get('/detail-produk', function () {
+    return view('produkDetail');
+})->name('detail-produk');
+
+Route::get('/profil-mitra', function () {
+    return view('profilMitra');
+})->name('profil-mitra');
+
+Route::get('/keranjang', function () {
+    return view('keranjang');
+})->name('keranjang');
 
 // Redirect halaman login utama ke pembeli secara default
 Route::get('/login', function () {

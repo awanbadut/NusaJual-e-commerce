@@ -112,3 +112,24 @@
     --font-weight-extrabold: 800;
     --font-weight-black: 900;
 }
+
+/* Sembunyikan Scrollbar tapi tetap bisa di-scroll */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Efek Masking Gradasi untuk Gambar Slide 1 */
+.mask-image-gradient-left {
+    -webkit-mask-image: linear-gradient(to left, black 60%, transparent 100%);
+    mask-image: linear-gradient(to left, black 60%, transparent 100%);
+}
+
+/* Efek Masking Gradasi untuk Gambar Slide 3 */
+.mask-image-gradient-right {
+    -webkit-mask-image: linear-gradient(to right, black 60%, transparent 100%);
+    mask-image: linear-gradient(to right, black 60%, transparent 100%);
+}

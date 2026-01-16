@@ -98,21 +98,21 @@
                 @csrf
 
                 <div>
-                    <x-input-label for="email" value="Email" />
+                    <x-form.label for="email" value="Email" />
 
-                    <x-text-input id="email" type="email" name="email" placeholder="nama@email.com" required />
+                    <x-form.input id="email" type="email" name="email" placeholder="nama@email.com" required />
                 </div>
 
                 <div>
-                    <x-input-label for="password" value="Password" />
+                    <x-form.label for="password" value="Password" />
 
-                    <x-text-input id="password" type="password" name="password" placeholder="********" required />
+                    <x-form.input id="password" type="password" name="password" placeholder="********" required />
                 </div>
 
-                <x-primary-button class="mt-2">
+                <x-ui.button class="mt-2">
                     Login Sekarang
                     <x-heroicon-m-arrow-right class="h-5 w-5" />
-                </x-primary-button>
+                </x-ui.button>
             </form>
 
             <div class="mt-6 text-center text-body-3 text-gray-500">

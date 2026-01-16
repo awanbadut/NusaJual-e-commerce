@@ -35,18 +35,18 @@
             </div>
 
             <div>
-                <x-input-label for="store_name" value="Nama Toko" />
-                <x-text-input id="store_name" name="store_name" placeholder="Contoh: Jaya Selalu" required />
+                <x-form.label for="store_name" value="Nama Toko" />
+                <x-form.input id="store_name" name="store_name" placeholder="Contoh: Jaya Selalu" required />
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                    <x-input-label for="owner_name" value="Nama Pemilik" />
-                    <x-text-input id="owner_name" name="owner_name" placeholder="Nama Lengkap Anda" required />
+                    <x-form.label for="owner_name" value="Nama Pemilik" />
+                    <x-form.input id="owner_name" name="owner_name" placeholder="Nama Lengkap Anda" required />
                 </div>
                 <div>
-                    <x-input-label for="phone" value="Nomor Telepon" />
-                    <x-text-input id="phone" type="number" name="phone" placeholder="0812-xxxx-xxxx" required />
+                    <x-form.label for="phone" value="Nomor Telepon" />
+                    <x-form.input id="phone" type="number" name="phone" placeholder="0812-xxxx-xxxx" required />
                 </div>
             </div>
 
@@ -56,45 +56,45 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                    <x-input-label for="province" value="Provinsi" />
-                    <x-select-input id="province" name="province">
+                    <x-form.label for="province" value="Provinsi" />
+                    <x-form.select id="province" name="province">
                         <option value="">Pilih Provinsi</option>
                         <option value="Jabar">Jawa Barat</option>
                         <option value="Jateng">Jawa Tengah</option>
                         <option value="Jatim">Jawa Timur</option>
-                    </x-select-input>
+                    </x-form.select>
                 </div>
                 <div>
-                    <x-input-label for="city" value="Kota/Kabupaten" />
-                    <x-select-input id="city" name="city">
+                    <x-form.label for="city" value="Kota/Kabupaten" />
+                    <x-form.select id="city" name="city">
                         <option value="">Pilih Kota</option>
-                    </x-select-input>
+                    </x-form.select>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                    <x-input-label for="district" value="Kecamatan" />
-                    <x-select-input id="district" name="district">
+                    <x-form.label for="district" value="Kecamatan" />
+                    <x-form.select id="district" name="district">
                         <option>Pilih</option>
-                    </x-select-input>
+                    </x-form.select>
                 </div>
                 <div>
-                    <x-input-label for="village" value="Kelurahan" />
-                    <x-select-input id="village" name="village">
+                    <x-form.label for="village" value="Kelurahan" />
+                    <x-form.select id="village" name="village">
                         <option>Pilih</option>
-                    </x-select-input>
+                    </x-form.select>
                 </div>
                 <div>
-                    <x-input-label for="postal_code" value="Kode Pos" />
-                    <x-text-input id="postal_code" type="number" name="postal_code" placeholder="xxxxx" />
+                    <x-form.label for="postal_code" value="Kode Pos" />
+                    <x-form.input id="postal_code" type="number" name="postal_code" placeholder="xxxxx" />
                 </div>
             </div>
 
             <div>
-                <x-input-label for="address" value="Alamat Lengkap" />
-                <x-text-area id="address" name="address" rows="3" placeholder="Nama Jalan, Gedung, No. Rumah...">
-                </x-text-area>
+                <x-form.label for="address" value="Alamat Lengkap" />
+                <x-form.textarea id="address" name="address" rows="3" placeholder="Nama Jalan, Gedung, No. Rumah...">
+                </x-form.textarea>
             </div>
 
             <div class="border-b border-gray-200 pb-2 mb-2 mt-4">
@@ -102,26 +102,26 @@
             </div>
 
             <div>
-                <x-input-label for="email" value="Email" />
-                <x-text-input id="email" type="email" name="email" placeholder="nama@email.com" required />
+                <x-form.label for="email" value="Email" />
+                <x-form.input id="email" type="email" name="email" placeholder="nama@email.com" required />
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                    <x-input-label for="password" value="Password" />
-                    <x-text-input id="password" type="password" name="password" placeholder="********" required />
+                    <x-form.label for="password" value="Password" />
+                    <x-form.input id="password" type="password" name="password" placeholder="********" required />
                 </div>
                 <div>
-                    <x-input-label for="password_confirmation" value="Konfirmasi Password" />
-                    <x-text-input id="password_confirmation" type="password" name="password_confirmation"
+                    <x-form.label for="password_confirmation" value="Konfirmasi Password" />
+                    <x-form.input id="password_confirmation" type="password" name="password_confirmation"
                         placeholder="********" required />
                 </div>
             </div>
 
-            <x-primary-button class="mt-4">
+            <x-ui.button class="mt-4">
                 Daftar Sekarang
                 <x-heroicon-m-arrow-right class="h-5 w-5" />
-            </x-primary-button>
+            </x-ui.button>
         </form>
 
         <div class="text-center text-body-3 text-gray-500">
