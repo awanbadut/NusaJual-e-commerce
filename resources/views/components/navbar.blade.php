@@ -59,7 +59,8 @@
                     <span>Profile</span>
                 </a>
                 @else
-                <a href="{{ route('login', ['role' => 'pembeli']) }}"
+                {{-- ✅ FIXED: Line 62 --}}
+                <a href="{{ route('login.pembeli') }}"
                     class="flex items-center gap-2 py-1 text-[#4E582C] font-bold border-b-2 border-transparent hover:text-[#0F4C20] hover:border-[#0F4C20] transition-all group">
                     <x-heroicon-o-arrow-right-end-on-rectangle class="w-5 h-5 group-hover:text-[#0F4C20]" />
                     <span>Masuk</span>
@@ -87,9 +88,10 @@
                 class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs(['katalog', 'detail-produk', 'profil-mitra']) ? 'text-[#0F4C20] bg-green-50 font-bold' : 'text-gray-700 hover:text-[#0F4C20] hover:bg-gray-50' }}">
                 Katalog
             </a>
-            <a href="#"
+            <a href="{{ route('keranjang') }}"
                 class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#0F4C20] hover:bg-gray-50">Keranjang</a>
-            <a href="{{ route('login', ['role' => 'pembeli']) }}"
+            {{-- ✅ FIXED: Mobile menu --}}
+            <a href="{{ route('login.pembeli') }}"
                 class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#0F4C20] hover:bg-gray-50">Masuk</a>
         </div>
     </div>

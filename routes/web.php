@@ -8,14 +8,12 @@ use App\Http\Controllers\Seller\CustomerController;
 use App\Http\Controllers\Seller\OrderController;
 use App\Http\Controllers\Seller\SalesController;
 use App\Http\Controllers\Seller\PaymentController;
-use App\Http\Controllers\Seller\ProfileController; // ← TAMBAH INI
+use App\Http\Controllers\Seller\ProfileController;
 
-// Redirect root ke seller login
+// ============================================
+// CUSTOMER ROUTES (dari Cipah)
+// ============================================
 Route::get('/', function () {
-<<<<<<< HEAD
-    return redirect()->route('seller.login');
-});
-=======
     return view('welcome');
 })->name('home');
 
@@ -34,14 +32,37 @@ Route::get('/profil-mitra', function () {
 Route::get('/keranjang', function () {
     return view('keranjang');
 })->name('keranjang');
->>>>>>> origin/cipah
 
 // ============================================
-// AUTH ROUTES UNTUK PENJUAL & ADMIN
+// LOGIN ROUTES - HYBRID (Cipah + Dev-Sawan)
+// ============================================
+
+// Redirect default login ke pembeli
+Route::get('/login', function () {
+    return redirect('/login/pembeli');
+});
+
+// Login pembeli (pakai view Cipah untuk sekarang)
+Route::get('/login/pembeli', function () {
+    return view('auth.login', ['role' => 'pembeli']);
+})->name('login.pembeli');
+
+// Login penjual (redirect ke sistem kamu yang proper)
+Route::get('/login/penjual', function () {
+    return redirect()->route('seller.login');
+})->name('login.penjual');
+
+// Register penjual (redirect ke sistem kamu)
+Route::get('/register-penjual', function () {
+    return redirect()->route('seller.register');
+})->name('register.penjual');
+
+// ============================================
+// SELLER ROUTES (dari Dev-Sawan)
 // ============================================
 Route::prefix('seller')->name('seller.')->group(function () {
     
-    // Guest routes (belum login)
+    // Guest routes
     Route::middleware('guest')->group(function () {
         Route::get('/login', [SellerAuthController::class, 'showLoginForm'])->name('login');
         Route::post('/login', [SellerAuthController::class, 'login'])->name('login.submit');
@@ -49,46 +70,31 @@ Route::prefix('seller')->name('seller.')->group(function () {
         Route::post('/register', [SellerAuthController::class, 'register'])->name('register.submit');
     });
 
-    // Protected routes (harus login sebagai seller)
+    // Protected routes
     Route::middleware(['auth', 'seller'])->group(function () {
-        // Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        
-        // Products
         Route::resource('products', ProductController::class);
         Route::delete('/products/{id}/image', [ProductController::class, 'deleteImage'])->name('products.delete-image');
-        
-        // Customers
         Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
         Route::get('/customers/{id}', [CustomerController::class, 'show'])->name('customers.show');
-        
-        // Orders
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
         Route::post('/orders/{id}/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
-        
-        // Sales
         Route::get('/sales', [SalesController::class, 'index'])->name('sales.index');
         Route::get('/sales/export', [SalesController::class, 'export'])->name('sales.export');
-        
-        // Payments
         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
         Route::post('/payments/withdrawal', [PaymentController::class, 'requestWithdrawal'])->name('payments.withdrawal');
-        
-        // Profile - PERBAIKI DI SINI (hapus seller. di name karena sudah ada prefix)
         Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
         Route::put('/profile/store', [ProfileController::class, 'updateStore'])->name('profile.update-store');
         Route::put('/profile/address', [ProfileController::class, 'updateAddress'])->name('profile.update-address');
         Route::put('/profile/bank', [ProfileController::class, 'updateBankAccount'])->name('profile.update-bank');
         Route::put('/profile/password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
-        
-        // Logout
         Route::post('/logout', [SellerAuthController::class, 'logout'])->name('logout');
     });
 });
 
 // ============================================
-// ADMIN ROUTES (Coming Soon)
+// ADMIN ROUTES
 // ============================================
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', function () {
