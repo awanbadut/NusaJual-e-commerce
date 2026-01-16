@@ -12,8 +12,29 @@ use App\Http\Controllers\Seller\ProfileController; // ← TAMBAH INI
 
 // Redirect root ke seller login
 Route::get('/', function () {
+<<<<<<< HEAD
     return redirect()->route('seller.login');
 });
+=======
+    return view('welcome');
+})->name('home');
+
+Route::get('/katalog', function () {
+    return view('catalog');
+})->name('katalog');
+
+Route::get('/detail-produk', function () {
+    return view('produkDetail');
+})->name('detail-produk');
+
+Route::get('/profil-mitra', function () {
+    return view('profilMitra');
+})->name('profil-mitra');
+
+Route::get('/keranjang', function () {
+    return view('keranjang');
+})->name('keranjang');
+>>>>>>> origin/cipah
 
 // ============================================
 // AUTH ROUTES UNTUK PENJUAL & ADMIN
