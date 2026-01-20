@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Mitra - Nusa Belanja</title>
+    <title>{{ $store->store_name }} - Nusa Belanja</title>
     <script src="//unpkg.com/alpinejs" defer></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -17,9 +17,9 @@
         <div class="flex gap-2 text-sm font-medium text-[#8B4513]">
             <a href="{{ route('katalog') }}" class="hover:underline">Katalog</a>
             <x-heroicon-s-chevron-right class="w-4 h-4 text-gray-400" />
-            <a href="{{route('detail-produk')}}" class="hover:underline">Informasi Produk</a>
+            <a href="#" class="hover:underline">Mitra</a>
             <x-heroicon-s-chevron-right class="w-4 h-4 text-gray-400" />
-            <span class="text-[#0F4C20] font-bold">Informasi Mitra</span>
+            <span class="text-[#0F4C20] font-bold">{{ $store->store_name }}</span>
         </div>
     </div>
 
@@ -29,26 +29,27 @@
                 class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row items-center gap-6">
 
                 <div class="w-32 h-32 md:w-[136px] md:h-[136px] rounded-lg overflow-hidden shrink-0 bg-gray-100">
-                    <img src="https://placehold.co/200x200/green/white?text=Mitra" class="w-full h-full object-cover">
+                    <img src="{{ $store->logo ? asset('storage/'.$store->logo) : 'https://placehold.co/200x200/green/white?text='.substr($store->store_name, 0, 1) }}"
+                        class="w-full h-full object-cover">
                 </div>
 
                 <div class="flex-1 flex flex-col items-center md:items-start text-center md:text-left gap-2">
-                    <h1 class="text-2xl md:text-3xl font-bold text-[#2E3B27]">Mitra Jaya Makmur</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold text-[#2E3B27]">{{ $store->store_name }}</h1>
 
                     <div class="flex items-center gap-2 text-sm text-gray-600">
                         <x-heroicon-s-map-pin class="w-5 h-5 text-gray-400" />
-                        <span>Jalan Limau Manis City No. 12, Padang</span>
+                        <span>{{ $store->address }}, {{ $store->city }}</span>
                     </div>
 
                     <div class="flex items-center gap-3 mt-1 text-sm text-gray-600">
                         <div class="flex items-center gap-1.5 font-medium">
                             <x-heroicon-s-cube class="w-5 h-5 text-[#8B4513]" />
-                            <span>50 Produk</span>
+                            <span>{{ $store->products_count }} Produk</span>
                         </div>
                         <div class="w-1.5 h-1.5 bg-gray-300 rounded-full"></div>
                         <div class="flex items-center gap-1.5 font-medium">
                             <x-heroicon-s-shopping-bag class="w-5 h-5 text-[#8B4513]" />
-                            <span>1000+ terjual</span>
+                            <span>0 terjual</span>
                         </div>
                     </div>
                 </div>
@@ -75,7 +76,7 @@
 
             <x-ui.sidebarfilter title="Atur Pilihanmu">
 
-                <form action="{{ url()->current() }}" method="GET">
+                <form action="{{ url()->current() }}" method="GET" id="storeFilterForm">
 
                     @if(request('search'))
                     <input type="hidden" name="search" value="{{ request('search') }}">
@@ -85,31 +86,18 @@
                         <h4 class="text-sm font-bold text-gray-800">Pilih Kategori</h4>
                         <div class="space-y-2">
 
+                            @foreach($categoriesList as $catName)
                             <label class="flex items-center gap-2.5 cursor-pointer group">
-                                <div
-                                    class="w-4 h-4 rounded border-2 {{ !request('category') ? 'border-[#0F4C20] bg-[#0F4C20]' : 'border-gray-300 bg-white' }} flex items-center justify-center text-white shrink-0">
-                                    @if(!request('category'))
-                                    <x-heroicon-s-check class="w-3 h-3" /> @endif
-                                </div>
-                                <span
-                                    class="text-sm font-bold {{ !request('category') ? 'text-[#0F4C20]' : 'text-gray-600' }}">Semua
-                                    Produk</span>
-                                <input type="radio" name="reset_cat" class="hidden"
-                                    onclick="window.location='{{ url()->current() }}?search={{ request('search') }}'">
-                            </label>
-
-                            @foreach(['Kopi', 'Sawit', 'Teh'] as $cat)
-                            <label class="flex items-center gap-2.5 cursor-pointer group">
-                                <input type="checkbox" class="peer hidden" name="category[]" value="{{ $cat }}"
-                                    @checked(in_array($cat, request('category', []))) onchange="this.form.submit()">
-
+                                <input type="checkbox" class="peer hidden" name="category[]" value="{{ $catName }}"
+                                    @checked(in_array($catName, request('category', []))) onchange="this.form.submit()">
                                 <div
                                     class="w-4 h-4 rounded border-2 border-gray-300 bg-white peer-checked:bg-[#0F4C20] peer-checked:border-[#0F4C20] transition flex items-center justify-center text-white shrink-0">
                                     <x-heroicon-s-check class="w-3 h-3" />
                                 </div>
                                 <span
-                                    class="text-sm font-medium text-gray-600 peer-checked:text-[#0F4C20] peer-checked:font-bold transition">{{
-                                    $cat }}</span>
+                                    class="text-sm font-medium text-gray-600 peer-checked:text-[#0F4C20] peer-checked:font-bold transition">
+                                    {{ $catName }}
+                                </span>
                             </label>
                             @endforeach
                         </div>
@@ -120,11 +108,10 @@
                     <div class="space-y-2">
                         <h4 class="text-sm font-bold text-gray-800">Sesuaikan Harga</h4>
                         <div class="space-y-2">
-                            @foreach(['Harga Tertinggi', 'Harga Terjangkau'] as $price)
+                            @foreach(['Harga Tertinggi', 'Harga Terjangkau'] as $priceSort)
                             <label class="flex items-center gap-2.5 cursor-pointer group">
-                                <input type="radio" name="sort_price" class="peer hidden" value="{{ $price }}"
-                                    @checked(request('sort_price')==$price) onchange="this.form.submit()">
-
+                                <input type="radio" name="sort_price" class="peer hidden" value="{{ $priceSort }}"
+                                    @checked(request('sort_price')==$priceSort) onchange="this.form.submit()">
                                 <div
                                     class="w-4 h-4 rounded-full border-2 border-gray-300 bg-white peer-checked:border-[#0F4C20] peer-checked:bg-white flex items-center justify-center shrink-0">
                                     <div
@@ -132,8 +119,9 @@
                                     </div>
                                 </div>
                                 <span
-                                    class="text-sm font-medium text-gray-600 peer-checked:text-[#0F4C20] peer-checked:font-bold transition">{{
-                                    $price }}</span>
+                                    class="text-sm font-medium text-gray-600 peer-checked:text-[#0F4C20] peer-checked:font-bold transition">
+                                    {{ $priceSort }}
+                                </span>
                             </label>
                             @endforeach
                         </div>
@@ -142,14 +130,19 @@
                 </form>
             </x-ui.sidebarfilter>
 
-
             <div class="flex-1">
 
                 <div class="flex flex-col gap-4 mb-6">
                     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div class="flex items-center gap-2 text-lg">
                             <span class="text-gray-500 font-medium">Menampilkan</span>
-                            <span class="font-bold text-[#0F4C20]">Semua Produk</span>
+                            <span class="font-bold text-[#0F4C20]">
+                                @if(request('search') || request('category') || request('sort_price'))
+                                {{ $products->total() }} Produk
+                                @else
+                                Semua Produk
+                                @endif
+                            </span>
                         </div>
 
                         <form action="{{ url()->current() }}" method="GET" class="relative w-full md:w-[320px]">
@@ -207,27 +200,26 @@
                     @endif
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                    @foreach([
-                    ['name' => 'Egestas vehicula', 'cat' => 'Kopi', 'price' => '500.000', 'old' => '600.000', 'sold' =>
-                    '500+'],
-                    ['name' => 'Egestas velit', 'cat' => 'Sawit', 'price' => '750.000', 'old' => null, 'sold' => '500'],
-                    ['name' => 'Sagittis elit', 'cat' => 'Teh', 'price' => '200.000', 'old' => null, 'sold' => '200'],
-                    ['name' => 'Imperdiet ultrices', 'cat' => 'Teh', 'price' => '250.000', 'old' => null, 'sold' =>
-                    '120'],
-                    ['name' => 'Ipsum donec', 'cat' => 'Teh', 'price' => '159.000', 'old' => '600.000', 'sold' =>
-                    '200'],
-                    ['name' => 'Tempus consequat', 'cat' => 'Teh', 'price' => '220.000', 'old' => null, 'sold' => '50'],
-                    ['name' => 'Egestas vitae', 'cat' => 'Kopi', 'price' => '450.000', 'old' => '600.000', 'sold' =>
-                    '120'],
-                    ['name' => 'Dictumst in', 'cat' => 'Kopi', 'price' => '450.000', 'old' => null, 'sold' => '500+'],
-                    ['name' => 'Tempus consequat', 'cat' => 'Sawit', 'price' => '220.000', 'old' => null, 'sold' =>
-                    '50'],
-                    ] as $item)
+                <div class="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-3 gap-6">
+                    @forelse($products as $product)
+                    <x-ui.product-card :item="$product" />
+                    @empty
+                    <div class="col-span-full py-12 text-center">
+                        <div class="inline-flex bg-gray-100 p-4 rounded-full mb-3">
+                            <x-heroicon-o-face-frown class="w-8 h-8 text-gray-400" />
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-700">Produk Tidak Ditemukan</h3>
+                        <p class="text-gray-500 text-sm">Toko ini belum memiliki produk dengan kriteria tersebut.</p>
+                        <a href="{{ url()->current() }}"
+                            class="text-[#0F4C20] font-bold text-sm mt-2 inline-block hover:underline">
+                            Lihat Semua Produk Toko
+                        </a>
+                    </div>
+                    @endforelse
+                </div>
 
-                    <x-ui.product-card :item="$item" />
-
-                    @endforeach
+                <div class="mt-8">
+                    {{ $products->links() }}
                 </div>
 
             </div>

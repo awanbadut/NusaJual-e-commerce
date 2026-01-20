@@ -6,9 +6,6 @@ use App\Models\User;
 use App\Models\Store;
 use App\Models\Product;
 use App\Models\ProductImage;
-use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Payment;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -16,62 +13,93 @@ class DemoDataSeeder extends Seeder
 {
     public function run(): void
     {
-        // Buat user pembeli dummy
-        $buyer = User::create([
-            'name' => 'John Smith',
-            'email' => 'buyer@test.com',
-            'password' => Hash::make('password123'),
-            'role' => 'buyer',
-            'phone' => '+63 812 3456 7890',
-            'address' => 'Jl. Contoh No. 123',
-        ]);
-
-        // Ambil store dari seller yang sudah daftar
+        // 1. Cek Toko, kalau belum ada => Buat Otomatis
         $store = Store::first();
-        
+
         if (!$store) {
-            $this->command->error('Tidak ada toko! Silakan register sebagai seller dulu.');
-            return;
+            $this->command->info('🏭 Toko belum ada. Membuat Seller & Toko baru...');
+
+            // Buat User Seller
+            $seller = User::create([
+                'name' => 'Seller Utama',
+                'email' => 'seller@nusa.com',
+                'password' => Hash::make('password'),
+                'role' => 'seller',
+                'phone' => '081299998888',
+                'address' => 'Jl. Seller No. 1 Padang',
+            ]);
+
+            // Buat Toko
+            $store = Store::create([
+                'user_id' => $seller->id,
+                'store_name' => 'Nusa Official Store', // Sesuai kolom database
+                'description' => 'Toko resmi Nusa Belanja terlengkap.',
+                'province' => 'Sumatera Barat',
+                'city' => 'Padang',
+                'district' => 'Padang Utara',
+                'address' => 'Jl. Khatib Sulaiman No. 1',
+                'postal_code' => '25100',
+            ]);
         }
 
-        // Buat produk dummy
-        $products = [
+        // 2. Buat User Pembeli Dummy (John Smith)
+        $buyer = User::where('email', 'buyer@test.com')->first();
+        if (!$buyer) {
+            $buyer = User::create([
+                'name' => 'John Smith',
+                'email' => 'buyer@test.com',
+                'password' => Hash::make('password'),
+                'role' => 'buyer',
+                'phone' => '+62 812 3456 7890',
+                'address' => 'Jl. Contoh No. 123',
+            ]);
+        }
+
+        // 3. Buat Produk Dummy
+        $productsData = [
             [
-                'name' => 'Egestas vehicula',
-                'description' => 'Kopi premium pilihan dengan rasa yang kaya',
+                'name' => 'Kopi Gayo Premium',
+                'description' => 'Kopi Arabika Gayo asli dengan aroma kuat.',
                 'price' => 200000,
-                'stock' => 3,
+                'stock' => 50,
                 'unit' => 'Kg',
                 'category_id' => 1,
             ],
             [
-                'name' => 'Amet purus',
-                'description' => 'Kopi berkualitas tinggi untuk pecinta kopi',
-                'price' => 250000,
-                'stock' => 2,
-                'unit' => 'Kg',
-                'category_id' => 1,
+                'name' => 'Teh Kayu Aro',
+                'description' => 'Teh hitam kualitas ekspor dari Kerinci.',
+                'price' => 50000,
+                'stock' => 100,
+                'unit' => 'Kotak',
+                'category_id' => 2,
             ],
             [
-                'name' => 'Vulputate egestas',
-                'description' => 'Kopi arabika pilihan',
-                'price' => 150000,
-                'stock' => 45,
-                'unit' => 'Kg',
-                'category_id' => 1,
+                'name' => 'Minyak Goreng Sawit',
+                'description' => 'Minyak goreng jernih 2 kali penyaringan.',
+                'price' => 18000,
+                'stock' => 200,
+                'unit' => 'Liter',
+                'category_id' => 3,
             ],
         ];
 
-        foreach ($products as $productData) {
+        foreach ($productsData as $data) {
+            // Cek biar produk gak dobel
+            if (Product::where('name', $data['name'])->exists()) {
+                continue;
+            }
+
+            // REVISI FINAL: 'slug' dihapus, tapi 'status' TETAP ADA karena di tabelmu ada
             $product = Product::create([
                 'store_id' => $store->id,
-                'category_id' => $productData['category_id'],
-                'name' => $productData['name'],
-                'description' => $productData['description'],
-                'price' => $productData['price'],
-                'stock' => $productData['stock'],
-                'unit' => $productData['unit'],
-                'status' => 'active',
+                'category_id' => $data['category_id'],
+                'name' => $data['name'],
+                // 'slug' => ... (DIHAPUS KARENA TIDAK ADA DI TABLE)
+                'description' => $data['description'],
+                'price' => $data['price'],
+                'stock' => $data['stock'],
+                'unit' => $data['unit'],
+                'status' => 'active', // Ini aman karena di table ada kolom enum status
             ]);
 
             // Buat gambar dummy
@@ -82,43 +110,6 @@ class DemoDataSeeder extends Seeder
             ]);
         }
 
-        // Buat pesanan dummy
-        $statuses = ['completed', 'processing', 'pending', 'shipped'];
-        
-        for ($i = 0; $i < 10; $i++) {
-            $order = Order::create([
-                'user_id' => $buyer->id,
-                'store_id' => $store->id,
-                'order_number' => 'NB-' . rand(1000, 9999) . '-' . rand(1000, 9999),
-                'sub_total' => 1000000,
-                'shipping_cost' => 1000,
-                'total_amount' => 1001000,
-                'status' => $statuses[array_rand($statuses)],
-                'shipping_address' => 'Mulberry Street, Adamsbury 27378-5715, 53144 Swaniawski Key, Huntington Beach 23654',
-                'recipient_name' => 'Theresa Lebsack',
-                'recipient_phone' => '748-511-5598',
-            ]);
-
-            // Buat order items
-            $product = Product::inRandomOrder()->first();
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $product->id,
-                'quantity' => 2,
-                'price' => $product->price,
-                'total' => $product->price * 2,
-            ]);
-
-            // Buat payment
-            Payment::create([
-                'order_id' => $order->id,
-                'amount' => $order->total_amount,
-                'status' => in_array($order->status, ['completed', 'shipped']) ? 'confirmed' : 'pending',
-                'paid_at' => now(),
-                'confirmed_at' => in_array($order->status, ['completed', 'shipped']) ? now() : null,
-            ]);
-        }
-
-        $this->command->info('Demo data berhasil dibuat!');
+        $this->command->info('✅ Produk & User berhasil dibuat!');
     }
 }

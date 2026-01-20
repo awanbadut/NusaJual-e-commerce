@@ -32,7 +32,7 @@
 
         <div class="w-full bg-[#ECFDF5] p-2.5 rounded-lg flex gap-3">
 
-            <a href="{{ route('login', ['role' => 'pembeli']) }}"
+            <a href="{{ route('login.pembeli') }}"
                 class="flex-1 rounded-md p-3 flex flex-col items-center justify-center gap-2 transition cursor-pointer
                {{ $role == 'pembeli' ? 'bg-[#0F4C20] text-white shadow-sm' : 'bg-[#D1FAE5] text-[#475569] hover:bg-[#A7F3D0]' }}">
 
@@ -44,7 +44,7 @@
                 <span class="font-bold text-label-2">Pembeli</span>
             </a>
 
-            <a href="{{ route('login', ['role' => 'penjual']) }}"
+            <a href="{{ route('login.penjual') }}"
                 class="flex-1 rounded-md p-3 flex flex-col items-center justify-center gap-2 transition cursor-pointer
                {{ $role == 'penjual' ? 'bg-[#0F4C20] text-white shadow-sm' : 'bg-[#D1FAE5] text-[#475569] hover:bg-[#A7F3D0]' }}">
 
@@ -61,9 +61,7 @@
             <x-heroicon-s-information-circle class="h-5 w-5 text-[#8B4513] shrink-0 mt-0.5" />
             <p class="text-body-3 text-[#8B4513] font-medium leading-tight">
                 @if($role == 'pembeli')
-                Masuk sebagai pembeli untuk akses cepat ke ribuan produk menarik
-                @else
-                Masuk sebagai penjual untuk mengelola toko anda
+                Masuk sebagai pembeli untuk akses cepat ke ribuan produk menari
                 @endif
             </p>
         </div>
@@ -91,35 +89,6 @@
                     <span class="text-label-1 font-bold">Lanjutkan Dengan Google</span>
                 </button>
                 <p class="text-gray-500 text-body-3 font-medium">Tidak perlu password, akses instan dan aman</p>
-            </div>
-
-            @else
-            <form action="#" method="POST" class="flex flex-col gap-5">
-                @csrf
-
-                <div>
-                    <x-form.label for="email" value="Email" />
-
-                    <x-form.input id="email" type="email" name="email" placeholder="nama@email.com" required />
-                </div>
-
-                <div>
-                    <x-form.label for="password" value="Password" />
-
-                    <x-form.input id="password" type="password" name="password" placeholder="********" required />
-                </div>
-
-                <x-ui.button class="mt-2">
-                    Login Sekarang
-                    <x-heroicon-m-arrow-right class="h-5 w-5" />
-                </x-ui.button>
-            </form>
-
-            <div class="mt-6 text-center text-body-3 text-gray-500">
-                Belum Punya Akun?
-                <a href="{{ route('register.penjual') }}"
-                    class="text-gray-500 underline decoration-gray-400 hover:text-[#0F4C20] font-semibold">Daftar
-                    Sekarang</a>
             </div>
             @endif
 

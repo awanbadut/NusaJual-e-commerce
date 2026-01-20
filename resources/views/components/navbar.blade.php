@@ -24,7 +24,7 @@
                 </a>
                 @endif
 
-                @if(request()->routeIs(['katalog', 'detail-produk', 'profil-mitra']))
+                @if(request()->routeIs(['katalog', 'produk.show', 'profil-mitra']))
                 <a href="{{ route('katalog') }}"
                     class="flex items-center gap-2 py-1 text-[#0F4C20] font-bold border-b-2 border-[#0F4C20]">
                     <x-heroicon-s-building-storefront class="w-5 h-5" />
@@ -38,7 +38,7 @@
                 </a>
                 @endif
 
-                @if(request()->routeIs(['keranjang']))
+                @if(request()->routeIs(['keranjang','checkout','payment','success']))
                 <a href="{{ route('keranjang') }}"
                     class="flex items-center gap-2 py-1 text-[#0F4C20] font-bold border-b-2 border-[#0F4C20]">
                     <x-heroicon-s-shopping-cart class="w-5 h-5" />

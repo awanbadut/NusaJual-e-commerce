@@ -2,6 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SellerAuthController;
+// landing page controllers 
+use App\Http\Controllers\LandingPage\HomeController as PublicHomeController;
+use App\Http\Controllers\LandingPage\ProductController as PublicProductController;
+use App\Http\Controllers\LandingPage\StoreController as PublicStoreController;
+use App\Http\Controllers\LandingPage\CartController as PublicCartController;
+
 use App\Http\Controllers\Seller\DashboardController;
 use App\Http\Controllers\Seller\ProductController;
 use App\Http\Controllers\Seller\CustomerController;
@@ -13,25 +19,32 @@ use App\Http\Controllers\Seller\ProfileController;
 // ============================================
 // CUSTOMER ROUTES (dari Cipah)
 // ============================================
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::get('/', [PublicHomeController::class, 'index'])->name('home');
 
-Route::get('/katalog', function () {
-    return view('catalog');
-})->name('katalog');
+Route::get('/katalog', [PublicProductController::class, 'index'])->name('katalog');
+Route::get('/produk/{id}', [PublicProductController::class, 'show'])->name('produk.show');
+Route::get('/mitra/{id}', [PublicStoreController::class, 'show'])->name('profil-mitra');
 
-Route::get('/detail-produk', function () {
-    return view('produkDetail');
-})->name('detail-produk');
+// Arahkan ke Controller method index
+Route::get('/keranjang', [PublicCartController::class, 'index'])->name('keranjang');
+// Tambah ke keranjang
+Route::post('/keranjang', [PublicCartController::class, 'store'])->name('keranjang.store');
+// Route pendukung lainnya (sudah benar jika kamu copas sebelumnya)
+Route::delete('/keranjang/clear', [PublicCartController::class, 'clear'])->name('keranjang.clear');
+Route::patch('/keranjang/{id}', [PublicCartController::class, 'update'])->name('keranjang.update');
+Route::delete('/keranjang/{id}', [PublicCartController::class, 'destroy'])->name('keranjang.destroy');
 
-Route::get('/profil-mitra', function () {
-    return view('profilMitra');
-})->name('profil-mitra');
+Route::get('/checkout', function () {
+    return view('checkout');
+})->name('checkout');
 
-Route::get('/keranjang', function () {
-    return view('keranjang');
-})->name('keranjang');
+Route::get('/payment', function () {
+    return view('payment');
+})->name('payment');
+Route::get('/payment/succes', function () {
+    return view('paymentSucces');
+})->name('success');
+
 
 // ============================================
 // LOGIN ROUTES - HYBRID (Cipah + Dev-Sawan)
@@ -61,7 +74,7 @@ Route::get('/register-penjual', function () {
 // SELLER ROUTES (dari Dev-Sawan)
 // ============================================
 Route::prefix('seller')->name('seller.')->group(function () {
-    
+
     // Guest routes
     Route::middleware('guest')->group(function () {
         Route::get('/login', [SellerAuthController::class, 'showLoginForm'])->name('login');

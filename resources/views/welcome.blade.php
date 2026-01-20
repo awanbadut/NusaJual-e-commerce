@@ -131,28 +131,32 @@
             <h2 class="text-3xl md:text-4xl font-extrabold text-[#0F4C20]">Bareng Mitra Terbaik</h2>
             <p class="text-lg md:text-h5 text-[#8B4513] font-medium">Dari kebun, gudang, sampai ke tangan pelanggan</p>
         </div>
-        <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            @for ($i = 1; $i <= 4; $i++) <div
-                class="bg-white rounded-lg p-3 shadow-sm border border-gray-100 flex flex-col items-center hover:shadow-md transition duration-300">
+
+        <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center">
+            @foreach($stores as $store)
+            <div
+                class="bg-white rounded-lg p-3 shadow-sm border border-gray-100 flex flex-col items-center hover:shadow-md transition duration-300 h-full w-full max-w-xs">
                 <div
                     class="w-[150px] h-[150px] md:w-[176px] md:h-[176px] rounded-full overflow-hidden mb-4 bg-gray-100 shrink-0">
-                    <img src="https://placehold.co/400x400/green/white?text=Toko+{{$i}}"
+                    <img src="{{ $store->logo ? asset('storage/'.$store->logo) : 'https://placehold.co/400x400/green/white?text='.substr($store->store_name, 0, 2) }}"
                         class="w-full h-full object-cover">
                 </div>
-                <div class="w-full flex flex-col items-center gap-2 px-2 mb-4 text-center">
-                    <h3 class="text-xl font-bold text-[#321804]">Kopi Jaya {{ $i }}</h3>
-                    <p class="text-sm font-medium text-[#283618] line-clamp-2">Nibh massa vitae porta tincidunt. Quam
-                        faucibus elementum proin mi nec id.</p>
+                <div class="w-full flex flex-col items-center gap-2 px-2 mb-4 text-center flex-1">
+                    <h3 class="text-xl font-bold text-[#321804] line-clamp-1">{{ $store->store_name }}</h3>
+                    <p class="text-sm font-medium text-[#283618] line-clamp-2">
+                        {{ $store->description ?? 'Mitra terpercaya Nusa Belanja.' }}
+                    </p>
                 </div>
                 <div class="w-full grid grid-cols-3 gap-1 mb-4 border-t border-gray-50 pt-3">
                     <div class="flex flex-col items-center gap-1 border-r border-gray-100">
-                        <span class="text-[#9ca3af] text-[10px] font-semibold uppercase tracking-wider">Kategori</span>
+                        <span class="text-[#9ca3af] text-[10px] font-semibold uppercase tracking-wider">Pemilik</span>
                         <div class="flex flex-col items-center gap-1">
                             <div
                                 class="w-[24px] h-[24px] bg-[#fefae0] rounded-full flex items-center justify-center shrink-0">
-                                <x-heroicon-s-tag class="w-3 h-3 text-[#283618]" />
+                                <x-heroicon-s-user class="w-3 h-3 text-[#283618]" />
                             </div>
-                            <span class="text-xs font-bold text-[#0a0a0a]">Kopi</span>
+                            <span class="text-xs font-bold text-[#0a0a0a] line-clamp-1">{{ explode(' ',
+                                $store->user->name)[0] }}</span>
                         </div>
                     </div>
                     <div class="flex flex-col items-center gap-1 border-r border-gray-100">
@@ -162,7 +166,7 @@
                                 class="w-[24px] h-[24px] bg-[#ffefd0] rounded-full flex items-center justify-center shrink-0">
                                 <x-heroicon-s-cube class="w-3 h-3 text-[#283618]" />
                             </div>
-                            <span class="text-xs font-bold text-[#0a0a0a]">110</span>
+                            <span class="text-xs font-bold text-[#0a0a0a]">{{ $store->products_count }}</span>
                         </div>
                     </div>
                     <div class="flex flex-col items-center gap-1">
@@ -172,17 +176,18 @@
                                 class="w-[24px] h-[24px] bg-[#e2f7d7] rounded-full flex items-center justify-center shrink-0">
                                 <x-heroicon-s-map-pin class="w-3 h-3 text-[#283618]" />
                             </div>
-                            <span class="text-xs font-bold text-[#0a0a0a] truncate w-full text-center">Solok</span>
+                            <span class="text-xs font-bold text-[#0a0a0a] truncate w-full text-center">{{ $store->city
+                                ?? 'Indo' }}</span>
                         </div>
                     </div>
                 </div>
-                <button
+                <a href="{{ route('profil-mitra', $store->id) }}"
                     class="w-full bg-[#045405] hover:bg-[#033a03] text-white font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 transition text-sm mt-auto">
                     Lihat Profile
                     <x-heroicon-s-arrow-right class="w-4 h-4" />
-                </button>
-        </div>
-        @endfor
+                </a>
+            </div>
+            @endforeach
         </div>
     </section>
 
@@ -191,21 +196,25 @@
             <h2 class="text-3xl md:text-4xl font-extrabold text-[#0F4C20]">Hasil Bumi Pilihan Kita</h2>
             <p class="text-lg md:text-h5 text-[#8B4513] font-medium">Dari berbagai daerah, siap memenuhi kebutuhan</p>
         </div>
-        <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-y-20 gap-x-6 pt-10">
-            @foreach(['Kopi', 'Sawit', 'Teh', 'Rempah', 'Buah'] as $cat)
-            <div
-                class="relative flex flex-col items-center bg-[#fefefb] border border-[#e3fb9a] rounded-lg p-4 shadow-sm hover:shadow-md transition duration-300 cursor-pointer group mt-10">
+
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-center gap-y-16 gap-x-8 pt-10">
+            @foreach($categories as $category)
+            <a href="{{ route('katalog', ['category' => $category->slug]) }}"
+                class="relative flex flex-col items-center bg-[#fefefb] border border-[#e3fb9a] rounded-lg p-4 shadow-sm hover:shadow-md transition duration-300 cursor-pointer group mt-10 w-36 md:w-48">
+
                 <div
                     class="w-[100px] h-[100px] md:w-[129px] md:h-[129px] rounded-full overflow-hidden border-[4px] border-white shadow-sm absolute -top-[50px] md:-top-[64px] bg-gray-200 group-hover:scale-105 transition-transform">
-                    <img src="https://placehold.co/300x300/brown/white?text={{$cat}}"
+                    <img src="https://placehold.co/300x300/brown/white?text={{ $category->name }}"
                         class="w-full h-full object-cover">
                 </div>
+
                 <div class="h-[50px] md:h-[60px]"></div>
+
                 <div class="flex flex-col items-center gap-1 w-full text-center mt-2">
-                    <h4 class="text-lg font-bold text-[#0a0a0a]">{{ $cat }}</h4>
-                    <span class="text-sm font-semibold text-[#87470c]">500 Produk</span>
+                    <h4 class="text-lg font-bold text-[#0a0a0a] line-clamp-1">{{ $category->name }}</h4>
+                    <span class="text-sm font-semibold text-[#87470c]">{{ $category->products_count }} Produk</span>
                 </div>
-            </div>
+            </a>
             @endforeach
         </div>
     </section>
@@ -216,43 +225,45 @@
             <p class="text-lg md:text-h5 text-[#8B4513] font-medium">Hasil terbaik dari mitra terpercaya</p>
         </div>
 
-        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
-            @for ($j = 1; $j <= 4; $j++) <div
-                class="flex flex-col sm:flex-row bg-[#fefefb] border border-[#e3fb9a] rounded-lg p-3 shadow-sm hover:shadow-md transition duration-300">
-
-                <div class="w-full sm:w-[204px] h-[200px] sm:h-[178px] rounded-lg overflow-hidden shrink-0">
-                    <img src="https://placehold.co/400x300/brown/white?text=Kopi+Gayo"
-                        class="w-full h-full object-cover">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-center">
+            @foreach($products as $product)
+            <div
+                class="flex flex-col sm:flex-row bg-[#fefefb] border border-[#e3fb9a] rounded-lg p-3 shadow-sm hover:shadow-md transition duration-300 w-full max-w-xl">
+                <div class="w-full sm:w-[204px] h-[200px] sm:h-[178px] rounded-lg overflow-hidden shrink-0 bg-gray-100">
+                    @php
+                    $imgUrl = $product->primaryImage ? asset('storage/' . $product->primaryImage->image_path) :
+                    'https://placehold.co/400x300/brown/white?text=' . urlencode($product->name);
+                    @endphp
+                    <img src="{{ $imgUrl }}" class="w-full h-full object-cover">
                 </div>
-
                 <div class="flex-1 flex flex-col justify-between px-2 sm:px-4 py-4 sm:py-2">
                     <div class="flex justify-between items-center w-full mb-2 sm:mb-0">
-                        <span class="text-[#4b5563] text-sm font-medium">Kopi</span>
+                        <span class="text-[#4b5563] text-sm font-medium">{{ $product->category->name ?? 'Umum' }}</span>
                         <div class="flex items-center gap-2 text-[#030712] text-xs font-medium">
                             <x-heroicon-s-shopping-bag class="w-4 h-4 text-[#f4b400]" />
-                            <span>1000 terjual</span>
+                            <span>0 terjual</span>
                         </div>
                     </div>
                     <div class="flex flex-col gap-1 mb-2 sm:mb-0">
-                        <h3 class="text-lg sm:text-h6 font-bold text-[#111827]">Egestas vehicula</h3>
+                        <h3 class="text-lg sm:text-h6 font-bold text-[#111827] line-clamp-1">{{ $product->name }}</h3>
                         <div class="flex items-baseline gap-1">
-                            <span class="text-[16px] font-bold text-[#87470c]">Rp 500.000</span>
-                            <span class="text-xs text-[#6b7280]">/Kg</span>
+                            <span class="text-[16px] font-bold text-[#87470c]">Rp {{ number_format($product->price, 0,
+                                ',', '.') }}</span>
+                            <span class="text-xs text-[#6b7280]">/{{ $product->unit }}</span>
                         </div>
                     </div>
-                    <p class="text-xs text-[#6b7280] line-clamp-2 leading-relaxed mb-3 sm:mb-0">
-                        Non suspendisse turpis velit enim facilisi et at. Dictum senectus ac elit ac risus mattis. Urna.
-                    </p>
+                    <p class="text-xs text-[#6b7280] line-clamp-2 leading-relaxed mb-3 sm:mb-0">{{ $product->description
+                        }}</p>
                     <div class="flex justify-end mt-2">
-                        <button
+                        <a href="{{ route('produk.show', $product->id) }}"
                             class="bg-[#f4b400] hover:bg-yellow-500 text-[#045405] font-bold text-xs py-2 px-4 rounded-lg flex items-center gap-2 transition shadow-sm w-full sm:w-auto justify-center">
                             Beli Sekarang
                             <x-heroicon-s-arrow-right class="w-4 h-4" />
-                        </button>
+                        </a>
                     </div>
                 </div>
-        </div>
-        @endfor
+            </div>
+            @endforeach
         </div>
 
         <div class="text-center mt-12">

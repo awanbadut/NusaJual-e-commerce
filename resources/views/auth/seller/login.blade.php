@@ -1,87 +1,108 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - NusaJual</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Masuk Sebagai Penjual - Nusa Belanja</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
+        rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-[#f5f5dc] min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-        <!-- Logo -->
-        <div class="flex items-center justify-center mb-6">
-            <div class="bg-green-800 text-white px-4 py-2 rounded font-bold mr-2">Logo</div>
-            <span class="text-xl font-semibold">Nusa Belanja</span>
-        </div>
 
-        <!-- Header -->
-        <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-gray-800 mb-2">Selamat Datang</h1>
-            <p class="text-gray-600">Masuk sebagai penjual untuk mengelola toko Anda</p>
-        </div>
+<body class="bg-[#F8FCF8] min-h-screen flex items-center justify-center p-4">
 
-        <!-- Alert Error -->
-        @if($errors->any())
-        <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4 flex items-start">
-            <span class="text-amber-600 mr-2">⚠️</span>
-            <div class="text-sm text-amber-800">
-                @foreach($errors->all() as $error)
-                    <p>{{ $error }}</p>
-                @endforeach
+    <div
+        class="bg-white w-full max-w-[572px] rounded-[10px] shadow-lg border border-gray-100 p-8 md:p-12 flex flex-col items-center gap-8">
+
+        <div class="flex items-center gap-3">
+            <div class="bg-[#0F4C20] rounded px-3 py-2 text-white font-bold tracking-tight text-sm">
+                Logo
             </div>
+            <span class="text-xl font-bold text-gray-700">Nusa Belanja</span>
         </div>
-        @endif
 
-        <!-- Alert Success -->
-        @if(session('success'))
-        <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-4 flex items-start">
-            <span class="text-green-600 mr-2">✓</span>
-            <p class="text-sm text-green-800">{{ session('success') }}</p>
+        <div class="text-center">
+            <h1 class="text-2xl font-bold text-black mb-2 tracking-tight">Selamat Datang</h1>
+            <p class="text-gray-500 font-medium">Pilih Peran Anda untuk Melanjutkan</p>
         </div>
-        @endif
 
-        <!-- Form Login -->
-        <form action="{{ route('seller.login.submit') }}" method="POST">
+        <div class="w-full bg-[#ECFDF5] p-2.5 rounded-lg flex gap-3">
+
+            <a href="{{ route('login.pembeli') }}"
+                class="flex-1 rounded-md p-3 flex flex-col items-center justify-center gap-2 transition cursor-pointer bg-[#D1FAE5] text-[#475569] hover:bg-[#A7F3D0]">
+                <x-heroicon-o-shopping-cart class="w-6 h-6" />
+                <span class="font-bold text-sm">Pembeli</span>
+            </a>
+
+            <a href="{{ route('seller.login') }}"
+                class="flex-1 rounded-md p-3 flex flex-col items-center justify-center gap-2 transition cursor-pointer bg-[#0F4C20] text-white shadow-sm">
+                <x-heroicon-s-building-storefront class="w-6 h-6" />
+                <span class="font-bold text-sm">Penjual</span>
+            </a>
+
+        </div>
+
+        <div class="w-full bg-[#FFFFF0] border border-orange-100 rounded-[10px] p-3 flex items-start gap-3">
+            <x-heroicon-s-information-circle class="h-5 w-5 text-[#8B4513] shrink-0 mt-0.5" />
+            <p class="text-sm text-[#8B4513] font-medium leading-tight">
+                Masuk sebagai penjual untuk mengelola toko Anda
+            </p>
+        </div>
+
+        <form action="{{ route('seller.login.submit') }}" method="POST" class="w-full flex flex-col gap-5">
             @csrf
 
-            <!-- Email -->
-            <div class="mb-4">
-                <label class="block text-gray-700 font-medium mb-2">Email</label>
-                <input 
-                    type="email" 
-                    name="email" 
-                    value="{{ old('email') }}" 
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 @error('email') border-red-500 @enderror" 
-                    placeholder="nama@email.com" 
-                    required>
+            @if($errors->any())
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start">
+                <span class="text-amber-600 mr-2">⚠️</span>
+                <div class="text-sm text-amber-800">
+                    @foreach($errors->all() as $error)
+                    <p>{{ $error }}</p>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            @if(session('success'))
+            <div class="bg-green-50 border border-green-200 rounded-lg p-3 flex items-start">
+                <span class="text-green-600 mr-2">✓</span>
+                <p class="text-sm text-green-800">{{ session('success') }}</p>
+            </div>
+            @endif
+
+            <div>
+                <label class="block text-gray-700 font-bold mb-2">Email</label>
+                <input type="email" name="email" value="{{ old('email') }}"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0F4C20] focus:border-[#0F4C20] placeholder-gray-400 font-medium @error('email') border-red-500 @enderror"
+                    placeholder="nama@email.com" required>
             </div>
 
-            <!-- Password -->
-            <div class="mb-6">
-                <label class="block text-gray-700 font-medium mb-2">Password</label>
-                <input 
-                    type="password" 
-                    name="password" 
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 @error('password') border-red-500 @enderror" 
-                    placeholder="••••••••" 
-                    required>
+            <div>
+                <label class="block text-gray-700 font-bold mb-2">Password</label>
+                <input type="password" name="password"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0F4C20] focus:border-[#0F4C20] placeholder-gray-400 font-medium @error('password') border-red-500 @enderror"
+                    placeholder="********" required>
             </div>
 
-            <!-- Submit Button -->
-            <button 
-                type="submit" 
-                class="w-full bg-green-800 text-white py-3 rounded-lg font-semibold hover:bg-green-900 transition flex items-center justify-center">
-                Login Sekarang →
+            <button type="submit"
+                class="mt-2 w-full bg-[#0F4C20] hover:bg-[#0b3a18] text-white font-bold py-3.5 px-6 rounded-lg flex items-center justify-center gap-2 transition shadow-md">
+                Login Sekarang
+                <x-heroicon-m-arrow-right class="h-5 w-5" />
             </button>
         </form>
 
-        <!-- Register Link -->
-        <p class="text-center text-gray-600 mt-4">
-            Belum Punya Akun? 
-            <a href="{{ route('seller.register') }}" class="text-green-800 font-semibold hover:underline">
+        <div class="text-center text-sm text-gray-500 font-medium">
+            Belum Punya Akun?
+            <a href="{{ route('seller.register') }}"
+                class="text-gray-500 underline decoration-gray-400 hover:text-[#0F4C20] font-semibold">
                 Daftar Sekarang
             </a>
-        </p>
+        </div>
+
     </div>
 </body>
+
 </html>

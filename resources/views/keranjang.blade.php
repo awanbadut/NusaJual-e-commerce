@@ -18,17 +18,47 @@
             <div
                 class="relative w-full h-[200px] bg-[#F0EFE6] rounded-xl border border-[#496030] overflow-hidden flex flex-col items-center justify-center text-center p-6 shadow-sm">
                 <div class="absolute inset-0 opacity-10"
-                    style="background-image: url('https://placehold.co/100x100/5c3208/white?text=Pattern'); background-size: 100px;">
+                    style="background-image: url('{{ asset('img/pattern-kopi1.png') }}'); background-size: 100%">
                 </div>
                 <div class="relative z-10 flex flex-col gap-1">
-                    <h1 class="text-3xl md:text-4xl font-extrabold text-[#0F4C20]">Keranjang Belanja</h1>
-                    <p class="text-base md:text-lg font-medium text-[#8B4513]">
+                    <h1 class="text-3xl md:text-4xl font-bold text-[#0F4C20]">Keranjang Belanja</h1>
+                    <p class="text-lg md:text-lg font-medium text-[#8B4513]">
                         Cek kembali produk sebelum lanjut ke pembayaran
                     </p>
                 </div>
             </div>
         </div>
     </section>
+
+    @php
+    $cartData = [];
+    foreach($groupedCarts as $storeId => $items) {
+    $storeName = $items->first()->product->store->store_name;
+    $storeItems = [];
+
+    foreach($items as $item) {
+    $storeItems[] = [
+    'id' => $item->id, // ID Cart
+    'product_id' => $item->product_id,
+    'name' => $item->product->name,
+    'category' => $item->product->category->name ?? 'Umum',
+    'price' => $item->product->price,
+    'old_price' => 0, // Bisa disesuaikan jika ada field discount
+    'qty' => $item->quantity,
+    'image' => $item->product->primaryImage ? asset('storage/'.$item->product->primaryImage->image_path) :
+    'https://placehold.co/100x100/brown/white?text='.urlencode($item->product->name),
+    'unit' => $item->product->unit,
+    'selected' => false // Default tidak terpilih
+    ];
+    }
+
+    $cartData[] = [
+    'id' => $storeId,
+    'name' => $storeName,
+    'items' => $storeItems
+    ];
+    }
+    @endphp
 
     <section class="pb-24 px-4 sm:px-6 lg:px-8" x-data="cartData()">
 
@@ -40,11 +70,15 @@
                     <div class="text-lg font-bold text-gray-700">
                         Total <span x-text="itemCount"></span> Item Siap Checkout
                     </div>
-                    <button @click="clearCart()"
-                        class="flex items-center gap-2 text-[#0F4C20] font-bold text-sm hover:text-red-600 transition">
-                        <x-heroicon-s-trash class="w-5 h-5" />
-                        Kosongkan Keranjang
-                    </button>
+
+                    <form action="{{ route('keranjang.clear') }}" method="POST" id="clearCartForm">
+                        @csrf @method('DELETE')
+                        <button type="button" @click="clearCartConfirm()"
+                            class="flex items-center gap-2 text-[#0F4C20] font-bold text-sm hover:text-red-600 transition">
+                            <x-heroicon-s-trash class="w-5 h-5" />
+                            Kosongkan Keranjang
+                        </button>
+                    </form>
                 </div>
 
                 <template x-for="(mitra, mIndex) in cart" :key="mitra.id">
@@ -92,27 +126,29 @@
                                         <div class="mt-1 flex items-baseline gap-1">
                                             <span class="text-[#8B4513] font-bold text-sm"
                                                 x-text="formatRupiah(item.price)"></span>
-                                            <span class="text-xs text-gray-500">/Kg</span>
+                                            <span class="text-xs text-gray-500" x-text="'/' + item.unit"></span>
                                             <span x-show="item.old_price"
                                                 class="text-xs text-gray-400 line-through ml-2"
                                                 x-text="formatRupiah(item.old_price)"></span>
                                         </div>
 
-                                        {{-- baris hapus dan quantitay --}}
-                                        <div class="flex items-center justify-between">
-                                            <button @click="removeItem(mIndex, iIndex)"
+                                        <div class="flex items-center justify-between mt-3">
+                                            <button @click="deleteItem(item.id)"
                                                 class="flex items-center gap-1 text-xs text-gray-400 hover:text-red-500 transition">
                                                 <x-heroicon-s-trash class="w-4 h-4" />
                                                 Hapus
                                             </button>
 
                                             <div class="flex items-center border border-gray-300 rounded-lg h-9">
-                                                <button @click="if(item.qty > 1) item.qty--"
-                                                    class="px-2 text-gray-500 hover:text-[#0F4C20] hover:bg-gray-50 h-full rounded-l-lg">-</button>
+                                                <button @click="updateQty(item.id, item.qty - 1, mIndex, iIndex)"
+                                                    class="px-2 text-gray-500 hover:text-[#0F4C20] hover:bg-gray-50 h-full rounded-l-lg"
+                                                    :disabled="item.qty <= 1">-</button>
+
                                                 <input type="text"
                                                     class="w-10 text-center text-sm font-bold text-gray-700 border-none focus:ring-0 p-0"
                                                     x-model="item.qty" readonly>
-                                                <button @click="item.qty++"
+
+                                                <button @click="updateQty(item.id, item.qty + 1, mIndex, iIndex)"
                                                     class="px-2 text-gray-500 hover:text-[#0F4C20] hover:bg-gray-50 h-full rounded-r-lg">+</button>
                                             </div>
                                         </div>
@@ -125,9 +161,18 @@
                     </div>
                 </template>
 
+                <div x-show="cart.length === 0" class="text-center py-20 bg-white rounded-xl border border-gray-200">
+                    <div class="inline-flex bg-gray-100 p-4 rounded-full mb-3">
+                        <x-heroicon-o-shopping-cart class="w-8 h-8 text-gray-400" />
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-700">Keranjang Masih Kosong</h3>
+                    <a href="{{ route('katalog') }}" class="text-[#0F4C20] font-bold text-sm mt-2 hover:underline">Mulai
+                        Belanja</a>
+                </div>
+
             </div>
 
-            <div class="w-full lg:w-[380px] shrink-0">
+            <div class="w-full lg:w-[380px] shrink-0" x-show="cart.length > 0">
                 <div class="bg-white border border-gray-200 rounded-xl shadow-lg sticky top-28 p-6 flex flex-col gap-4">
 
                     <h3 class="text-lg font-bold text-[#0F4C20] pb-3 border-b border-gray-100 text-center">
@@ -155,14 +200,24 @@
 
                     <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
                         <span class="text-base font-bold text-gray-700">Estimasi Total</span>
-                        <span class="text-xl font-bold text-[#0F4C20]" x-text="formatRupiah(subTotal + 1000)"></span>
+                        <span class="text-xl font-bold text-[#0F4C20]"
+                            x-text="formatRupiah(subTotal > 0 ? subTotal + 1000 : 0)"></span>
                     </div>
 
-                    <button
-                        class="w-full bg-[#0F4C20] hover:bg-[#0b3a18] text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition shadow-md mt-2">
-                        Siap Checkout
-                        <x-heroicon-s-arrow-right class="w-5 h-5" />
-                    </button>
+                    <form action="#" method="GET"> <template x-for="mitra in cart">
+                            <template x-for="item in mitra.items">
+                                <input type="hidden" name="selected_items[]" :value="item.id" x-if="item.selected">
+                            </template>
+                        </template>
+
+                        <button type="submit"
+                            class="w-full bg-[#0F4C20] hover:bg-[#0b3a18] text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition shadow-md mt-2"
+                            :disabled="selectedCount === 0"
+                            :class="selectedCount === 0 ? 'opacity-50 cursor-not-allowed' : ''">
+                            Siap Checkout
+                            <x-heroicon-s-arrow-right class="w-5 h-5" />
+                        </button>
+                    </form>
 
                 </div>
             </div>
@@ -175,26 +230,9 @@
     <script>
         function cartData() {
             return {
-                cart: [
-                    {
-                        id: 1,
-                        name: 'Mitra Makmur Jaya',
-                        items: [
-                            { id: 101, name: 'Egestas vehicula', category: 'Kopi', price: 200000, old_price: 0, qty: 2, image: 'https://placehold.co/100x100/brown/white?text=Kopi', selected: true },
-                            { id: 102, name: 'Habitasse facilisis', category: 'Sawit', price: 350000, old_price: 399000, qty: 1, image: 'https://placehold.co/100x100/orange/white?text=Sawit', selected: false },
-                            { id: 103, name: 'Amet purus', category: 'Kopi', price: 250000, old_price: 300000, qty: 2, image: 'https://placehold.co/100x100/brown/white?text=Kopi', selected: true }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        name: 'Mitra Tani Sejahtera',
-                        items: [
-                            { id: 201, name: 'Diam commodo', category: 'Teh', price: 150000, old_price: 0, qty: 2, image: 'https://placehold.co/100x100/green/white?text=Teh', selected: false }
-                        ]
-                    }
-                ],
+                // DATA CART DIAMBIL DARI PHP DI ATAS
+                cart: @json($cartData),
 
-                // Hitung total item yang dipilih (hanya yang dicentang)
                 get selectedCount() {
                     let count = 0;
                     this.cart.forEach(mitra => {
@@ -205,7 +243,6 @@
                     return count;
                 },
 
-                // Hitung total item di keranjang (termasuk yang tidak dipilih)
                 get itemCount() {
                     let count = 0;
                     this.cart.forEach(mitra => {
@@ -216,7 +253,6 @@
                     return count;
                 },
 
-                // Hitung Subtotal Harga (hanya yang dicentang)
                 get subTotal() {
                     let total = 0;
                     this.cart.forEach(mitra => {
@@ -227,33 +263,64 @@
                     return total;
                 },
 
-                // Format Rupiah
                 formatRupiah(number) {
                     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
                 },
 
-                // Logic Checkbox Mitra (Pilih Semua)
                 isMitraSelected(mIndex) {
                     return this.cart[mIndex].items.every(item => item.selected);
                 },
+                
                 toggleMitra(mIndex) {
                     let allSelected = this.isMitraSelected(mIndex);
                     this.cart[mIndex].items.forEach(item => item.selected = !allSelected);
                 },
 
-                // Logic Hapus Item
-                removeItem(mIndex, iIndex) {
-                    this.cart[mIndex].items.splice(iIndex, 1);
-                    // Hapus mitra jika item habis
-                    if (this.cart[mIndex].items.length === 0) {
-                        this.cart.splice(mIndex, 1);
+                // UPDATE QTY KE SERVER VIA FETCH
+                updateQty(id, newQty, mIndex, iIndex) {
+                    if (newQty < 1) return;
+
+                    // Update UI dulu biar responsif
+                    this.cart[mIndex].items[iIndex].qty = newQty;
+
+                    fetch(`/keranjang/${id}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ quantity: newQty })
+                    });
+                },
+
+                // DELETE ITEM (UI + Form Submit Helper)
+                deleteItem(id) {
+                    if(confirm('Hapus produk ini dari keranjang?')) {
+                        // Buat form hidden dinamis untuk method DELETE
+                        let form = document.createElement('form');
+                        form.action = `/keranjang/${id}`;
+                        form.method = 'POST';
+                        
+                        let csrf = document.createElement('input');
+                        csrf.type = 'hidden';
+                        csrf.name = '_token';
+                        csrf.value = '{{ csrf_token() }}';
+                        
+                        let method = document.createElement('input');
+                        method.type = 'hidden';
+                        method.name = '_method';
+                        method.value = 'DELETE';
+
+                        form.appendChild(csrf);
+                        form.appendChild(method);
+                        document.body.appendChild(form);
+                        form.submit();
                     }
                 },
 
-                // Kosongkan Keranjang
-                clearCart() {
+                clearCartConfirm() {
                     if(confirm('Yakin ingin mengosongkan keranjang?')) {
-                        this.cart = [];
+                        document.getElementById('clearCartForm').submit();
                     }
                 }
             }
