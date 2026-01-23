@@ -38,7 +38,7 @@
                 </a>
                 @endif
 
-                @if(request()->routeIs(['keranjang','checkout','payment','success']))
+                @if(request()->routeIs(['keranjang','checkout.review','payment.success','payment.process','payment.show']))
                 <a href="{{ route('keranjang') }}"
                     class="flex items-center gap-2 py-1 text-[#0F4C20] font-bold border-b-2 border-[#0F4C20]">
                     <x-heroicon-s-shopping-cart class="w-5 h-5" />
@@ -52,12 +52,60 @@
                 </a>
                 @endif
 
-                @auth
+                {{-- @auth
                 <a href="#"
                     class="flex items-center gap-2 py-1 text-[#4E582C] font-bold border-b-2 border-transparent hover:text-[#0F4C20] hover:border-[#0F4C20] transition-all group">
                     <x-heroicon-o-user class="w-5 h-5 group-hover:text-[#0F4C20]" />
                     <span>Profile</span>
                 </a>
+                @else --}}
+
+                @auth
+                <div class="relative" x-data="{ profileOpen: false }">
+                    <button @click="profileOpen = !profileOpen" @click.away="profileOpen = false"
+                        class="flex items-center gap-2 py-1 text-[#4E582C] font-bold border-b-2 border-transparent hover:text-[#0F4C20] hover:border-[#0F4C20] transition-all group">
+
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=0F4C20&color=fff"
+                            class="w-6 h-6 rounded-full border border-gray-200">
+
+                        <span class="max-w-[100px] truncate">{{ Auth::user()->name }}</span>
+                        <x-heroicon-s-chevron-down class="w-3 h-3 text-gray-400 group-hover:text-[#0F4C20]" />
+                    </button>
+
+                    <div x-show="profileOpen"
+                        class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] py-2 border border-gray-100 z-50 origin-top-right"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                        style="display: none;">
+
+                        <div class="px-4 py-2 border-b border-gray-50 mb-1">
+                            <p class="text-xs text-gray-400">Halo,</p>
+                            <p class="font-bold text-[#0F4C20] truncate">{{ Auth::user()->name }}</p>
+                        </div>
+
+                        <a href="#"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-[#0F4C20]">
+                            Profile Saya
+                        </a>
+
+                        {{-- Pastikan route 'orders.index' sudah ada, kalau belum hapus href-nya jadi # --}}
+                        <a href="#"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-[#0F4C20]">
+                            Pesanan Saya
+                        </a>
+
+                        <div class="border-t border-gray-100 my-1"></div>
+
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit"
+                                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-bold flex items-center gap-2">
+                                <x-heroicon-o-arrow-left-start-on-rectangle class="w-4 h-4" />
+                                Keluar
+                            </button>
+                        </form>
+                    </div>
+                </div>
                 @else
                 {{-- ✅ FIXED: Line 62 --}}
                 <a href="{{ route('login.pembeli') }}"

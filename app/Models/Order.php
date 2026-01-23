@@ -13,15 +13,19 @@ class Order extends Model
         'order_number',
         'user_id',
         'store_id',
-        'status',
-        'payment_status',
-        'payment_method',
-        'sub_total',  // Pakai sub_total
+        'status',          // enum: pending, processing, etc
+        'payment_status',  // enum: unpaid, paid, etc
+        'payment_method',  // bank_transfer, etc
+        'sub_total',
         'tax',
         'shipping_cost',
         'total_amount',
         'shipping_address',
         'notes',
+
+        // [TAMBAHAN] Sesuai struktur tabel database kamu yang baru
+        'recipient_name',
+        'recipient_phone',
     ];
 
     protected function casts(): array
@@ -32,7 +36,10 @@ class Order extends Model
         ];
     }
 
-    // Relationships
+    // ===========================
+    // RELATIONSHIPS
+    // ===========================
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -48,13 +55,25 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    // Accessor untuk subtotal (agar bisa pakai $order->subtotal)
+    /**
+     * [BARU] Relasi ke tabel Payments
+     * Satu Order memiliki Satu Data Pembayaran
+     */
+    public function payment()
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    // ===========================
+    // HELPERS & ACCESSORS
+    // ===========================
+
+    // Accessor untuk subtotal
     public function getSubtotalAttribute()
     {
         return $this->attributes['sub_total'] ?? 0;
     }
 
-    // Status helpers
     public function isPending()
     {
         return $this->status === 'pending';

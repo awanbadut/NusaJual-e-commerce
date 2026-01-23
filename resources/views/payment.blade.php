@@ -13,22 +13,22 @@
 
     <x-navbar />
 
-    {{-- <div class="pt-24 pb-4 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div class="pt-24 pb-4 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div class="flex items-center gap-2 text-sm font-medium text-[#8B4513]">
             <a href="{{ route('keranjang') }}" class="hover:underline">Keranjang</a>
             <x-heroicon-s-chevron-right class="w-4 h-4 text-gray-400" />
-            <a href="#" class="hover:underline">Checkout</a>
+            <span class="text-gray-400">Checkout</span>
             <x-heroicon-s-chevron-right class="w-4 h-4 text-gray-400" />
             <span class="text-[#0F4C20] font-bold">Pembayaran</span>
         </div>
-    </div> --}}
+    </div>
 
     <section class="px-4 sm:px-6 lg:px-8 mb-8">
         <div class="max-w-7xl mx-auto">
             <div
                 class="relative w-full h-[180px] bg-[#F0EFE6] rounded-xl border border-[#496030] overflow-hidden flex flex-col items-center justify-center text-center p-6 shadow-sm">
                 <div class="absolute inset-0 opacity-10"
-                    style="background-image: url('img/pattern-kopi1.png'); background-size: 100%">
+                    style="background-image: url('{{ asset('img/pattern-kopi1.png') }}'); background-size: 100%">
                 </div>
                 <div class="relative z-10 flex flex-col gap-1">
                     <h1 class="text-3xl md:text-4xl font-bold text-[#0F4C20]">Unggah Bukti Pembayaran</h1>
@@ -61,12 +61,16 @@
                             class="flex flex-col items-center justify-center gap-2 p-4 bg-[#FAFAFA] rounded-lg border border-gray-100">
                             <span class="text-sm font-bold text-[#8B4513] uppercase tracking-wide">Total
                                 Pembayaran</span>
-                            <span class="text-3xl md:text-4xl font-bold text-gray-800">Rp 9.451.000</span>
+
+                            <span class="text-3xl md:text-4xl font-bold text-gray-800">
+                                Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                            </span>
 
                             <div
                                 class="flex items-center gap-2 bg-[#FEF9C3] text-[#854D0E] px-3 py-1.5 rounded-full text-xs font-bold mt-1">
                                 <x-heroicon-s-clock class="w-4 h-4" />
-                                <span>Bayar sebelum 29 Desember 2025, 23:59</span>
+                                <span>Bayar sebelum {{ $order->created_at->addDay()->translatedFormat('d F Y, H:i')
+                                    }}</span>
                             </div>
                         </div>
 
@@ -93,7 +97,7 @@
                                         </button>
                                     </div>
                                     <p class="text-sm text-gray-500 font-medium">a.n <span
-                                            class="font-bold text-gray-700">Nusa Belanja</span></p>
+                                            class="font-bold text-gray-700">PT Nusa Belanja</span></p>
                                 </div>
                             </div>
                         </div>
@@ -101,36 +105,61 @@
                         <div class="space-y-2">
                             <p class="text-sm font-medium text-gray-600">Upload Bukti Transfer :</p>
 
-                            <label
-                                class="flex flex-col items-center justify-center w-full h-48 border-2 border-[#8B4513] border-dashed rounded-xl cursor-pointer bg-[#FFFCF5] hover:bg-[#FFF8E6] transition group relative">
+                            <form action="{{ route('payment.process', $order->id) }}" method="POST"
+                                enctype="multipart/form-data" id="paymentForm" x-data="{ isLoading: false }"
+                                @submit="isLoading = true"> @csrf
 
-                                <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
-                                    <div
-                                        class="w-12 h-12 rounded-full bg-[#8B4513] bg-opacity-10 flex items-center justify-center mb-3 group-hover:scale-110 transition">
-                                        <x-heroicon-s-arrow-up-tray class="w-6 h-6 text-[#ffffff] text-bold" />
+                                <label
+                                    class="flex flex-col items-center justify-center w-full h-48 border-2 border-[#8B4513] border-dashed rounded-xl cursor-pointer bg-[#FFFCF5] hover:bg-[#FFF8E6] transition group relative">
+
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
+                                        <div
+                                            class="w-12 h-12 rounded-full bg-[#8B4513] bg-opacity-10 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                                            <x-heroicon-s-arrow-up-tray class="w-6 h-6 text-white" />
+                                        </div>
+
+                                        <p class="mb-1 text-sm text-gray-600 font-medium">
+                                            <span class="font-bold text-[#8B4513]">Klik untuk Upload</span> atau seret
+                                            file kesini
+                                        </p>
+                                        <p class="text-xs text-gray-400">SVG, PNG, JPG (Max. 2MB)</p>
+
+                                        <p x-show="fileName"
+                                            class="mt-4 text-sm font-bold text-[#0F4C20] bg-white px-3 py-1 rounded-full border border-green-200 shadow-sm animate-fade-in">
+                                            File: <span x-text="fileName"></span>
+                                        </p>
                                     </div>
 
-                                    <p class="mb-1 text-sm text-gray-600 font-medium">
-                                        <span class="font-bold text-[#8B4513]">Klik untuk Upload</span> atau seret file
-                                        kesini
-                                    </p>
-                                    <p class="text-xs text-gray-400">SVG, PNG, JPG (Max. 2MB)</p>
+                                    <input type="file" name="payment_proof"
+                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        @change="handleFileUpload" accept="image/*" required />
+                                </label>
 
-                                    <p x-show="fileName"
-                                        class="mt-4 text-sm font-bold text-[#0F4C20] bg-white px-3 py-1 rounded-full border border-green-200 shadow-sm animate-fade-in">
-                                        File: <span x-text="fileName"></span>
-                                    </p>
-                                </div>
+                                @error('payment_proof')
+                                <p class="text-red-500 text-sm mt-2 text-center font-bold bg-red-50 py-1 rounded">{{
+                                    $message }}</p>
+                                @enderror
 
-                                <input type="file" class="hidden" @change="handleFileUpload" accept="image/*" />
-                            </label>
+                                <button type="submit" :disabled="isLoading"
+                                    :class="isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#0b3a18]'"
+                                    class="w-full bg-[#0F4C20] text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 transition shadow-md text-lg mt-6">
+
+                                    <span x-show="!isLoading">Konfirmasi Pembayaran</span>
+                                    <span x-show="isLoading">Memproses...</span>
+
+                                    <svg x-show="isLoading" class="animate-spin h-5 w-5 text-white ml-2"
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                            stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
+                                    </svg>
+
+                                    <x-heroicon-s-check-circle x-show="!isLoading" class="w-5 h-5" />
+                                </button>
+                            </form>
                         </div>
-
-                        <a href="{{route('success')}}"
-                            class="w-full bg-[#0F4C20] hover:bg-[#0b3a18] text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 transition shadow-md text-lg">
-                            Siap Checkout
-                            <x-heroicon-s-arrow-right class="w-5 h-5" />
-                        </a>
 
                     </div>
                 </div>
@@ -146,31 +175,35 @@
                     </h3>
 
                     <div class="space-y-3 text-sm">
+                        <div class="text-center pb-2">
+                            <span class="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">Invoice: {{
+                                $order->order_number }}</span>
+                        </div>
+
                         <div class="flex justify-between">
                             <span class="text-gray-600 font-medium">Banyak Produk</span>
-                            <span class="font-bold text-gray-800">3</span>
+                            <span class="font-bold text-gray-800">{{ $order->items->count() }} Pcs</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600 font-medium">Sub Total</span>
-                            <span class="font-bold text-gray-800">Rp 1.000.000</span>
+                            <span class="font-bold text-gray-800">Rp {{ number_format($order->sub_total, 0, ',', '.')
+                                }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600 font-medium">Layanan</span>
                             <span class="font-bold text-gray-800">Rp 1.000</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-600 font-medium">Discount</span>
-                            <span class="font-bold text-gray-800">-Rp 0</span>
-                        </div>
-                        <div class="flex justify-between">
                             <span class="text-gray-600 font-medium">Pengiriman</span>
-                            <span class="font-bold text-gray-800">Rp 450.000</span>
+                            <span class="font-bold text-gray-800">Rp {{ number_format($order->shipping_cost, 0, ',',
+                                '.') }}</span>
                         </div>
                     </div>
 
                     <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
                         <span class="text-base font-bold text-gray-700">Total</span>
-                        <span class="text-xl font-bold text-[#0F4C20]">Rp 1.451.000</span>
+                        <span class="text-xl font-bold text-[#0F4C20]">Rp {{ number_format($order->total_amount, 0, ',',
+                            '.') }}</span>
                     </div>
 
                 </div>

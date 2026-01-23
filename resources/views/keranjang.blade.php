@@ -181,7 +181,7 @@
 
                     <div class="space-y-3 text-sm">
                         <div class="flex justify-between">
-                            <span class="text-gray-600 font-medium">Banyak Produk</span>
+                            <span class="text-gray-600 font-medium">Total Item</span>
                             <span class="font-bold text-gray-800" x-text="selectedCount"></span>
                         </div>
                         <div class="flex justify-between">
@@ -204,9 +204,11 @@
                             x-text="formatRupiah(subTotal > 0 ? subTotal + 1000 : 0)"></span>
                     </div>
 
-                    <form action="#" method="GET"> <template x-for="mitra in cart">
+                    <form action="{{ route('checkout.review') }}" method="POST">
+                        @csrf <template x-for="mitra in cart">
                             <template x-for="item in mitra.items">
-                                <input type="hidden" name="selected_items[]" :value="item.id" x-if="item.selected">
+                                <input type="hidden" name="selected_items[]" :value="item.id"
+                                    :disabled="!item.selected">
                             </template>
                         </template>
 
@@ -229,102 +231,123 @@
 
     <script>
         function cartData() {
-            return {
-                // DATA CART DIAMBIL DARI PHP DI ATAS
-                cart: @json($cartData),
+        return {
+            // Mengambil data dari PHP
+            cart: @json($cartData),
 
-                get selectedCount() {
-                    let count = 0;
-                    this.cart.forEach(mitra => {
-                        mitra.items.forEach(item => {
-                            if(item.selected) count += item.qty;
-                        });
+            // Getter untuk menghitung jumlah item yang dicentang
+            get selectedCount() {
+                let count = 0;
+                this.cart.forEach(mitra => {
+                    mitra.items.forEach(item => {
+                        if (item.selected) {
+                            count += parseInt(item.qty);
+                        }
                     });
-                    return count;
-                },
+                });
+                return count;
+            },
 
-                get itemCount() {
-                    let count = 0;
-                    this.cart.forEach(mitra => {
-                        mitra.items.forEach(item => {
-                            count += item.qty;
-                        });
+            // Getter untuk menghitung total semua item (untuk badge header)
+            get itemCount() {
+                let count = 0;
+                this.cart.forEach(mitra => {
+                    mitra.items.forEach(item => {
+                        count += parseInt(item.qty);
                     });
-                    return count;
-                },
+                });
+                return count;
+            },
 
-                get subTotal() {
-                    let total = 0;
-                    this.cart.forEach(mitra => {
-                        mitra.items.forEach(item => {
-                            if(item.selected) total += (item.price * item.qty);
-                        });
+            // Getter Subtotal (HARGA x QTY)
+            // [FIX] Menggunakan parseFloat agar harga '20000.00' terbaca sebagai angka 20000
+            get subTotal() {
+                let total = 0;
+                this.cart.forEach(mitra => {
+                    mitra.items.forEach(item => {
+                        if (item.selected) {
+                            let price = parseFloat(item.price);
+                            let qty = parseInt(item.qty);
+                            total += (price * qty);
+                        }
                     });
-                    return total;
-                },
+                });
+                return total;
+            },
 
-                formatRupiah(number) {
-                    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
-                },
+            formatRupiah(number) {
+                return new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                    minimumFractionDigits: 0
+                }).format(number);
+            },
 
-                isMitraSelected(mIndex) {
-                    return this.cart[mIndex].items.every(item => item.selected);
-                },
-                
-                toggleMitra(mIndex) {
-                    let allSelected = this.isMitraSelected(mIndex);
-                    this.cart[mIndex].items.forEach(item => item.selected = !allSelected);
-                },
+            isMitraSelected(mIndex) {
+                return this.cart[mIndex].items.every(item => item.selected);
+            },
 
-                // UPDATE QTY KE SERVER VIA FETCH
-                updateQty(id, newQty, mIndex, iIndex) {
-                    if (newQty < 1) return;
+            toggleMitra(mIndex) {
+                let allSelected = this.isMitraSelected(mIndex);
+                this.cart[mIndex].items.forEach(item => item.selected = !allSelected);
+            },
 
-                    // Update UI dulu biar responsif
-                    this.cart[mIndex].items[iIndex].qty = newQty;
+            // [FIX] UPDATE QTY DENGAN LOGIC BARU
+            updateQty(id, newQty, mIndex, iIndex) {
+                newQty = parseInt(newQty);
+                if (newQty < 1) return;
 
-                    fetch(`/keranjang/${id}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({ quantity: newQty })
-                    });
-                },
+                // 1. Update UI Frontend Dulu (Supaya responsif & Subtotal berubah)
+                this.cart[mIndex].items[iIndex].qty = newQty;
 
-                // DELETE ITEM (UI + Form Submit Helper)
-                deleteItem(id) {
-                    if(confirm('Hapus produk ini dari keranjang?')) {
-                        // Buat form hidden dinamis untuk method DELETE
-                        let form = document.createElement('form');
-                        form.action = `/keranjang/${id}`;
-                        form.method = 'POST';
-                        
-                        let csrf = document.createElement('input');
-                        csrf.type = 'hidden';
-                        csrf.name = '_token';
-                        csrf.value = '{{ csrf_token() }}';
-                        
-                        let method = document.createElement('input');
-                        method.type = 'hidden';
-                        method.name = '_method';
-                        method.value = 'DELETE';
-
-                        form.appendChild(csrf);
-                        form.appendChild(method);
-                        document.body.appendChild(form);
-                        form.submit();
+                // 2. Kirim Request ke Backend (Background)
+                fetch(`/keranjang/${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        quantity: newQty
+                    })
+                }).then(res => {
+                    if (!res.ok) {
+                        alert('Gagal update server'); 
+                        // Opsional: Balikkan qty jika gagal
                     }
-                },
+                });
+            },
 
-                clearCartConfirm() {
-                    if(confirm('Yakin ingin mengosongkan keranjang?')) {
-                        document.getElementById('clearCartForm').submit();
-                    }
+            deleteItem(id) {
+                if (confirm('Hapus produk ini dari keranjang?')) {
+                    let form = document.createElement('form');
+                    form.action = `/keranjang/${id}`;
+                    form.method = 'POST';
+
+                    let csrf = document.createElement('input');
+                    csrf.type = 'hidden';
+                    csrf.name = '_token';
+                    csrf.value = '{{ csrf_token() }}';
+
+                    let method = document.createElement('input');
+                    method.type = 'hidden';
+                    method.name = '_method';
+                    method.value = 'DELETE';
+
+                    form.appendChild(csrf);
+                    form.appendChild(method);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            },
+
+            clearCartConfirm() {
+                if (confirm('Yakin ingin mengosongkan keranjang?')) {
+                    document.getElementById('clearCartForm').submit();
                 }
             }
         }
+    }
     </script>
 
 </body>

@@ -12,20 +12,18 @@ class Payment extends Model
     protected $fillable = [
         'order_id',
         'amount',
-        'disbursement_date',
-        'transaction_date',
-        'status',
-        'proof_image',
-        'notes',
+        'payment_proof',
+        'status',         // pending, paid, confirmed
+        'paid_at',        // Kapan user upload bukti
+        'confirmed_at'    // Kapan admin konfirmasi
     ];
 
     protected $casts = [
-        'disbursement_date' => 'date',
-        'transaction_date' => 'date',
-        'amount' => 'decimal:2',
+        'paid_at' => 'datetime',
+        'confirmed_at' => 'datetime',
     ];
 
-    // Relationships
+    // Relasi ke Order
     public function order()
     {
         return $this->belongsTo(Order::class);

@@ -70,7 +70,7 @@
 
             @if($role == 'pembeli')
             <div class="flex flex-col items-center gap-3">
-                <button
+                <a href="{{ route('auth.google')}}"
                     class="w-full bg-[#0F4C20] hover:bg-green-900 text-white font-bold py-4 px-6 rounded-md flex items-center justify-center gap-3 transition shadow-md">
                     <svg class="w-6 h-6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -87,7 +87,7 @@
                             fill="#EA4335" />
                     </svg>
                     <span class="text-label-1 font-bold">Lanjutkan Dengan Google</span>
-                </button>
+                </a>
                 <p class="text-gray-500 text-body-3 font-medium">Tidak perlu password, akses instan dan aman</p>
             </div>
             @endif
