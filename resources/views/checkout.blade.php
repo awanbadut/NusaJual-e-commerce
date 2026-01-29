@@ -74,18 +74,39 @@
                                 <x-heroicon-s-map-pin class="w-5 h-5" />
                                 <h3>Alamat Pengiriman</h3>
                             </div>
-                            <a href="#" class="text-sm font-medium text-gray-500 hover:text-[#0F4C20]">Ubah Alamat</a>
+                            <a href="{{ route('profile.address') }}"
+                                class="text-sm font-medium text-gray-500 hover:text-[#0F4C20]">
+                                {{ $primaryAddress ? 'Ubah Alamat' : 'Tambah Alamat' }}
+                            </a>
                         </div>
 
                         <div class="text-gray-700">
+                            @if($primaryAddress)
                             <div class="flex items-baseline gap-2 mb-1">
-                                <span class="font-bold text-lg text-[#2E3B27]">{{ Auth::user()->name }}</span>
-                                <span class="text-sm text-gray-500 font-medium">({{ Auth::user()->phone ?? 'No HP Belum
-                                    Diisi' }})</span>
+                                <span class="font-bold text-lg text-[#2E3B27]">{{ $primaryAddress->receiver_name
+                                    }}</span>
+                                <span class="text-sm text-gray-500 font-medium">({{ $primaryAddress->phone }})</span>
+                                @if($primaryAddress->is_primary)
+                                <span class="bg-[#563B1F] text-white text-[10px] px-2 py-0.5 rounded-full">Utama</span>
+                                @endif
                             </div>
                             <p class="text-sm text-gray-600 leading-relaxed">
-                                {{ Auth::user()->address ?? 'Alamat belum diatur. Silakan ubah alamat.' }}
+                                {{ $primaryAddress->detail_address }} <br>
+                                {{ $primaryAddress->village_name }}, {{ $primaryAddress->district_name }} <br>
+                                {{ $primaryAddress->city_name }}, {{ $primaryAddress->province_name }} {{
+                                $primaryAddress->postal_code }}
                             </p>
+
+                            <input type="hidden" name="address_id" value="{{ $primaryAddress->id }}">
+                            @else
+                            <div class="text-center py-4 bg-red-50 rounded-lg border border-red-100">
+                                <p class="text-red-600 font-medium mb-2">Kamu belum mengatur alamat pengiriman.</p>
+                                <a href="{{ route('profile.address') }}"
+                                    class="inline-block bg-[#0F4C20] text-white px-4 py-2 rounded text-sm font-bold">
+                                    Atur Alamat Sekarang
+                                </a>
+                            </div>
+                            @endif
                         </div>
                     </div>
 

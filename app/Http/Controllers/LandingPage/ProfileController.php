@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Address;
+use Illuminate\Support\Facades\DB;
 
 class ProfileController extends Controller
 {
@@ -94,5 +95,104 @@ class ProfileController extends Controller
         ]);
 
         return back()->with('success', 'Alamat berhasil ditambahkan!');
+    }
+
+    public function updateAddress(Request $request, $id)
+    {
+        // 1. Cari Alamat milik user yang sedang login (Security Check)
+        $address = Address::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
+
+        // 2. Validasi sama persis dengan Store
+        $validated = $request->validate([
+            'receiver_name' => 'required|string|max:255',
+            'phone'         => 'required|string|max:20',
+            'province_code' => 'required',
+            'city_code'     => 'required',
+            'district_code' => 'required',
+            'village_code'  => 'required',
+            'province_name' => 'required',
+            'city_name'     => 'required',
+            'district_name' => 'required',
+            'village_name'  => 'required',
+            'postal_code'   => 'required',
+            'detail_address' => 'required|string',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // 3. Logika "Jadikan Utama"
+            // Jika user mencentang "Jadikan Utama", maka alamat lain harus di-set false
+            if ($request->has('is_primary') && $request->is_primary == '1') {
+                Address::where('user_id', Auth::id())->update(['is_primary' => false]);
+                $address->is_primary = true;
+            }
+            // Catatan: Jika user uncheck, kita biarkan saja (tidak otomatis mengubah yang lain)
+            // Atau logic-nya bisa disesuaikan kebutuhan.
+
+            // 4. Update Data
+            $address->update([
+                'receiver_name' => $validated['receiver_name'],
+                'phone'         => $validated['phone'],
+                'province_code' => $validated['province_code'],
+                'city_code'     => $validated['city_code'],
+                'district_code' => $validated['district_code'],
+                'village_code'  => $validated['village_code'],
+                'province_name' => $validated['province_name'],
+                'city_name'     => $validated['city_name'],
+                'district_name' => $validated['district_name'],
+                'village_name'  => $validated['village_name'],
+                'postal_code'   => $validated['postal_code'],
+                'detail_address' => $validated['detail_address'],
+                'is_primary'    => $address->is_primary ?? false, // Pertahankan status jika tidak diubah
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('profile.address')
+                ->with('success', 'Alamat berhasil diperbarui.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Gagal update alamat: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * HAPUS ALAMAT
+     */
+    public function destroyAddress($id)
+    {
+        $address = Address::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
+
+        $address->delete();
+
+        return redirect()->route('profile.address')
+            ->with('success', 'Alamat berhasil dihapus.');
+    }
+
+    /**
+     * SET ALAMAT UTAMA (Via Tombol Kecil "Jadikan Utama")
+     */
+    public function setPrimaryAddress($id)
+    {
+        // Cari alamat yang mau dijadikan utama
+        $address = Address::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
+
+        try {
+            DB::beginTransaction();
+
+            // 1. Reset semua alamat user ini jadi false
+            Address::where('user_id', Auth::id())->update(['is_primary' => false]);
+
+            // 2. Set alamat yang dipilih jadi true
+            $address->update(['is_primary' => true]);
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Alamat utama berhasil diubah.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Gagal mengubah alamat utama.']);
+        }
     }
 }

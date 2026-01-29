@@ -10,23 +10,25 @@ use App\Models\OrderItem;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Address;
 
 class CheckoutController extends Controller
 {
     // 1. Menampilkan Halaman Checkout (Review)
     public function review(Request $request)
     {
+        $user = Auth::user();
         if ($request->isMethod('get') || !$request->has('selected_items')) {
             return redirect()->route('keranjang')->with('error', 'Silakan pilih produk terlebih dahulu sebelum checkout.');
         }
 
-        // Validasi: Pastikan ada item yang dipilih dari keranjang
+        // Validasi
         $request->validate([
             'selected_items' => 'required|array|min:1',
             'selected_items.*' => 'exists:carts,id'
         ]);
 
-        // Ambil data item keranjang yang dipilih
+        // Ambil data item keranjang
         $cartItems = Cart::with('product')->whereIn('id', $request->selected_items)->get();
 
         if ($cartItems->isEmpty()) {
@@ -36,7 +38,19 @@ class CheckoutController extends Controller
         // Hitung Subtotal
         $subTotal = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
 
-        // Data dummy ongkir (Nanti bisa dikembangkan pakai API RajaOngkir)
+        // Ambil Alamat Utama
+        $primaryAddress = Address::where('user_id', $user->id)
+            ->where('is_primary', true)
+            ->first();
+
+        // Fallback jika tidak ada utama
+        if (!$primaryAddress) {
+            $primaryAddress = Address::where('user_id', $user->id)
+                ->latest()
+                ->first();
+        }
+
+        // Data dummy ongkir
         $couriers = [
             ['id' => 'jne', 'name' => 'JNE Reguler', 'etd' => '5-7 Hari', 'price' => 45000],
             ['id' => 'jnt', 'name' => 'JNT Express', 'etd' => '3-5 Hari', 'price' => 50000],
@@ -44,11 +58,9 @@ class CheckoutController extends Controller
             ['id' => 'sikilat', 'name' => 'Sikilat', 'etd' => '7-10 Hari', 'price' => 25000],
         ];
 
-        return view('checkout', compact('cartItems', 'subTotal', 'couriers'));
+        // PERBAIKAN UTAMA DISINI: Tambahkan 'primaryAddress'
+        return view('checkout', compact('cartItems', 'subTotal', 'couriers', 'primaryAddress'));
     }
-
-    // 2. Memproses Simpan Order (Action dari tombol "Lakukan Pembayaran")
-    // ... (Method review tetap sama) ...
 
     // 2. Memproses Simpan Order
     public function store(Request $request)
@@ -57,60 +69,56 @@ class CheckoutController extends Controller
             'selected_items' => 'required|string',
             'shipping_cost' => 'required|numeric',
             'shipping_courier' => 'required|string',
+            'address_id' => 'required|exists:addresses,id', // Validasi ID Alamat
         ]);
 
         $selectedItemIds = explode(',', $request->selected_items);
-
-        // Load data produk
         $cartItems = Cart::with('product')->whereIn('id', $selectedItemIds)->get();
 
         if ($cartItems->isEmpty()) {
             return back()->with('error', 'Terjadi kesalahan, item tidak ditemukan.');
         }
 
-        // Ambil store_id dari produk pertama
-        $storeId = $cartItems->first()->product->store_id;
+        // Ambil data alamat yang digunakan untuk transaksi ini
+        $shippingAddress = Address::find($request->address_id);
 
+        // Format string alamat lengkap untuk disimpan di tabel order (snapshot)
+        $fullAddressString = $shippingAddress->detail_address . ', ' .
+            $shippingAddress->village_name . ', ' .
+            $shippingAddress->district_name . ', ' .
+            $shippingAddress->city_name . ', ' .
+            $shippingAddress->province_name . ' ' .
+            $shippingAddress->postal_code;
+
+        $storeId = $cartItems->first()->product->store_id;
         $subtotal = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
         $totalPrice = $subtotal + 1000 + $request->shipping_cost;
 
         try {
             DB::beginTransaction();
 
-            // === [LOGIKA BARU] GENERATE ORDER NUMBER ===
-            // Format: NB-YYYYMMDD-XXXX (Urutan per hari)
-
-            $today = now()->format('Ymd'); // Contoh: 20251027
-
-            // Hitung berapa order yang sudah dibuat HARI INI
+            // Generate Order Number
+            $today = now()->format('Ymd');
             $orderCountToday = Order::whereDate('created_at', now()->today())->count();
-
-            // Urutan selanjutnya = Jumlah hari ini + 1
             $nextSequence = $orderCountToday + 1;
-
-            // Format 4 digit (misal: 1 jadi 0001, 15 jadi 0015)
-            $sequenceStr = str_pad($nextSequence, 4, '0', STR_PAD_LEFT);
-
-            // Gabungkan: NB-20251027-0001
-            $newOrderNumber = 'NB-' . $today . '-' . $sequenceStr;
-            // ===========================================
+            $newOrderNumber = 'NB-' . $today . '-' . str_pad($nextSequence, 4, '0', STR_PAD_LEFT);
 
             // Buat Order
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'store_id' => $storeId,
-
-                // Gunakan nomor order yang baru digenerate
                 'order_number' => $newOrderNumber,
-
                 'total_amount' => $totalPrice,
                 'sub_total' => $subtotal,
                 'shipping_cost' => $request->shipping_cost,
                 'status' => 'pending',
                 'payment_status' => 'pending',
-                'recipient_name' => Auth::user()->name,
-                'recipient_phone' => Auth::user()->phone ?? '-',
-                'shipping_address' => Auth::user()->address ?? '-',
+
+                // [FIX] Gunakan data dari Tabel Address, bukan Auth::user()
+                'recipient_name' => $shippingAddress->receiver_name,
+                'recipient_phone' => $shippingAddress->phone,
+                'shipping_address' => $fullAddressString, // Simpan alamat lengkap
+
                 'notes' => 'Kurir: ' . $request->shipping_courier,
             ]);
 
@@ -131,7 +139,6 @@ class CheckoutController extends Controller
             return redirect()->route('payment.show', $order->id);
         } catch (\Exception $e) {
             DB::rollback();
-            // Kembalikan error agar mudah didebug
             return back()->with('error', 'Gagal checkout: ' . $e->getMessage());
         }
     }

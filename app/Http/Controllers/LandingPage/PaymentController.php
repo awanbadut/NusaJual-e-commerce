@@ -95,9 +95,7 @@ class PaymentController extends Controller
      */
     public function success($id)
     {
-        // Ambil data order untuk ditampilkan di struk
-        // Kita load 'items.product' untuk menampilkan gambar & nama produk
-        $order = Order::with(['items.product', 'payment'])
+        $order = Order::with(['items.product.category', 'payment']) // Saya tambah .category biar lengkap
             ->where('id', $id)
             ->where('user_id', Auth::id())
             ->firstOrFail();

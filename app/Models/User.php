@@ -81,6 +81,7 @@ class User extends Authenticatable
     // Helper untuk mengambil alamat utama user
     public function primaryAddress()
     {
-        return $this->hasOne(Address::class)->where('is_primary', true);
+        return $this->addresses()->where('is_primary', true)->first()
+            ?? $this->addresses()->latest()->first();
     }
 }
