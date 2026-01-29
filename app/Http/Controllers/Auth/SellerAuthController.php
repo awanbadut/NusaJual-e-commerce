@@ -32,10 +32,10 @@ class SellerAuthController extends Controller
         ]);
 
         $credentials = $request->only('email', 'password');
-        
+
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            
+
             // Cek apakah role adalah seller atau admin
             if (!in_array($user->role, ['seller', 'admin'])) {
                 Auth::logout();
@@ -50,7 +50,7 @@ class SellerAuthController extends Controller
             if ($user->role === 'admin') {
                 return redirect()->intended(route('admin.dashboard'));
             }
-            
+
             return redirect()->intended(route('seller.dashboard'));
         }
 
@@ -72,70 +72,89 @@ class SellerAuthController extends Controller
      */
     public function register(Request $request)
     {
+        // 1. Validasi Input
         $validated = $request->validate([
             'store_name' => 'required|string|max:255',
             'owner_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'province' => 'required|string',
-            'city' => 'required|string',
-            'district' => 'required|string',
+            'phone'      => 'required|string|max:20',
+
+            // Validasi Kode (Dikirim dari value option dropdown)
+            'province_code' => 'required',
+            'city_code'     => 'required',
+            'district_code' => 'required',
+            'village_code'  => 'required', // PENTING BANGET
+
+            // Validasi Nama (Dikirim dari input hidden)
+            'province' => 'required',
+            'city'     => 'required',
+            'district' => 'required',
+            'village'  => 'required',
+
             'postal_code' => 'required|string|max:10',
-            'address' => 'required|string',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
+            'address'     => 'required|string',
+            'email'       => 'required|email|unique:users,email',
+            'password'    => 'required|min:8|confirmed',
         ], [
+            // Custom Messages
             'store_name.required' => 'Nama toko wajib diisi',
-            'owner_name.required' => 'Nama pemilik wajib diisi',
-            'phone.required' => 'Nomor telepon wajib diisi',
-            'province.required' => 'Provinsi wajib dipilih',
-            'city.required' => 'Kota/Kabupaten wajib dipilih',
-            'district.required' => 'Kecamatan wajib dipilih',
-            'postal_code.required' => 'Kode pos wajib diisi',
-            'address.required' => 'Alamat lengkap wajib diisi',
-            'email.required' => 'Email wajib diisi',
-            'email.email' => 'Format email tidak valid',
+            'province_code.required' => 'Provinsi wajib dipilih',
+            'city_code.required' => 'Kota/Kabupaten wajib dipilih',
+            'district_code.required' => 'Kecamatan wajib dipilih',
+            'village_code.required' => 'Kelurahan wajib dipilih',
             'email.unique' => 'Email sudah terdaftar',
-            'password.required' => 'Password wajib diisi',
-            'password.min' => 'Password minimal 8 karakter',
             'password.confirmed' => 'Konfirmasi password tidak cocok',
         ]);
 
         try {
             DB::beginTransaction();
 
-            // Buat user penjual
+            // 2. Buat User Penjual
             $user = User::create([
-                'name' => $validated['owner_name'],
-                'email' => $validated['email'],
+                'name'     => $validated['owner_name'],
+                'email'    => $validated['email'],
                 'password' => Hash::make($validated['password']),
-                'role' => 'seller',
-                'phone' => $validated['phone'],
+                'role'     => 'seller',
+                'phone'    => $validated['phone'],
             ]);
 
-            // Buat toko
+            // 3. Buat Slug Toko (biar URL-nya cantik, misal: nusa-belanja-123)
+            $slug = \Illuminate\Support\Str::slug($validated['store_name']) . '-' . rand(100, 999);
+
+            // 4. Buat Toko
             Store::create([
-                'user_id' => $user->id,
-                'store_name' => $validated['store_name'],
-                'province' => $validated['province'],
-                'city' => $validated['city'],
-                'district' => $validated['district'],
-                'postal_code' => $validated['postal_code'],
-                'address' => $validated['address'],
+                'user_id'       => $user->id,
+                'store_name'    => $validated['store_name'],
+                'slug'          => $slug,
+                'description'   => 'Toko resmi ' . $validated['store_name'], // <--- INI YG DITAMBAHKAN
+
+                // Simpan Kode Wilayah (Penting untuk Ongkir)
+                'province_code' => $validated['province_code'],
+                'city_code'     => $validated['city_code'],
+                'district_code' => $validated['district_code'],
+                'village_code'  => $validated['village_code'],
+
+                // Simpan Nama Wilayah (Untuk Tampilan)
+                'province'      => $validated['province'],
+                'city'          => $validated['city'],
+                'district'      => $validated['district'],
+                'village'       => $validated['village'],
+
+                'postal_code'   => $validated['postal_code'],
+                'address'       => $validated['address'],
             ]);
 
             DB::commit();
 
-            // Login otomatis
-            Auth::login($user);
-
-            return redirect()->route('seller.dashboard')
-                ->with('success', 'Registrasi berhasil! Selamat datang di NusaJual.');
-
+            return redirect()->route('seller.login')
+                ->with('success', 'Registrasi berhasil! Silakan login untuk mengelola toko.');
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
+            // Uncomment baris ini jika ingin melihat detail error di layar saat testing
+            // dd($e->getMessage()); 
+
             return back()->withErrors([
-                'error' => 'Terjadi kesalahan saat registrasi. Silakan coba lagi.',
+                'error' => 'Terjadi kesalahan sistem. Silakan coba lagi.',
             ])->withInput();
         }
     }

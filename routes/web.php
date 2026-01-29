@@ -15,7 +15,9 @@ use App\Http\Controllers\LandingPage\ProductController as PublicProductControlle
 use App\Http\Controllers\LandingPage\StoreController as PublicStoreController;
 use App\Http\Controllers\LandingPage\CartController as PublicCartController;
 use App\Http\Controllers\LandingPage\CheckoutController as PublicCheckoutController;
-use App\Http\Controllers\LandingPage\PaymentController as BuyerPaymentController; // Alias diperbaiki
+use App\Http\Controllers\LandingPage\PaymentController as BuyerPaymentController;
+use App\Http\Controllers\LandingPage\ProfileController as BuyerProfileController;
+use App\Http\Controllers\LandingPage\LocationController;
 
 // 3. Seller Controllers
 use App\Http\Controllers\Seller\DashboardController;
@@ -92,8 +94,28 @@ Route::middleware(['auth', 'buyer'])->group(function () {
     Route::get('/payment/{id}', [BuyerPaymentController::class, 'show'])->name('payment.show');
     Route::post('/payment/{id}', [BuyerPaymentController::class, 'process'])->name('payment.process');
 
+    // 5. Profile Pembeli
+    Route::get('/profile', [BuyerProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [BuyerProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/address', [BuyerProfileController::class, 'address'])->name('profile.address');
+    // Route::post('/profile/address', [BuyerProfileController::class, 'storeAddress'])->name('profile.address.store');
     Route::post('/logout', [BuyerAuthController::class, 'logout'])->name('logout');
+
+    Route::prefix('profile/address')->name('profile.address.')->group(function () {
+        Route::post('/', [BuyerProfileController::class, 'storeAddress'])->name('store');
+        Route::put('/{address}', [BuyerProfileController::class, 'updateAddress'])->name('update'); // Buat method updateAddress nanti
+        Route::delete('/{address}', [BuyerProfileController::class, 'destroyAddress'])->name('destroy'); // Buat method destroyAddress nanti
+        Route::patch('/{address}/primary', [BuyerProfileController::class, 'setPrimaryAddress'])->name('setPrimary'); // Buat method setPrimaryAddress nanti
+    });
 });
+
+Route::prefix('api/location')->group(function () {
+    Route::get('/provinces', [LocationController::class, 'getProvinces']);
+    Route::get('/cities/{provinceCode}', [LocationController::class, 'getCities']);
+    Route::get('/districts/{cityCode}', [LocationController::class, 'getDistricts']);
+    Route::get('/villages/{districtCode}', [LocationController::class, 'getVillages']);
+});
+
 
 
 /*

@@ -72,4 +72,15 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
+    }
+
+    // Helper untuk mengambil alamat utama user
+    public function primaryAddress()
+    {
+        return $this->hasOne(Address::class)->where('is_primary', true);
+    }
 }

@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str; // PENTING: Import Str untuk slug
 
 class DemoDataSeeder extends Seeder
 {
@@ -26,19 +27,29 @@ class DemoDataSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role' => 'seller',
                 'phone' => '081299998888',
-                'address' => 'Jl. Seller No. 1 Padang',
+                // 'address' => 'Jl. Seller No. 1 Padang', // Opsional, karena alamat utama ada di stores/addresses
             ]);
 
-            // Buat Toko
+            // Buat Toko (SESUAIKAN DENGAN STRUKTUR BARU)
             $store = Store::create([
-                'user_id' => $seller->id,
-                'store_name' => 'Nusa Official Store', // Sesuai kolom database
-                'description' => 'Toko resmi Nusa Belanja terlengkap.',
-                'province' => 'Sumatera Barat',
-                'city' => 'Padang',
-                'district' => 'Padang Utara',
-                'address' => 'Jl. Khatib Sulaiman No. 1',
-                'postal_code' => '25100',
+                'user_id'       => $seller->id,
+                'store_name'    => 'Nusa Official Store',
+                'slug'          => Str::slug('Nusa Official Store'), // Wajib ada
+                'description'   => 'Toko resmi Nusa Belanja terlengkap.', // Wajib ada (sesuai error tadi)
+
+                // Data Wilayah Lengkap (Dummy Data Padang)
+                'province_code' => '13',
+                'province'      => 'Sumatera Barat',
+                'city_code'     => '1371',
+                'city'          => 'Kota Padang',
+                'district_code' => '137101',
+                'district'      => 'Padang Utara',
+                'village_code'  => '1371011001', // Kode dummy 10 digit (Penting utk ongkir)
+                'village'       => 'Air Tawar',
+
+                'postal_code'   => '25100',
+                'address'       => 'Jl. Khatib Sulaiman No. 1',
+                'logo'          => null,
             ]);
         }
 
@@ -51,7 +62,7 @@ class DemoDataSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role' => 'buyer',
                 'phone' => '+62 812 3456 7890',
-                'address' => 'Jl. Contoh No. 123',
+                // 'address' => 'Jl. Contoh No. 123', // Hapus jika error, gunakan tabel addresses
             ]);
         }
 
@@ -89,17 +100,16 @@ class DemoDataSeeder extends Seeder
                 continue;
             }
 
-            // REVISI FINAL: 'slug' dihapus, tapi 'status' TETAP ADA karena di tabelmu ada
             $product = Product::create([
                 'store_id' => $store->id,
                 'category_id' => $data['category_id'],
                 'name' => $data['name'],
-                // 'slug' => ... (DIHAPUS KARENA TIDAK ADA DI TABLE)
+                // 'slug' => ... (Dihapus sesuai permintaan sebelumnya)
                 'description' => $data['description'],
                 'price' => $data['price'],
                 'stock' => $data['stock'],
                 'unit' => $data['unit'],
-                'status' => 'active', // Ini aman karena di table ada kolom enum status
+                'status' => 'active',
             ]);
 
             // Buat gambar dummy
@@ -110,6 +120,6 @@ class DemoDataSeeder extends Seeder
             ]);
         }
 
-        $this->command->info('✅ Produk & User berhasil dibuat!');
+        $this->command->info('✅ Produk, Toko & User berhasil dibuat!');
     }
 }

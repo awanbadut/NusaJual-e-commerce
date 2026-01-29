@@ -52,15 +52,23 @@
                 </a>
                 @endif
 
-                {{-- @auth
-                <a href="#"
+                @auth
+                @if(request()->routeIs(['profile.index', 'profile.update']))
+                <a href="{{ route('profile.index') }}"
+                    class="flex items-center gap-2 py-1 text-[#4E582C] font-bold border-b-2 border-transparent hover:text-[#0F4C20] hover:border-[#0F4C20] transition-all group">
+                    <x-heroicon-s-user class="w-5 h-5 group-hover:text-[#0F4C20]" />
+                    <span>Profile</span>
+                </a>
+                @else
+                <a href="{{ route('profile.index') }}"
                     class="flex items-center gap-2 py-1 text-[#4E582C] font-bold border-b-2 border-transparent hover:text-[#0F4C20] hover:border-[#0F4C20] transition-all group">
                     <x-heroicon-o-user class="w-5 h-5 group-hover:text-[#0F4C20]" />
                     <span>Profile</span>
                 </a>
-                @else --}}
+                @endif
+                @else
 
-                @auth
+                {{-- @auth
                 <div class="relative" x-data="{ profileOpen: false }">
                     <button @click="profileOpen = !profileOpen" @click.away="profileOpen = false"
                         class="flex items-center gap-2 py-1 text-[#4E582C] font-bold border-b-2 border-transparent hover:text-[#0F4C20] hover:border-[#0F4C20] transition-all group">
@@ -89,7 +97,7 @@
                         </a>
 
                         {{-- Pastikan route 'orders.index' sudah ada, kalau belum hapus href-nya jadi # --}}
-                        <a href="#"
+                        {{-- <a href="#"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-[#0F4C20]">
                             Pesanan Saya
                         </a>
@@ -106,7 +114,7 @@
                         </form>
                     </div>
                 </div>
-                @else
+                @else --}}
                 {{-- ✅ FIXED: Line 62 --}}
                 <a href="{{ route('login.pembeli') }}"
                     class="flex items-center gap-2 py-1 text-[#4E582C] font-bold border-b-2 border-transparent hover:text-[#0F4C20] hover:border-[#0F4C20] transition-all group">

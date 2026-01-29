@@ -20,6 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // 2. UBAH BAGIAN INI (Ganti satu baris lama dengan blok ini)
         $middleware->redirectGuestsTo(function (Request $request) {
+            // Jika user akses URL yang berawalan 'seller/'
+            if ($request->is('seller/*')) {
+                return route('seller.login');
+            }
 
             // Default untuk user biasa (akses keranjang, checkout, dll)
             return route('login.pembeli');

@@ -12,13 +12,22 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('store_name');
-            $table->text('description')->nullable();
+            $table->string('slug')->unique(); // Bagus untuk URL toko
+            $table->text('description')->nullable(); // <--- TAMBAHKAN INI (Penyebab Error)
+
+            // Wilayah (Simpan Kode & Nama)
+            $table->string('province_code');
+            $table->string('province');
+            $table->string('city_code');
+            $table->string('city');
+            $table->string('district_code');
+            $table->string('district');
+            $table->string('village_code'); // PENTING UNTUK ONGKIR
+            $table->string('village');
+            $table->string('postal_code');
+
+            $table->text('address'); // Alamat detail
             $table->string('logo')->nullable();
-            $table->string('province')->nullable();
-            $table->string('city')->nullable();
-            $table->string('district')->nullable();
-            $table->text('address')->nullable();
-            $table->string('postal_code', 10)->nullable();
             $table->timestamps();
         });
     }

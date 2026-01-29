@@ -12,23 +12,30 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // 1. Ambil 5 Kategori (bisa diurutkan berdasarkan nama atau yang paling banyak produknya)
+        // 1. Kategori (Tetap)
         $categories = Category::withCount('products')->limit(5)->get();
 
-        // 2. Ambil 4 Mitra/Toko (Eager load user & hitung produk)
+        // 2. Mitra/Toko (DIUBAH)
+        // Ambil 8 mitra dengan produk terbanyak
         $stores = Store::with('user')
             ->withCount('products')
-            ->latest()
-            ->limit(4)
+            ->orderByDesc('products_count') // Urutkan dari produk terbanyak
+            ->take(8) // Ambil 8 saja untuk ditampilkan
             ->get();
 
-        // 3. Ambil 4 Produk Terbaru yang statusnya active (Eager load category, store, dan primaryImage)
+        // Hitung total seluruh mitra untuk mengetahui sisanya
+        $totalStores = Store::count();
+        // Hitung sisa (Total - 8). Jika hasilnya minus (karena toko < 8), jadikan 0.
+        $sisaMitra = max(0, $totalStores - 8);
+
+        // 3. Produk (Tetap)
         $products = Product::with(['category', 'store', 'primaryImage'])
             ->where('status', 'active')
             ->latest()
             ->limit(4)
             ->get();
 
-        return view('welcome', compact('categories', 'stores', 'products'));
+        // Jangan lupa kirim $sisaMitra ke view
+        return view('welcome', compact('categories', 'stores', 'products', 'sisaMitra'));
     }
 }

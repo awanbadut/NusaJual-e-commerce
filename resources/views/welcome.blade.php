@@ -133,9 +133,12 @@
         </div>
 
         <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center">
+
+            {{-- Loop 8 Mitra Teratas --}}
             @foreach($stores as $store)
             <div
                 class="bg-white rounded-lg p-3 shadow-sm border border-gray-100 flex flex-col items-center hover:shadow-md transition duration-300 h-full w-full max-w-xs">
+                {{-- ... (Isi card mitra kamu yang lama, biarkan sama) ... --}}
                 <div
                     class="w-[150px] h-[150px] md:w-[176px] md:h-[176px] rounded-full overflow-hidden mb-4 bg-gray-100 shrink-0">
                     <img src="{{ $store->logo ? asset('storage/'.$store->logo) : 'https://placehold.co/400x400/green/white?text='.substr($store->store_name, 0, 2) }}"
@@ -188,9 +191,31 @@
                 </a>
             </div>
             @endforeach
+
+            {{-- KARTU KHUSUS "SISA MITRA" --}}
+            @if($sisaMitra > 0)
+            <a href="#"
+                class="bg-[#F0EFE6] border-2 border-dashed border-[#496030] rounded-lg p-3 shadow-sm flex flex-col items-center justify-center hover:bg-[#e6e4d6] transition duration-300 h-full w-full max-w-xs group cursor-pointer min-h-[300px]">
+
+                <div
+                    class="w-[80px] h-[80px] rounded-full bg-[#496030] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span class="text-white font-bold text-2xl">+{{ $sisaMitra }}</span>
+                </div>
+
+                <h3 class="text-xl font-bold text-[#0F4C20] text-center">Mitra Lainnya</h3>
+                <p class="text-sm font-medium text-[#8B4513] text-center mt-2 px-4">
+                    Masih banyak mitra lokal hebat lainnya yang siap melayani.
+                </p>
+
+                <div class="mt-6 flex items-center gap-2 text-[#0F4C20] font-bold text-sm">
+                    Lihat Semua Mitra
+                    <x-heroicon-s-arrow-right class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+            </a>
+            @endif
+
         </div>
     </section>
-
     <section class="py-24 px-4 bg-white">
         <div class="max-w-7xl mx-auto text-center mb-20 flex flex-col items-center gap-2">
             <h2 class="text-3xl md:text-4xl font-extrabold text-[#0F4C20]">Hasil Bumi Pilihan Kita</h2>
