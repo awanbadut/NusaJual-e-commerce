@@ -5,37 +5,35 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Payment extends Model
+class Withdrawal extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'order_id',
+        'store_id',
+        'bank_account_id',
         'amount',
-        'payment_proof',
+        'withdrawal_proof',
+        'notes',
+        'admin_notes',
         'status',
-        'paid_at',
-        'confirmed_at',
+        'requested_at',
+        'processed_at',
     ];
 
     protected $casts = [
+        'requested_at' => 'datetime',
+        'processed_at' => 'datetime',
         'amount' => 'decimal:2',
-        'paid_at' => 'datetime',
-        'confirmed_at' => 'datetime',
     ];
 
-    public function order()
+    public function store()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Store::class);
     }
 
-    public function isPaid()
+    public function bankAccount()
     {
-        return $this->status === 'paid';
-    }
-
-    public function isConfirmed()
-    {
-        return $this->status === 'confirmed';
+        return $this->belongsTo(BankAccount::class);
     }
 }

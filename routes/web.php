@@ -173,11 +173,52 @@ Route::prefix('seller')->name('seller.')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| ADMIN ROUTES
+| ADMIN AUTH ROUTES (Login Terpisah)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [App\Http\Controllers\Admin\Auth\AdminAuthController::class, 'showLoginForm'])
+            ->name('login');
+        Route::post('/login', [App\Http\Controllers\Admin\Auth\AdminAuthController::class, 'login'])
+            ->name('login.submit');
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN DASHBOARD ROUTES (Protected)
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
-    Route::get('/dashboard', function () {
-        return 'Admin Dashboard - Coming Soon';
-    })->name('dashboard');
+    
+    // Logout
+    Route::post('/logout', [App\Http\Controllers\Admin\Auth\AdminAuthController::class, 'logout'])
+        ->name('logout');
+    
+    // Dashboard
+    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])
+        ->name('dashboard');
+
+    // Mitra Management
+    Route::get('/mitra', [App\Http\Controllers\Admin\MitraController::class, 'index'])
+        ->name('mitra.index');
+    Route::get('/mitra/{id}', [App\Http\Controllers\Admin\MitraController::class, 'show'])
+        ->name('mitra.show');
+
+    // Payment Verification
+    Route::post('/payments/{id}/confirm', [App\Http\Controllers\Admin\PaymentController::class, 'confirm'])
+        ->name('payments.confirm');
+    Route::post('/payments/{id}/reject', [App\Http\Controllers\Admin\PaymentController::class, 'reject'])
+        ->name('payments.reject');
+
+    // Withdrawal Management
+    Route::post('/withdrawals/{id}/approve', [App\Http\Controllers\Admin\WithdrawalController::class, 'approve'])
+        ->name('withdrawals.approve');
+    Route::post('/withdrawals/{id}/process', [App\Http\Controllers\Admin\WithdrawalController::class, 'process'])
+        ->name('withdrawals.process');
+    Route::post('/withdrawals/{id}/reject', [App\Http\Controllers\Admin\WithdrawalController::class, 'reject'])
+        ->name('withdrawals.reject');
+    Route::get('/withdrawals/{id}/print', [App\Http\Controllers\Admin\WithdrawalController::class, 'print'])
+        ->name('withdrawals.print');
 });
