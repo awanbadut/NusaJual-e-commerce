@@ -59,6 +59,19 @@ Route::get('/register-penjual', function () {
     return redirect()->route('seller.register');
 })->name('register.penjual');
 
+/*
+|--------------------------------------------------------------------------
+| API LOCATION ROUTES (PUBLIC ACCESS)
+|--------------------------------------------------------------------------
+| Move this OUTSIDE any middleware group so both Buyers and Sellers can use it.
+*/
+Route::prefix('api/location')->group(function () {
+    Route::get('/provinces', [LocationController::class, 'getProvinces']);
+    Route::get('/cities/{provinceCode}', [LocationController::class, 'getCities']);
+    Route::get('/districts/{cityCode}', [LocationController::class, 'getDistricts']);
+    Route::get('/villages/{districtCode}', [LocationController::class, 'getVillages']);
+});
+
 
 /*
 |--------------------------------------------------------------------------
@@ -107,13 +120,7 @@ Route::middleware(['auth', 'buyer'])->group(function () {
         Route::delete('/{address}', [BuyerProfileController::class, 'destroyAddress'])->name('destroy'); // Buat method destroyAddress nanti
         Route::patch('/{address}/primary', [BuyerProfileController::class, 'setPrimaryAddress'])->name('setPrimary'); // Buat method setPrimaryAddress nanti
     });
-});
-
-Route::prefix('api/location')->group(function () {
-    Route::get('/provinces', [LocationController::class, 'getProvinces']);
-    Route::get('/cities/{provinceCode}', [LocationController::class, 'getCities']);
-    Route::get('/districts/{cityCode}', [LocationController::class, 'getDistricts']);
-    Route::get('/villages/{districtCode}', [LocationController::class, 'getVillages']);
+    Route::get('/profile/orders', [BuyerProfileController::class, 'orders'])->name('profile.orders');
 });
 
 
@@ -191,11 +198,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
-    
+
     // Logout
     Route::post('/logout', [App\Http\Controllers\Admin\Auth\AdminAuthController::class, 'logout'])
         ->name('logout');
-    
+
     // Dashboard
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])
         ->name('dashboard');

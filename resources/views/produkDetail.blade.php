@@ -192,31 +192,60 @@
                             <span class="text-xl font-bold text-[#8B4513]">Rp <span x-text="total"></span></span>
                         </div>
 
-                        <form action="{{ route('keranjang.store') }}" method="POST" class="w-full">
+                        <form action="{{ route('keranjang.store') }}" method="POST" class="w-full" x-data="{ 
+        loading: false, 
+        added: false,
+        submitForm(e) {
+            this.loading = true;
+            // Simulasi delay sedikit biar animasi kelihatan (opsional, karena submit asli reload page)
+            // Tapi karena ini submit form biasa (bukan AJAX), loading akan muncul sampai page reload.
+            // Jika mau animasi 'berhasil' tanpa reload, harus pakai AJAX.
+            // Di sini kita pakai animasi klik simple saat submit.
+        }
+    }" @submit="submitForm">
                             @csrf
-
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
-
                             <input type="hidden" name="qty" :value="qty">
 
                             <div class="flex gap-4">
                                 <div
-                                    class="flex items-center border-2 border-[#0F4C20] rounded-lg h-12 w-32 justify-between px-2">
+                                    class="flex items-center border-2 border-[#0F4C20] rounded-lg h-12 w-32 justify-between px-2 shrink-0">
                                     <button type="button" @click="if(qty > 1) qty--"
-                                        class="text-[#0F4C20] hover:bg-green-50 p-1 rounded transition">
+                                        class="text-[#0F4C20] hover:bg-green-50 p-1 rounded transition active:scale-90">
                                         <x-heroicon-s-minus class="w-5 h-5" />
                                     </button>
                                     <span class="font-bold text-lg text-gray-800" x-text="qty"></span>
                                     <button type="button" @click="if(qty < maxStock) qty++"
-                                        class="text-[#0F4C20] hover:bg-green-50 p-1 rounded transition">
+                                        class="text-[#0F4C20] hover:bg-green-50 p-1 rounded transition active:scale-90">
                                         <x-heroicon-s-plus class="w-5 h-5" />
                                     </button>
                                 </div>
 
                                 <button type="submit"
-                                    class="flex-1 bg-[#0F4C20] hover:bg-[#0b3a18] text-white font-bold rounded-lg h-12 flex items-center justify-center gap-2 transition shadow-md">
-                                    <span>Tambah Keranjang</span>
-                                    <x-heroicon-s-shopping-cart class="w-5 h-5" />
+                                    class="group relative flex-1 bg-[#0F4C20] hover:bg-[#0b3a18] text-white font-bold rounded-lg h-12 flex items-center justify-center gap-2 transition-all duration-300 shadow-md active:scale-95 overflow-hidden"
+                                    :class="{ 'cursor-not-allowed opacity-90': loading }" :disabled="loading">
+
+                                    <div class="flex items-center gap-2 transition-transform duration-300"
+                                        :class="{ '-translate-y-10': loading }">
+                                        <span>Tambah Keranjang</span>
+                                        <x-heroicon-s-shopping-cart class="w-5 h-5 group-hover:animate-bounce" />
+                                    </div>
+
+                                    <div class="absolute inset-0 flex items-center justify-center transition-transform duration-300 translate-y-10"
+                                        :class="{ 'translate-y-0': loading }">
+                                        <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg"
+                                            fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        <span class="ml-2">Memproses...</span>
+                                    </div>
+
+                                    <span
+                                        class="absolute inset-0 rounded-lg bg-white/20 scale-0 transition-transform duration-300 active:scale-100"></span>
                                 </button>
                             </div>
                         </form>

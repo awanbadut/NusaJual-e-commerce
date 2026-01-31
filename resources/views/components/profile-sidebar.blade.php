@@ -25,15 +25,15 @@
         <a href="{{ route('profile.address') }}"
             class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition
            {{ request()->routeIs('profile.address') ? 'bg-[#0F4C20] text-white font-bold' : 'text-gray-600 hover:bg-green-50 hover:text-[#0F4C20]' }}">
-            <x-heroicon-o-map-pin class="w-5 h-5" />
+            <x-heroicon-s-map-pin class="w-5 h-5" />
             Alamat Saya
         </a>
 
         {{-- Link: Pesanan Saya --}}
-        <a href=""
+        <a href="{{ route('profile.orders') }}"
             class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition
-           {{ request()->routeIs('orders.*') ? 'bg-[#0F4C20] text-white font-bold' : 'text-gray-600 hover:bg-green-50 hover:text-[#0F4C20]' }}">
-            <x-heroicon-o-shopping-bag class="w-5 h-5" />
+           {{ request()->routeIs('profile.orders') ? 'bg-[#0F4C20] text-white font-bold' : 'text-gray-600 hover:bg-green-50 hover:text-[#0F4C20]' }}">
+            <x-heroicon-s-shopping-bag class="w-5 h-5" />
             Pesanan Saya
         </a>
 
@@ -43,7 +43,7 @@
             @csrf
             <button type="submit"
                 class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold text-red-600 hover:bg-red-50 transition text-left">
-                <x-heroicon-o-arrow-left-start-on-rectangle class="w-5 h-5" />
+                <x-heroicon-s-arrow-left-start-on-rectangle class="w-5 h-5" />
                 Keluar
             </button>
         </form>

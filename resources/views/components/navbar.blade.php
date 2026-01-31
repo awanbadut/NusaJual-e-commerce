@@ -53,9 +53,9 @@
                 @endif
 
                 @auth
-                @if(request()->routeIs(['profile.index', 'profile.update']))
+                @if(request()->routeIs(['profile.index', 'profile.update', 'profile.address', 'profile.orders']))
                 <a href="{{ route('profile.index') }}"
-                    class="flex items-center gap-2 py-1 text-[#4E582C] font-bold border-b-2 border-transparent hover:text-[#0F4C20] hover:border-[#0F4C20] transition-all group">
+                    class="flex items-center gap-2 py-1 text-[#0F4C20] font-bold border-b-2 border-[#0F4C20]">
                     <x-heroicon-s-user class="w-5 h-5 group-hover:text-[#0F4C20]" />
                     <span>Profile</span>
                 </a>

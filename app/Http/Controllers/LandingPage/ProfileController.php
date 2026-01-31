@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Address;
+use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 
 class ProfileController extends Controller
@@ -194,5 +195,36 @@ class ProfileController extends Controller
             DB::rollBack();
             return back()->withErrors(['error' => 'Gagal mengubah alamat utama.']);
         }
+    }
+
+    public function orders(Request $request)
+    {
+        $user = Auth::user();
+        $status = $request->query('status', 'all');
+
+        // Query Dasar: Ambil Order user login + relasi produk
+        $query = Order::with(['items.product.primaryImage', 'items.product.store'])
+            ->where('user_id', $user->id)
+            ->latest(); // Urutkan dari yang terbaru
+
+        // Logic Filter Status
+        if ($status !== 'all') {
+            if ($status == 'pending') {
+                // Filter "Belum Dibayar"
+                $query->where('payment_status', 'pending')
+                    ->where('status', '!=', 'cancelled');
+            } elseif ($status == 'processing') {
+                // Filter "Diproses" (bisa mencakup paid, processing, shipped)
+                $query->whereIn('status', ['processing', 'shipped'])
+                    ->where('payment_status', 'paid'); // Pastikan sudah bayar
+            } else {
+                // Filter status biasa (completed, cancelled)
+                $query->where('status', $status);
+            }
+        }
+
+        $orders = $query->paginate(5); // Pagination 5 order per halaman
+
+        return view('profileBuyer.orders', compact('orders'));
     }
 }
