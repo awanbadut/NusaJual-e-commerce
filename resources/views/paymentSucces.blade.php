@@ -184,7 +184,7 @@
                         Belanja Lagi
                     </a>
 
-                    <a href="#"
+                    <a href="{{ route('profile.orders') }}"
                         class="px-6 py-3 rounded-lg bg-[#0F4C20] text-white font-bold text-sm hover:bg-[#0b3a18] transition w-full sm:w-auto text-center">
                         Lihat Status Pesanan
                     </a>

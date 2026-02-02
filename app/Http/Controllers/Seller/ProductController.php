@@ -18,7 +18,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $store = auth()->user()->store;
-        
+
         $query = Product::where('store_id', $store->id)
             ->with(['category', 'primaryImage']);
 
@@ -53,7 +53,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Simpan produk baru
+     * Simpan produk baru (UPDATED: Tambah Weight)
      */
     public function store(Request $request)
     {
@@ -63,6 +63,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
+            'weight' => 'required|integer|min:1', // [BARU] Validasi Berat
             'unit' => 'required|string',
             'status' => 'required|in:active,draft',
             'images.*' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
@@ -79,19 +80,20 @@ class ProductController extends Controller
                 'description' => $validated['description'],
                 'price' => $validated['price'],
                 'stock' => $validated['stock'],
+                'weight' => $validated['weight'], // [BARU] Simpan Berat
                 'unit' => $validated['unit'],
                 'status' => $validated['status'],
             ]);
 
-            // Upload gambar
+            // Upload gambar (Logika sama)
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $index => $image) {
                     $path = $image->store('products', 'public');
-                    
+
                     ProductImage::create([
                         'product_id' => $product->id,
                         'image_path' => $path,
-                        'is_primary' => $index === 0, // Gambar pertama jadi primary
+                        'is_primary' => $index === 0,
                     ]);
                 }
             }
@@ -100,13 +102,9 @@ class ProductController extends Controller
 
             return redirect()->route('seller.products.index')
                 ->with('success', 'Produk berhasil ditambahkan!');
-
         } catch (\Exception $e) {
             DB::rollBack();
-            
-            return back()->withErrors([
-                'error' => 'Terjadi kesalahan saat menyimpan produk.',
-            ])->withInput();
+            return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -130,14 +128,14 @@ class ProductController extends Controller
         $product = Product::with('images')
             ->where('store_id', auth()->user()->store->id)
             ->findOrFail($id);
-        
+
         $categories = Category::all();
 
         return view('seller.products.edit', compact('product', 'categories'));
     }
 
     /**
-     * Update produk
+     * Update produk (UPDATED: Tambah Weight)
      */
     public function update(Request $request, $id)
     {
@@ -150,6 +148,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
+            'weight' => 'required|integer|min:1', // [BARU] Validasi Berat
             'unit' => 'required|string',
             'status' => 'required|in:active,draft',
             'images.*' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
@@ -164,15 +163,16 @@ class ProductController extends Controller
                 'description' => $validated['description'],
                 'price' => $validated['price'],
                 'stock' => $validated['stock'],
+                'weight' => $validated['weight'], // [BARU] Update Berat
                 'unit' => $validated['unit'],
                 'status' => $validated['status'],
             ]);
 
-            // Upload gambar baru jika ada
+            // Upload gambar baru (Logika sama)
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $index => $image) {
                     $path = $image->store('products', 'public');
-                    
+
                     ProductImage::create([
                         'product_id' => $product->id,
                         'image_path' => $path,
@@ -185,13 +185,9 @@ class ProductController extends Controller
 
             return redirect()->route('seller.products.index')
                 ->with('success', 'Produk berhasil diupdate!');
-
         } catch (\Exception $e) {
             DB::rollBack();
-            
-            return back()->withErrors([
-                'error' => 'Terjadi kesalahan saat mengupdate produk.',
-            ])->withInput();
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat update.'])->withInput();
         }
     }
 
@@ -213,7 +209,6 @@ class ProductController extends Controller
 
             return redirect()->route('seller.products.index')
                 ->with('success', 'Produk berhasil dihapus!');
-
         } catch (\Exception $e) {
             return back()->withErrors([
                 'error' => 'Terjadi kesalahan saat menghapus produk.',
@@ -224,7 +219,7 @@ class ProductController extends Controller
     public function deleteImage($id)
     {
         $image = ProductImage::findOrFail($id);
-        
+
         // Pastikan gambar ini milik toko yang login
         if ($image->product->store_id !== auth()->user()->store->id) {
             abort(403);
@@ -233,7 +228,7 @@ class ProductController extends Controller
         try {
             // Hapus file dari storage
             Storage::disk('public')->delete($image->image_path);
-            
+
             // Hapus record dari database
             $image->delete();
 
@@ -241,7 +236,6 @@ class ProductController extends Controller
                 'success' => true,
                 'message' => 'Gambar berhasil dihapus'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

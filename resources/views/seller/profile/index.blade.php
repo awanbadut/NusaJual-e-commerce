@@ -123,8 +123,14 @@
             </div>
 
             <!-- Alamat Toko -->
-            {{-- PERUBAHAN: Ganti nama function di x-data --}}
-            <div class="bg-white rounded-lg shadow-sm p-6" x-data="addresSellerData()" x-init="init()">
+            {{-- Mengirim data $store ke dalam fungsi Alpine --}}
+            <div class="bg-white rounded-lg shadow-sm p-6" x-data="addresSellerData({
+                province_code: '{{ $store->province_code }}',
+                city_code: '{{ $store->city_code }}',
+                district_code: '{{ $store->district_code }}',
+                village_code: '{{ $store->village_code }}',
+                postal_code: '{{ $store->postal_code }}'
+            })" x-init="init()">
 
                 <form action="{{ route('seller.profile.update-address') }}" method="POST">
                     @csrf
@@ -210,7 +216,8 @@
                             <label for="address" class="block text-gray-700 font-medium mb-2">Alamat Lengkap</label>
                             <textarea id="address" name="address" rows="3"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0F4C20] focus:border-[#0F4C20]"
-                                placeholder="Nama Jalan, Gedung, No. Rumah..." required>{{ old('address') }}</textarea>
+                                placeholder="Nama Jalan, Gedung, No. Rumah..."
+                                required>{{ old('address', $store->address) }}</textarea>
                         </div>
                     </div>
 
@@ -356,69 +363,119 @@
 
 @push('scripts')
 <script>
-    function addresSellerData() {
+    function addresSellerData(savedData = {}) {
         return {
-            // Data List dari API
+            // Data List
             provinces: [],
             cities: [],
             districts: [],
             villages: [],
 
-            // Model Data Form
+            // Form Data
             form: {
                 province_code: '',
                 city_code: '',
                 district_code: '',
                 village_code: '',
-                postal_code: ''
+                postal_code: savedData.postal_code || ''
+            },
+            
+            // Simpan data DB untuk referensi
+            saved: {
+                province_code: savedData.province_code ? String(savedData.province_code) : '',
+                city_code: savedData.city_code ? String(savedData.city_code) : '',
+                district_code: savedData.district_code ? String(savedData.district_code) : '',
+                village_code: savedData.village_code ? String(savedData.village_code) : ''
             },
 
-            init() {
-                this.fetchProvinces();
+            async init() {
+                // OPTIMASI: Parallel Fetching (Ambil semua data API secara bersamaan)
+                // Kita tidak menunggu satu selesai baru minta yang lain, tapi minta sekaligus.
+                
+                const requests = [];
+
+                // 1. Request Provinsi (Selalu diminta)
+                requests.push(fetch('/api/location/provinces').then(r => r.json()));
+
+                // 2. Request Kota (Jika ID Provinsi ada di DB, langsung tembak API-nya)
+                if (this.saved.province_code) {
+                    requests.push(fetch(`/api/location/cities/${this.saved.province_code}`).then(r => r.json()));
+                } else {
+                    requests.push(Promise.resolve([])); // Placeholder kosong jika tidak ada data
+                }
+
+                // 3. Request Kecamatan
+                if (this.saved.city_code) {
+                    requests.push(fetch(`/api/location/districts/${this.saved.city_code}`).then(r => r.json()));
+                } else {
+                    requests.push(Promise.resolve([]));
+                }
+
+                // 4. Request Kelurahan
+                if (this.saved.district_code) {
+                    requests.push(fetch(`/api/location/villages/${this.saved.district_code}`).then(r => r.json()));
+                } else {
+                    requests.push(Promise.resolve([]));
+                }
+
+                try {
+                    // Tunggu semua request selesai berbarengan
+                    const [provData, cityData, distData, villData] = await Promise.all(requests);
+
+                    // Masukkan data ke List (Dropdown Options)
+                    this.provinces = provData;
+                    this.cities = cityData;
+                    this.districts = distData;
+                    this.villages = villData;
+
+                    // Setelah opsi tersedia, barulah kita pilih nilainya (Value)
+                    // Ini mencegah dropdown terlihat kosong/reset
+                    this.form.province_code = this.saved.province_code;
+                    
+                    // Gunakan $nextTick untuk memastikan UI update dulu sebelum set value anakannya
+                    // (Trik Alpine.js agar lebih mulus)
+                    this.$nextTick(() => {
+                        this.form.city_code = this.saved.city_code;
+                        this.form.district_code = this.saved.district_code;
+                        this.form.village_code = this.saved.village_code;
+                    });
+
+                } catch (error) {
+                    console.error("Gagal memuat data lokasi:", error);
+                }
             },
 
-            // --- FETCH API FUNCTION ---
-            async fetchProvinces() {
-                let res = await fetch('/api/location/provinces');
-                this.provinces = await res.json();
-            },
+            // --- FUNGSI FETCH MANUAL (Untuk User Interaction) ---
+            // Fungsi ini tetap dipakai saat User klik ganti provinsi/kota secara manual
+
             async fetchCities() {
                 if (!this.form.province_code) return;
-                // Reset data di bawahnya saat ganti provinsi
-                this.cities = []; this.districts = []; this.villages = [];
+                // Reset anak-anaknya karena user mengubah induk
                 this.form.city_code = ''; this.form.district_code = ''; this.form.village_code = '';
-                
+                this.cities = []; this.districts = []; this.villages = [];
+
                 let res = await fetch(`/api/location/cities/${this.form.province_code}`);
                 this.cities = await res.json();
             },
+
             async fetchDistricts() {
                 if (!this.form.city_code) return;
-                this.districts = []; this.villages = [];
                 this.form.district_code = ''; this.form.village_code = '';
-                
+                this.districts = []; this.villages = [];
+
                 let res = await fetch(`/api/location/districts/${this.form.city_code}`);
                 this.districts = await res.json();
             },
+
             async fetchVillages() {
                 if (!this.form.district_code) return;
-                this.villages = [];
                 this.form.village_code = '';
-                
+                this.villages = [];
+
                 let res = await fetch(`/api/location/villages/${this.form.district_code}`);
                 this.villages = await res.json();
             },
 
-            // --- HELPER LOGIC ---
-            // setPostalCode() {
-            //     let village = this.villages.find(i => i.code == this.form.village_code);
-            //     // Ambil kode pos index ke-0 jika ada
-            //     if (village && village.postal_codes && village.postal_codes.length > 0) {
-            //         this.form.postal_code = village.postal_codes[0];
-            //     } else {
-            //         this.form.postal_code = '';
-            //     }
-            // },
-            // Helper untuk mengambil NAMA wilayah berdasarkan KODE (untuk disimpan ke DB)
             getName(list, code) {
                 let item = list.find(i => i.code == code);
                 return item ? item.name : '';

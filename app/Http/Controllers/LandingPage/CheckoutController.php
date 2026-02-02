@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Address;
+use Illuminate\Support\Facades\Http;
 
 class CheckoutController extends Controller
 {
@@ -18,47 +19,111 @@ class CheckoutController extends Controller
     public function review(Request $request)
     {
         $user = Auth::user();
+
+        // 1. Cek User Pilih Barang atau Tidak
         if ($request->isMethod('get') || !$request->has('selected_items')) {
             return redirect()->route('keranjang')->with('error', 'Silakan pilih produk terlebih dahulu sebelum checkout.');
         }
 
-        // Validasi
-        $request->validate([
-            'selected_items' => 'required|array|min:1',
-            'selected_items.*' => 'exists:carts,id'
-        ]);
+        // 2. Parsing Item ID
+        $selectedItems = $request->selected_items;
+        if (is_string($selectedItems)) {
+            $selectedItems = explode(',', $selectedItems);
+        }
 
-        // Ambil data item keranjang
-        $cartItems = Cart::with('product')->whereIn('id', $request->selected_items)->get();
+        // 3. Ambil Data Cart + Produk + Toko
+        $cartItems = Cart::with(['product.store'])->whereIn('id', $selectedItems)->get();
 
         if ($cartItems->isEmpty()) {
             return redirect()->route('keranjang')->with('error', 'Pilih minimal satu produk.');
         }
 
-        // Hitung Subtotal
-        $subTotal = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
-
-        // Ambil Alamat Utama
-        $primaryAddress = Address::where('user_id', $user->id)
-            ->where('is_primary', true)
-            ->first();
-
-        // Fallback jika tidak ada utama
+        // 4. Ambil Alamat Tujuan (User)
+        $primaryAddress = Address::where('user_id', $user->id)->where('is_primary', true)->first();
         if (!$primaryAddress) {
-            $primaryAddress = Address::where('user_id', $user->id)
-                ->latest()
-                ->first();
+            $primaryAddress = Address::where('user_id', $user->id)->latest()->first();
         }
 
-        // Data dummy ongkir
-        $couriers = [
-            ['id' => 'jne', 'name' => 'JNE Reguler', 'etd' => '5-7 Hari', 'price' => 45000],
-            ['id' => 'jnt', 'name' => 'JNT Express', 'etd' => '3-5 Hari', 'price' => 50000],
-            ['id' => 'sicepat', 'name' => 'Sicepat', 'etd' => '7-14 Hari', 'price' => 20000],
-            ['id' => 'sikilat', 'name' => 'Sikilat', 'etd' => '7-10 Hari', 'price' => 25000],
-        ];
+        // Inisialisasi variabel
+        $couriers = [];
+        $origin = null;
+        $destination = null;
+        $totalWeight = 0;
 
-        // PERBAIKAN UTAMA DISINI: Tambahkan 'primaryAddress'
+        // --- LOGIKA HITUNG ONGKIR API.CO.ID ---
+
+        // Cek 1: User punya alamat & punya Kode Kelurahan?
+        if ($primaryAddress && $primaryAddress->village_code) {
+
+            // Cek 2: Ambil Toko
+            $firstProduct = $cartItems->first()->product;
+            $store = $firstProduct->store ?? null;
+
+            // Cek 3: Toko punya Kode Kelurahan?
+            if ($store && $store->village_code) {
+
+                $origin = $store->village_code;
+                $destination = $primaryAddress->village_code;
+
+                // Cek 4: Hitung Total Berat (Min 1 Kg)
+                $totalWeightGram = $cartItems->sum(function ($item) {
+                    $weight = $item->product->weight > 0 ? $item->product->weight : 1000;
+                    return $weight * $item->quantity;
+                });
+
+                $weightInKg = max(1, ceil($totalWeightGram / 1000));
+
+                // Cek 5: Request ke API.co.id
+                try {
+                    $apiKey = env('API_CO_ID_KEY');
+
+                    if ($apiKey) {
+                        $response = Http::withHeaders([
+                            'x-api-co-id' => $apiKey,
+                        ])->get('https://use.api.co.id/expedition/shipping-cost', [
+                            'origin_village_code'      => $origin,
+                            'destination_village_code' => $destination,
+                            'weight'                   => $weightInKg,
+                        ]);
+
+                        if ($response->successful()) {
+                            $apiData = $response->json();
+                            // Ambil array 'couriers' dari dalam 'data'
+                            $results = $apiData['data']['couriers'] ?? [];
+
+                            foreach ($results as $courier) {
+                                // Filter: Hanya ambil kurir yang harganya masuk akal (opsional)
+                                if (isset($courier['price']) && $courier['price'] > 0) {
+                                    $couriers[] = [
+                                        // ID unik untuk radio button
+                                        'id'    => $courier['courier_code'],
+                                        // Nama Tampilan: JNE Express, JNE Cargo, dll
+                                        'name'  => $courier['courier_name'],
+                                        // Estimasi: Jika null, tampilkan '-'
+                                        'etd'   => $courier['estimation'] ? $courier['estimation'] : '-',
+                                        // Harga
+                                        'price' => $courier['price']
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Log error jika perlu: \Log::error($e->getMessage());
+                    // Biarkan kosong, nanti masuk fallback
+                }
+            }
+        }
+
+        // Fallback jika API Gagal / Data tidak lengkap
+        if (empty($couriers)) {
+            $couriers = [
+                ['id' => 'manual', 'name' => 'Kurir Toko (Manual)', 'etd' => '3-7 Hari', 'price' => 25000],
+            ];
+        }
+
+        $subTotal = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
+
         return view('checkout', compact('cartItems', 'subTotal', 'couriers', 'primaryAddress'));
     }
 
