@@ -13,14 +13,6 @@ class Store extends Model
         'user_id',
         'store_name',
         'slug',
-        'description',
-        'logo', // Pastikan di database namanya 'logo' sesuai migrasi awal kamu
-
-        // --- TAMBAHAN BARU (Sesuai Controller) ---
-        'owner_name',
-        'phone',
-
-        // --- WILAYAH ---
         'province_code',
         'province',
         'city_code',
@@ -31,14 +23,12 @@ class Store extends Model
         'village',
         'postal_code',
         'address',
-
-        // --- TAMBAHAN BANK (Sesuai Controller) ---
-        'bank_name',
-        'account_number',
-        'account_holder',
+        'logo',
+        'description',
+        'owner_name',
+        'phone',
     ];
 
-    // ... Relasi tetap sama ...
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -52,5 +42,15 @@ class Store extends Model
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function bankAccounts()
+    {
+        return $this->hasMany(BankAccount::class);
+    }
+
+    public function withdrawals()
+    {
+        return $this->hasMany(Withdrawal::class);
     }
 }

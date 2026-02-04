@@ -20,19 +20,14 @@ return new class extends Migration
                 $table->string('phone')->nullable()->after('owner_name');
             }
 
-            // Kolom Bank
-            if (!Schema::hasColumn('stores', 'bank_name')) {
-                $table->string('bank_name')->nullable()->after('address');
-                $table->string('account_number')->nullable()->after('bank_name');
-                $table->string('account_holder')->nullable()->after('account_number');
-            }
+           
         });
     }
 
     public function down()
     {
         Schema::table('stores', function (Blueprint $table) {
-            $table->dropColumn(['owner_name', 'phone', 'bank_name', 'account_number', 'account_holder']);
+            $table->dropColumn(['owner_name', 'phone']);
         });
     }
 };
