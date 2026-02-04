@@ -67,6 +67,8 @@ class ProfileController extends Controller
             'district_code' => 'required',
             'village_code' => 'required', // Ini kunci utama ongkir
             'detail_address' => 'required',
+            'latitude'       => 'nullable|numeric', // Tambahan
+            'longitude'      => 'nullable|numeric', // Tambahan
         ]);
 
         if ($request->has('is_primary')) {
@@ -90,10 +92,12 @@ class ProfileController extends Controller
             'village_code' => $request->village_code,
             'village_name' => $request->village_name,
             'postal_code' => $request->postal_code,
-
             'detail_address' => $request->detail_address,
+            'latitude'       => $request->latitude,  // Simpan
+            'longitude'      => $request->longitude, // Simpan
             'is_primary' => $isPrimary,
         ]);
+        //dd($request->all());
 
         return back()->with('success', 'Alamat berhasil ditambahkan!');
     }
@@ -117,6 +121,8 @@ class ProfileController extends Controller
             'village_name'  => 'required',
             'postal_code'   => 'required',
             'detail_address' => 'required|string',
+            'latitude'       => 'nullable|numeric', // Tambahan
+            'longitude'      => 'nullable|numeric', // Tambahan
         ]);
 
         try {
@@ -145,6 +151,8 @@ class ProfileController extends Controller
                 'village_name'  => $validated['village_name'],
                 'postal_code'   => $validated['postal_code'],
                 'detail_address' => $validated['detail_address'],
+                'latitude'       => $request->latitude,  // Update
+                'longitude'      => $request->longitude, // Update
                 'is_primary'    => $address->is_primary ?? false, // Pertahankan status jika tidak diubah
             ]);
 

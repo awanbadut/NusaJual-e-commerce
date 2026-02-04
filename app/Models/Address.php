@@ -24,7 +24,8 @@ class Address extends Model
         'village_code',
         'village_name',
         'postal_code',
-
+        'latitude',
+        'longitude',
         'detail_address',
         'is_primary',
     ];
