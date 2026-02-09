@@ -28,9 +28,8 @@
 
                 <!-- Store Profile Card -->
                 <div class="flex items-center gap-4 mb-6 p-4 bg-green-50 rounded-lg border border-green-100">
-                    <!-- Store Logo -->
-                    @if($store->store_logo)
-                    <img src="{{ asset('storage/' . $store->store_logo) }}" class="w-20 h-20 object-cover rounded-lg">
+                    @if($store->logo)
+                    <img src="{{ asset('storage/' . $store->logo) }}" class="w-20 h-20 object-cover rounded-lg">
                     @else
                     <div class="w-20 h-20 bg-green-200 rounded-lg flex items-center justify-center">
                         <svg class="w-10 h-10 text-green-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,16 +51,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             </svg>
-                            <span>{{ $store->address ?? 'Jalan Limau Manis City No. 12, Padang' }}</span>
+                            <span>{{ $store->city ?? 'Belum diisi' }}</span>
                         </div>
-                        <button class="text-xs text-green-800 font-medium mt-2 flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                                </path>
-                            </svg>
-                            Edit Logo
-                        </button>
                     </div>
                 </div>
 
@@ -70,24 +61,12 @@
                     @csrf
                     @method('PUT')
 
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-sm font-bold text-gray-900">Informasi Toko</h3>
-                        <button type="button" class="text-green-800 font-medium text-sm flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                                </path>
-                            </svg>
-                            Edit
-                        </button>
-                    </div>
-
                     <div class="space-y-4">
                         <!-- Store Name -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Nama Toko</label>
-                            <input type="text" name="store_name" value="{{ $store->store_name }}"
-                                placeholder="Contoh: Jaya Selalu"
+                            <input type="text" name="store_name" value="{{ old('store_name', $store->store_name) }}"
+                                placeholder="Contoh: Jaya Selalu" required
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm">
                         </div>
 
@@ -95,25 +74,29 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Nama Pemilik</label>
-                                <input type="text" name="owner_name" value="{{ $store->owner_name }}"
-                                    placeholder="Contoh: Nienow-Heidenreich"
+                                <input type="text" name="owner_name" value="{{ old('owner_name', $store->owner_name ?? $user->name) }}"
+                                    placeholder="Contoh: Budi Santoso" required
                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Nomor Telepon</label>
-                                <input type="text" name="phone" value="{{ $store->phone }}"
-                                    placeholder="Contoh: 145-927-232-312"
+                                <input type="text" name="phone" value="{{ old('phone', $store->phone) }}"
+                                    placeholder="Contoh: 08123456789" required
                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm">
                             </div>
+                        </div>
+
+                        <!-- Logo Upload -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Logo Toko (Opsional)</label>
+                            <input type="file" name="store_logo" accept="image/*"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm">
+                            <p class="text-xs text-gray-500 mt-1">Max 2MB (JPG, PNG)</p>
                         </div>
                     </div>
 
                     <!-- Action Buttons -->
                     <div class="flex justify-end gap-3 mt-6">
-                        <button type="button"
-                            class="px-6 py-2.5 bg-green-100 text-gray-700 rounded-lg hover:bg-green-200 transition text-sm font-medium">
-                            Batal
-                        </button>
                         <button type="submit"
                             class="px-6 py-2.5 bg-green-800 text-white rounded-lg hover:bg-green-900 transition text-sm font-medium">
                             Simpan Perubahan
@@ -123,7 +106,6 @@
             </div>
 
             <!-- Alamat Toko -->
-            {{-- Mengirim data $store ke dalam fungsi Alpine --}}
             <div class="bg-white rounded-lg shadow-sm p-6" x-data="addresSellerData({
                 province_code: '{{ $store->province_code }}',
                 city_code: '{{ $store->city_code }}',
@@ -136,17 +118,7 @@
                     @csrf
                     @method('PUT')
 
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-sm font-bold text-gray-900">Alamat Toko</h3>
-                        <button class="text-green-800 font-medium text-sm flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                                </path>
-                            </svg>
-                            Edit
-                        </button>
-                    </div>
+                    <h3 class="text-sm font-bold text-gray-900 mb-4">Alamat Toko</h3>
 
                     <div class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -154,7 +126,7 @@
                                 <label class="block text-gray-700 font-medium mb-2">Provinsi</label>
                                 <select name="province_code" x-model="form.province_code" @change="fetchCities()"
                                     required
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0F4C20] focus:border-[#0F4C20] bg-white">
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-600 focus:border-green-600 bg-white">
                                     <option value="">Pilih Provinsi</option>
                                     <template x-for="item in provinces" :key="item.code">
                                         <option :value="item.code" x-text="item.name"></option>
@@ -167,7 +139,7 @@
                                 <label class="block text-gray-700 font-medium mb-2">Kota/Kabupaten</label>
                                 <select name="city_code" x-model="form.city_code" @change="fetchDistricts()"
                                     :disabled="!form.province_code" required
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0F4C20] focus:border-[#0F4C20] bg-white disabled:bg-gray-100">
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-600 focus:border-green-600 bg-white disabled:bg-gray-100">
                                     <option value="">Pilih Kota</option>
                                     <template x-for="item in cities" :key="item.code">
                                         <option :value="item.code" x-text="item.name"></option>
@@ -182,7 +154,7 @@
                                 <label class="block text-gray-700 font-medium mb-2">Kecamatan</label>
                                 <select name="district_code" x-model="form.district_code" @change="fetchVillages()"
                                     :disabled="!form.city_code" required
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0F4C20] focus:border-[#0F4C20] bg-white disabled:bg-gray-100">
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-600 focus:border-green-600 bg-white disabled:bg-gray-100">
                                     <option value="">Pilih Kecamatan</option>
                                     <template x-for="item in districts" :key="item.code">
                                         <option :value="item.code" x-text="item.name"></option>
@@ -193,9 +165,9 @@
 
                             <div>
                                 <label class="block text-gray-700 font-medium mb-2">Kelurahan</label>
-                                <select name="village_code" x-model="form.village_code" ::disabled="!form.district_code"
+                                <select name="village_code" x-model="form.village_code" :disabled="!form.district_code"
                                     required
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0F4C20] focus:border-[#0F4C20] bg-white disabled:bg-gray-100">
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-600 focus:border-green-600 bg-white disabled:bg-gray-100">
                                     <option value="">Pilih Kelurahan</option>
                                     <template x-for="item in villages" :key="item.code">
                                         <option :value="item.code" x-text="item.name"></option>
@@ -207,7 +179,7 @@
                             <div>
                                 <label class="block text-gray-700 font-medium mb-2">Kode Pos</label>
                                 <input type="text" name="postal_code" x-model="form.postal_code"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0F4C20] focus:border-[#0F4C20]"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-600 focus:border-green-600"
                                     placeholder="Kode Pos" required />
                             </div>
                         </div>
@@ -215,17 +187,13 @@
                         <div>
                             <label for="address" class="block text-gray-700 font-medium mb-2">Alamat Lengkap</label>
                             <textarea id="address" name="address" rows="3"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0F4C20] focus:border-[#0F4C20]"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-600 focus:border-green-600"
                                 placeholder="Nama Jalan, Gedung, No. Rumah..."
                                 required>{{ old('address', $store->address) }}</textarea>
                         </div>
                     </div>
 
                     <div class="flex justify-end gap-3 mt-6">
-                        <button type="button"
-                            class="px-6 py-2.5 bg-green-100 text-gray-700 rounded-lg hover:bg-green-200 transition text-sm font-medium">
-                            Batal
-                        </button>
                         <button type="submit"
                             class="px-6 py-2.5 bg-green-800 text-white rounded-lg hover:bg-green-900 transition text-sm font-medium">
                             Simpan Perubahan
@@ -233,9 +201,6 @@
                     </div>
                 </form>
             </div>
-
-
-
         </div>
 
         <!-- Right Column: Bank Account & Password -->
@@ -244,14 +209,6 @@
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-bold text-green-800">Rekening Mitra</h2>
-                    <button class="text-green-800 font-medium text-sm flex items-center gap-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                            </path>
-                        </svg>
-                        Edit
-                    </button>
                 </div>
 
                 <!-- Warning Message -->
@@ -274,37 +231,38 @@
                         <!-- Bank Name -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Nama Bank</label>
-                            <select name="bank_name"
+                            <select name="bank_name" required
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm">
-                                <option>Pilih Bank</option>
-                                <option>BCA</option>
-                                <option>BNI</option>
-                                <option>BRI</option>
-                                <option>Mandiri</option>
+                                <option value="">Pilih Bank</option>
+                                <option value="BCA" {{ ($bankAccount && $bankAccount->bank_name == 'BCA') ? 'selected' : '' }}>BCA</option>
+                                <option value="BNI" {{ ($bankAccount && $bankAccount->bank_name == 'BNI') ? 'selected' : '' }}>BNI</option>
+                                <option value="BRI" {{ ($bankAccount && $bankAccount->bank_name == 'BRI') ? 'selected' : '' }}>BRI</option>
+                                <option value="Mandiri" {{ ($bankAccount && $bankAccount->bank_name == 'Mandiri') ? 'selected' : '' }}>Mandiri</option>
+                                <option value="BSI" {{ ($bankAccount && $bankAccount->bank_name == 'BSI') ? 'selected' : '' }}>BSI</option>
                             </select>
                         </div>
 
                         <!-- Account Number -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Nomor Telepon</label>
-                            <input type="text" name="account_number" placeholder="Contoh: 145-927-232-312"
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nomor Rekening</label>
+                            <input type="text" name="account_number" 
+                                   value="{{ old('account_number', $bankAccount->account_number ?? '') }}"
+                                   placeholder="Contoh: 1234567890" required
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm">
                         </div>
 
                         <!-- Account Holder -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Atas Nam Rekening</label>
-                            <input type="text" name="account_holder" placeholder="Contoh: Nienow-Heidenreich"
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Atas Nama Rekening</label>
+                            <input type="text" name="account_holder" 
+                                   value="{{ old('account_holder', $bankAccount->account_name ?? '') }}"
+                                   placeholder="Contoh: Budi Santoso" required
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm">
                         </div>
                     </div>
 
                     <!-- Action Buttons -->
                     <div class="flex justify-end gap-3 mt-6">
-                        <button type="button"
-                            class="px-6 py-2.5 bg-green-100 text-gray-700 rounded-lg hover:bg-green-200 transition text-sm font-medium">
-                            Batal
-                        </button>
                         <button type="submit"
                             class="px-6 py-2.5 bg-green-800 text-white rounded-lg hover:bg-green-900 transition text-sm font-medium">
                             Simpan Perubahan
@@ -317,14 +275,6 @@
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-bold text-green-800">Keamanan Akun</h2>
-                    <button class="text-green-800 font-medium text-sm flex items-center gap-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
-                            </path>
-                        </svg>
-                        Ubah Kata Sandi
-                    </button>
                 </div>
 
                 <form action="{{ route('seller.profile.change-password') }}" method="POST">
@@ -334,15 +284,15 @@
                     <div class="space-y-4">
                         <!-- Password -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                            <input type="password" name="password" placeholder="••••••••"
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Password Baru</label>
+                            <input type="password" name="password" placeholder="••••••••" required
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm">
                         </div>
 
                         <!-- Confirm Password -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Konfirmasi Password</label>
-                            <input type="password" name="password_confirmation" placeholder="••••••••"
+                            <input type="password" name="password_confirmation" placeholder="••••••••" required
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm">
                         </div>
                     </div>
@@ -365,13 +315,11 @@
 <script>
     function addresSellerData(savedData = {}) {
         return {
-            // Data List
             provinces: [],
             cities: [],
             districts: [],
             villages: [],
 
-            // Form Data
             form: {
                 province_code: '',
                 city_code: '',
@@ -380,7 +328,6 @@
                 postal_code: savedData.postal_code || ''
             },
             
-            // Simpan data DB untuk referensi
             saved: {
                 province_code: savedData.province_code ? String(savedData.province_code) : '',
                 city_code: savedData.city_code ? String(savedData.city_code) : '',
@@ -389,29 +336,21 @@
             },
 
             async init() {
-                // OPTIMASI: Parallel Fetching (Ambil semua data API secara bersamaan)
-                // Kita tidak menunggu satu selesai baru minta yang lain, tapi minta sekaligus.
-                
                 const requests = [];
-
-                // 1. Request Provinsi (Selalu diminta)
                 requests.push(fetch('/api/location/provinces').then(r => r.json()));
 
-                // 2. Request Kota (Jika ID Provinsi ada di DB, langsung tembak API-nya)
                 if (this.saved.province_code) {
                     requests.push(fetch(`/api/location/cities/${this.saved.province_code}`).then(r => r.json()));
                 } else {
-                    requests.push(Promise.resolve([])); // Placeholder kosong jika tidak ada data
+                    requests.push(Promise.resolve([]));
                 }
 
-                // 3. Request Kecamatan
                 if (this.saved.city_code) {
                     requests.push(fetch(`/api/location/districts/${this.saved.city_code}`).then(r => r.json()));
                 } else {
                     requests.push(Promise.resolve([]));
                 }
 
-                // 4. Request Kelurahan
                 if (this.saved.district_code) {
                     requests.push(fetch(`/api/location/villages/${this.saved.district_code}`).then(r => r.json()));
                 } else {
@@ -419,21 +358,15 @@
                 }
 
                 try {
-                    // Tunggu semua request selesai berbarengan
                     const [provData, cityData, distData, villData] = await Promise.all(requests);
 
-                    // Masukkan data ke List (Dropdown Options)
                     this.provinces = provData;
                     this.cities = cityData;
                     this.districts = distData;
                     this.villages = villData;
 
-                    // Setelah opsi tersedia, barulah kita pilih nilainya (Value)
-                    // Ini mencegah dropdown terlihat kosong/reset
                     this.form.province_code = this.saved.province_code;
                     
-                    // Gunakan $nextTick untuk memastikan UI update dulu sebelum set value anakannya
-                    // (Trik Alpine.js agar lebih mulus)
                     this.$nextTick(() => {
                         this.form.city_code = this.saved.city_code;
                         this.form.district_code = this.saved.district_code;
@@ -445,12 +378,8 @@
                 }
             },
 
-            // --- FUNGSI FETCH MANUAL (Untuk User Interaction) ---
-            // Fungsi ini tetap dipakai saat User klik ganti provinsi/kota secara manual
-
             async fetchCities() {
                 if (!this.form.province_code) return;
-                // Reset anak-anaknya karena user mengubah induk
                 this.form.city_code = ''; this.form.district_code = ''; this.form.village_code = '';
                 this.cities = []; this.districts = []; this.villages = [];
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
 use App\Models\Store;
+use App\Models\BankAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -18,9 +19,11 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $store = $user->store;
+        
+        // Ambil bank account pertama (atau semua jika multiple)
+        $bankAccount = $store->bankAccounts()->first();
 
-
-        return view('seller.profile.index', compact('user', 'store'));
+        return view('seller.profile.index', compact('user', 'store', 'bankAccount'));
     }
 
     /**
@@ -43,18 +46,18 @@ class ProfileController extends Controller
 
         $data = [
             'store_name' => $request->store_name,
-            'owner_name' => $request->owner_name, // Optional jika di store ada kolom owner_name juga
+            'owner_name' => $request->owner_name,
             'phone'      => $request->phone,
         ];
 
         // Handle logo upload
         if ($request->hasFile('store_logo')) {
             // Delete old logo if exists
-            if ($store->store_logo) {
-                Storage::disk('public')->delete($store->store_logo);
+            if ($store->logo) {
+                Storage::disk('public')->delete($store->logo);
             }
 
-            $data['store_logo'] = $request->file('store_logo')->store('stores', 'public');
+            $data['logo'] = $request->file('store_logo')->store('stores/logos', 'public');
         }
 
         $store->update($data);
@@ -63,42 +66,34 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update store address (INI YANG DIPERBAIKI)
+     * Update store address
      */
     public function updateAddress(Request $request)
     {
         $request->validate([
-            // Validasi Kode Wilayah (Penting untuk API Ongkir)
             'province_code' => 'required',
             'city_code'     => 'required',
             'district_code' => 'required',
             'village_code'  => 'required',
-
-            // Validasi Nama Wilayah (Penting untuk Tampilan)
             'province'      => 'required|string',
             'city'          => 'required|string',
             'district'      => 'required|string',
             'village'       => 'required|string',
-
             'postal_code'   => 'required|string|max:10',
-            'address'       => 'required|string', // Alamat Lengkap (Jalan, No Rumah)
+            'address'       => 'required|string',
         ]);
 
         $store = Auth::user()->store;
 
         $store->update([
-            // Simpan Kode (ID dari API RajaOngkir/BinderByte)
             'province_code' => $request->province_code,
             'city_code'     => $request->city_code,
             'district_code' => $request->district_code,
             'village_code'  => $request->village_code,
-
-            // Simpan Nama Wilayah (Text)
             'province'      => $request->province,
             'city'          => $request->city,
             'district'      => $request->district,
             'village'       => $request->village,
-
             'postal_code'   => $request->postal_code,
             'address'       => $request->address,
         ]);
@@ -107,7 +102,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update bank account
+     * Update bank account (FIX: Simpan ke bank_accounts table)
      */
     public function updateBankAccount(Request $request)
     {
@@ -119,11 +114,24 @@ class ProfileController extends Controller
 
         $store = Auth::user()->store;
 
-        $store->update([
-            'bank_name'      => $request->bank_name,
-            'account_number' => $request->account_number,
-            'account_holder' => $request->account_holder,
-        ]);
+        // Cek apakah sudah ada bank account
+        $bankAccount = $store->bankAccounts()->first();
+
+        if ($bankAccount) {
+            // Update existing
+            $bankAccount->update([
+                'bank_name'      => $request->bank_name,
+                'account_number' => $request->account_number,
+                'account_name'   => $request->account_holder, // Field di DB adalah account_name
+            ]);
+        } else {
+            // Create new
+            $store->bankAccounts()->create([
+                'bank_name'      => $request->bank_name,
+                'account_number' => $request->account_number,
+                'account_name'   => $request->account_holder,
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Rekening mitra berhasil diperbarui!');
     }

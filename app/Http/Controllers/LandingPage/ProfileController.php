@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Address;
 use App\Models\Order;
+use App\Models\Refund;
 use Illuminate\Support\Facades\DB;
 
 class ProfileController extends Controller
@@ -25,13 +26,11 @@ class ProfileController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
             'gender' => 'nullable|in:Laki-laki,Perempuan',
-            // Validasi tanggal lahir manual dari 3 dropdown
             'dob_day' => 'nullable|numeric',
             'dob_month' => 'nullable|numeric',
             'dob_year' => 'nullable|numeric',
         ]);
 
-        // Gabungkan tanggal lahir: YYYY-MM-DD
         $dob = null;
         if ($request->dob_year && $request->dob_month && $request->dob_day) {
             $dob = $request->dob_year . '-' . $request->dob_month . '-' . $request->dob_day;
@@ -49,7 +48,6 @@ class ProfileController extends Controller
 
     public function address()
     {
-        // Ambil data asli dari database
         $addresses = Address::where('user_id', Auth::id())
             ->orderBy('is_primary', 'desc')
             ->get();
@@ -65,10 +63,10 @@ class ProfileController extends Controller
             'province_code' => 'required',
             'city_code' => 'required',
             'district_code' => 'required',
-            'village_code' => 'required', // Ini kunci utama ongkir
+            'village_code' => 'required',
             'detail_address' => 'required',
-            'latitude'       => 'nullable|numeric', // Tambahan
-            'longitude'      => 'nullable|numeric', // Tambahan
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
         ]);
 
         if ($request->has('is_primary')) {
@@ -81,8 +79,6 @@ class ProfileController extends Controller
             'user_id' => Auth::id(),
             'receiver_name' => $request->receiver_name,
             'phone' => $request->phone,
-
-            // Simpan Kode dan Nama (dikirim dari hidden input)
             'province_code' => $request->province_code,
             'province_name' => $request->province_name,
             'city_code' => $request->city_code,
@@ -93,67 +89,59 @@ class ProfileController extends Controller
             'village_name' => $request->village_name,
             'postal_code' => $request->postal_code,
             'detail_address' => $request->detail_address,
-            'latitude'       => $request->latitude,  // Simpan
-            'longitude'      => $request->longitude, // Simpan
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
             'is_primary' => $isPrimary,
         ]);
-        //dd($request->all());
 
         return back()->with('success', 'Alamat berhasil ditambahkan!');
     }
 
     public function updateAddress(Request $request, $id)
     {
-        // 1. Cari Alamat milik user yang sedang login (Security Check)
         $address = Address::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
 
-        // 2. Validasi sama persis dengan Store
         $validated = $request->validate([
             'receiver_name' => 'required|string|max:255',
-            'phone'         => 'required|string|max:20',
+            'phone' => 'required|string|max:20',
             'province_code' => 'required',
-            'city_code'     => 'required',
+            'city_code' => 'required',
             'district_code' => 'required',
-            'village_code'  => 'required',
+            'village_code' => 'required',
             'province_name' => 'required',
-            'city_name'     => 'required',
+            'city_name' => 'required',
             'district_name' => 'required',
-            'village_name'  => 'required',
-            'postal_code'   => 'required',
+            'village_name' => 'required',
+            'postal_code' => 'required',
             'detail_address' => 'required|string',
-            'latitude'       => 'nullable|numeric', // Tambahan
-            'longitude'      => 'nullable|numeric', // Tambahan
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
         ]);
 
         try {
             DB::beginTransaction();
 
-            // 3. Logika "Jadikan Utama"
-            // Jika user mencentang "Jadikan Utama", maka alamat lain harus di-set false
             if ($request->has('is_primary') && $request->is_primary == '1') {
                 Address::where('user_id', Auth::id())->update(['is_primary' => false]);
                 $address->is_primary = true;
             }
-            // Catatan: Jika user uncheck, kita biarkan saja (tidak otomatis mengubah yang lain)
-            // Atau logic-nya bisa disesuaikan kebutuhan.
 
-            // 4. Update Data
             $address->update([
                 'receiver_name' => $validated['receiver_name'],
-                'phone'         => $validated['phone'],
+                'phone' => $validated['phone'],
                 'province_code' => $validated['province_code'],
-                'city_code'     => $validated['city_code'],
+                'city_code' => $validated['city_code'],
                 'district_code' => $validated['district_code'],
-                'village_code'  => $validated['village_code'],
+                'village_code' => $validated['village_code'],
                 'province_name' => $validated['province_name'],
-                'city_name'     => $validated['city_name'],
+                'city_name' => $validated['city_name'],
                 'district_name' => $validated['district_name'],
-                'village_name'  => $validated['village_name'],
-                'postal_code'   => $validated['postal_code'],
+                'village_name' => $validated['village_name'],
+                'postal_code' => $validated['postal_code'],
                 'detail_address' => $validated['detail_address'],
-                'latitude'       => $request->latitude,  // Update
-                'longitude'      => $request->longitude, // Update
-                'is_primary'    => $address->is_primary ?? false, // Pertahankan status jika tidak diubah
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'is_primary' => $address->is_primary ?? false,
             ]);
 
             DB::commit();
@@ -166,36 +154,23 @@ class ProfileController extends Controller
         }
     }
 
-    /**
-     * HAPUS ALAMAT
-     */
     public function destroyAddress($id)
     {
         $address = Address::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
-
         $address->delete();
 
         return redirect()->route('profile.address')
             ->with('success', 'Alamat berhasil dihapus.');
     }
 
-    /**
-     * SET ALAMAT UTAMA (Via Tombol Kecil "Jadikan Utama")
-     */
     public function setPrimaryAddress($id)
     {
-        // Cari alamat yang mau dijadikan utama
         $address = Address::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
 
         try {
             DB::beginTransaction();
-
-            // 1. Reset semua alamat user ini jadi false
             Address::where('user_id', Auth::id())->update(['is_primary' => false]);
-
-            // 2. Set alamat yang dipilih jadi true
             $address->update(['is_primary' => true]);
-
             DB::commit();
 
             return redirect()->back()->with('success', 'Alamat utama berhasil diubah.');
@@ -210,29 +185,123 @@ class ProfileController extends Controller
         $user = Auth::user();
         $status = $request->query('status', 'all');
 
-        // Query Dasar: Ambil Order user login + relasi produk
-        $query = Order::with(['items.product.primaryImage', 'items.product.store'])
+        $query = Order::with(['items.product.primaryImage', 'items.product.store', 'items.product.category', 'payment', 'refund'])
             ->where('user_id', $user->id)
-            ->latest(); // Urutkan dari yang terbaru
+            ->latest();
 
-        // Logic Filter Status
         if ($status !== 'all') {
             if ($status == 'pending') {
-                // Filter "Belum Dibayar"
                 $query->where('payment_status', 'pending')
                     ->where('status', '!=', 'cancelled');
             } elseif ($status == 'processing') {
-                // Filter "Diproses" (bisa mencakup paid, processing, shipped)
                 $query->whereIn('status', ['processing', 'shipped'])
-                    ->where('payment_status', 'paid'); // Pastikan sudah bayar
+                    ->where('payment_status', 'paid');
             } else {
-                // Filter status biasa (completed, cancelled)
                 $query->where('status', $status);
             }
         }
 
-        $orders = $query->paginate(5); // Pagination 5 order per halaman
+        $orders = $query->paginate(5);
 
         return view('profileBuyer.orders', compact('orders'));
+    }
+
+    /**
+     * Cancel Order (Buyer) - WITH REFUND LOGIC
+     */
+    public function cancelOrder(Request $request, $id)
+    {
+        $order = Order::with('payment')
+            ->where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        if (!$order->canBeCancelled()) {
+            return back()->with('error', 'Pesanan tidak dapat dibatalkan. Waktu pembatalan sudah habis atau pesanan sudah diproses.');
+        }
+
+        DB::beginTransaction();
+        try {
+            // Scenario 1: Belum bayar (payment_status = pending)
+            if ($order->payment_status === 'pending') {
+                $order->update([
+                    'status' => 'cancelled',
+                    'cancelled_at' => now(),
+                    'cancellation_reason' => $request->input('reason', 'Dibatalkan oleh pembeli'),
+                    'refund_status' => 'none'
+                ]);
+
+                DB::commit();
+                return back()->with('success', 'Pesanan berhasil dibatalkan.');
+            }
+
+            // Scenario 2: Sudah bayar - REFUND REQUIRED
+            if ($order->payment_status === 'paid') {
+                $validated = $request->validate([
+                    'bank_name' => 'required|string|max:100',
+                    'account_number' => 'required|string|max:50',
+                    'account_holder' => 'required|string|max:255',
+                    'reason' => 'nullable|string|max:500',
+                ]);
+
+                $orderAmount = $order->total_amount;
+                $adminFee = Refund::calculateAdminFee($orderAmount);
+                $refundAmount = Refund::calculateRefundAmount($orderAmount);
+
+                Refund::create([
+                    'order_id' => $order->id,
+                    'user_id' => Auth::id(),
+                    'order_amount' => $orderAmount,
+                    'admin_fee' => $adminFee,
+                    'refund_amount' => $refundAmount,
+                    'bank_name' => $validated['bank_name'],
+                    'account_number' => $validated['account_number'],
+                    'account_holder' => $validated['account_holder'],
+                    'status' => 'pending',
+                    'cancellation_reason' => $validated['reason'] ?? 'Dibatalkan oleh pembeli',
+                    'requested_at' => now(),
+                ]);
+
+                $order->update([
+                    'status' => 'cancelled',
+                    'cancelled_at' => now(),
+                    'cancellation_reason' => $validated['reason'] ?? 'Dibatalkan oleh pembeli',
+                    'refund_status' => 'pending',
+                    'refund_amount' => $refundAmount,
+                ]);
+
+                DB::commit();
+
+                return back()->with('success', 
+                    "Pesanan berhasil dibatalkan. Dana sebesar Rp " . number_format($refundAmount, 0, ',', '.') . 
+                    " akan dikembalikan ke rekening Anda setelah diproses admin (1-3 hari kerja)."
+                );
+            }
+
+            DB::rollBack();
+            return back()->with('error', 'Tidak dapat membatalkan pesanan.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function completeOrder($id)
+    {
+        $order = Order::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        if (!$order->canBeCompleted()) {
+            return back()->with('error', 'Pesanan belum dapat diselesaikan. Pastikan pesanan sudah dikirim.');
+        }
+
+        $order->update([
+            'status' => 'completed',
+            'delivered_at' => now()
+        ]);
+
+        return back()->with('success', 'Terima kasih! Pesanan telah diselesaikan.');
     }
 }

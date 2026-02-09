@@ -107,20 +107,24 @@ Route::middleware(['auth', 'buyer'])->group(function () {
     Route::get('/payment/{id}', [BuyerPaymentController::class, 'show'])->name('payment.show');
     Route::post('/payment/{id}', [BuyerPaymentController::class, 'process'])->name('payment.process');
 
-    // 5. Profile Pembeli
+    // Profile Pembeli
     Route::get('/profile', [BuyerProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [BuyerProfileController::class, 'update'])->name('profile.update');
     Route::get('/profile/address', [BuyerProfileController::class, 'address'])->name('profile.address');
-    // Route::post('/profile/address', [BuyerProfileController::class, 'storeAddress'])->name('profile.address.store');
     Route::post('/logout', [BuyerAuthController::class, 'logout'])->name('logout');
 
+    // Address Management
     Route::prefix('profile/address')->name('profile.address.')->group(function () {
         Route::post('/', [BuyerProfileController::class, 'storeAddress'])->name('store');
-        Route::put('/{address}', [BuyerProfileController::class, 'updateAddress'])->name('update'); // Buat method updateAddress nanti
-        Route::delete('/{address}', [BuyerProfileController::class, 'destroyAddress'])->name('destroy'); // Buat method destroyAddress nanti
-        Route::patch('/{address}/primary', [BuyerProfileController::class, 'setPrimaryAddress'])->name('setPrimary'); // Buat method setPrimaryAddress nanti
+        Route::put('/{address}', [BuyerProfileController::class, 'updateAddress'])->name('update');
+        Route::delete('/{address}', [BuyerProfileController::class, 'destroyAddress'])->name('destroy');
+        Route::patch('/{address}/primary', [BuyerProfileController::class, 'setPrimaryAddress'])->name('setPrimary');
     });
+
+    // Orders
     Route::get('/profile/orders', [BuyerProfileController::class, 'orders'])->name('profile.orders');
+    Route::post('/profile/orders/{id}/cancel', [BuyerProfileController::class, 'cancelOrder'])->name('profile.orders.cancel');
+    Route::post('/profile/orders/{id}/complete', [BuyerProfileController::class, 'completeOrder'])->name('profile.orders.complete');
 });
 
 
@@ -171,6 +175,17 @@ Route::prefix('seller')->name('seller.')->group(function () {
         Route::put('/profile/address', [ProfileController::class, 'updateAddress'])->name('profile.update-address');
         Route::put('/profile/bank', [ProfileController::class, 'updateBankAccount'])->name('profile.update-bank');
         Route::put('/profile/password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
+
+        // Seller routes - Update Status
+Route::patch('/orders/{id}/status', [OrderController::class, 'updateStatus'])
+    ->name('orders.updateStatus');
+
+    // Withdrawals (Seller)
+Route::get('/withdrawals', [App\Http\Controllers\Seller\WithdrawalController::class, 'index'])->name('withdrawals.index');
+Route::post('/withdrawals', [App\Http\Controllers\Seller\WithdrawalController::class, 'store'])->name('withdrawals.store');
+Route::get('/withdrawals/{id}', [App\Http\Controllers\Seller\WithdrawalController::class, 'show'])->name('withdrawals.show');
+Route::post('/withdrawals/calculate-fee', [App\Http\Controllers\Seller\WithdrawalController::class, 'calculateFee'])->name('withdrawals.calculate-fee');
+
 
         // Logout
         Route::post('/logout', [SellerAuthController::class, 'logout'])->name('logout');
@@ -228,4 +243,24 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         ->name('withdrawals.reject');
     Route::get('/withdrawals/{id}/print', [App\Http\Controllers\Admin\WithdrawalController::class, 'print'])
         ->name('withdrawals.print');
+
+
+        // Refund Management
+    Route::prefix('refunds')->name('refunds.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\RefundController::class, 'index'])->name('index');
+        Route::get('/{id}/details', [\App\Http\Controllers\Admin\RefundController::class, 'getDetails'])->name('details');
+        Route::post('/{id}/process', [\App\Http\Controllers\Admin\RefundController::class, 'process'])->name('process');
+        Route::post('/{id}/reject', [\App\Http\Controllers\Admin\RefundController::class, 'reject'])->name('reject');
+        Route::get('/{id}/proof', [\App\Http\Controllers\Admin\RefundController::class, 'viewProof'])->name('viewProof');
+    });
+
+    // Mitra Management
+Route::get('/mitra', [App\Http\Controllers\Admin\MitraController::class, 'index'])->name('mitra.index');
+Route::get('/mitra/{id}', [App\Http\Controllers\Admin\MitraController::class, 'show'])->name('mitra.show');
+
+// 🔥 TAMBAHAN BARU: Withdrawal Management
+Route::get('/withdrawals', [App\Http\Controllers\Admin\WithdrawalController::class, 'index'])->name('withdrawals.index');
+Route::get('/withdrawals/{id}/details', [App\Http\Controllers\Admin\WithdrawalController::class, 'getDetails'])->name('withdrawals.details');
+Route::post('/withdrawals/{id}/process', [App\Http\Controllers\Admin\WithdrawalController::class, 'process'])->name('withdrawals.process');
+Route::post('/withdrawals/{id}/reject', [App\Http\Controllers\Admin\WithdrawalController::class, 'reject'])->name('withdrawals.reject');
 });

@@ -12,12 +12,11 @@
 <body class="bg-[#F8FCF8]">
     <div class="flex flex-col h-screen overflow-hidden">
 
-        <nav
-            class="bg-white border-b border-gray-200 h-16 flex items-center px-6 sticky top-0 z-50 flex-shrink-0 shadow-sm">
+        <!-- Top Navigation -->
+        <nav class="bg-white border-b border-gray-200 h-16 flex items-center px-6 sticky top-0 z-50 flex-shrink-0 shadow-sm">
             <div class="flex justify-between items-center w-full">
                 <div class="flex items-center gap-3 w-56">
-                    <div class="bg-green-800 text-white px-3 py-2 font-bold text-sm rounded"> Logo
-                    </div>
+                    <div class="bg-green-800 text-white px-3 py-2 font-bold text-sm rounded">Logo</div>
                     <span class="text-base font-bold text-gray-900">Nusa Belanja</span>
                 </div>
 
@@ -25,8 +24,7 @@
                     <span class="text-sm font-medium text-gray-700">
                         {{ auth()->user()->name ?? 'Admin Nusa Belanja' }}
                     </span>
-                    <div
-                        class="w-9 h-9 rounded-full bg-green-800 text-white flex items-center justify-center font-semibold text-sm">
+                    <div class="w-9 h-9 rounded-full bg-green-800 text-white flex items-center justify-center font-semibold text-sm">
                         {{ isset(auth()->user()->name) ? strtoupper(substr(auth()->user()->name, 0, 1)) : 'A' }}
                     </div>
                 </div>
@@ -35,6 +33,7 @@
 
         <div class="flex flex-1 overflow-hidden">
 
+            <!-- Sidebar -->
             <aside class="w-56 bg-white border-r border-gray-200 overflow-y-auto flex-shrink-0">
                 <div class="p-3 space-y-1">
 
@@ -42,19 +41,19 @@
                     <a href="{{ route('admin.dashboard') }}"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition
                                {{ request()->routeIs('admin.dashboard') ? 'bg-green-800 text-white' : 'text-gray-700 hover:bg-gray-50' }}">
-
                         <x-heroicon-o-squares-2x2 class="w-5 h-5" />
                         <span class="text-sm font-medium">Dashboard</span>
                     </a>
 
                     {{-- Mitra (dropdown) --}}
-                    <div> @php
+                    <div>
+                        @php
                         $isMitraActive = request()->routeIs('admin.mitra.*');
                         @endphp
 
                         <button type="button"
                             onclick="document.getElementById('mitraDropdown').classList.toggle('hidden');
-                                                     document.getElementById('mitraArrow').classList.toggle('rotate-180');"
+                                     document.getElementById('mitraArrow').classList.toggle('rotate-180');"
                             class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition
                                    {{ $isMitraActive ? 'bg-green-800 text-white' : 'text-gray-700 hover:bg-gray-50' }}">
                             <div class="flex items-center gap-3">
@@ -62,8 +61,7 @@
                                 <span class="text-sm font-medium">Mitra</span>
                             </div>
 
-                            <div id="mitraArrow"
-                                class="transition-transform duration-200 {{ $isMitraActive ? 'rotate-180' : '' }}">
+                            <div id="mitraArrow" class="transition-transform duration-200 {{ $isMitraActive ? 'rotate-180' : '' }}">
                                 <x-heroicon-o-chevron-down class="w-3 h-3" />
                             </div>
                         </button>
@@ -78,7 +76,8 @@
 
                             {{-- 5 mitra pertama --}}
                             @foreach($sidebarStores ?? [] as $store)
-                            <a href="{{ route('admin.mitra.show', $store->id) }}" class="block px-3 py-2 rounded-lg text-xs border-l-2
+                            <a href="{{ route('admin.mitra.show', $store->id) }}" 
+                               class="block px-3 py-2 rounded-lg text-xs border-l-2
                                       {{ request()->routeIs('admin.mitra.show') && request()->route('id') == $store->id
                                             ? 'border-green-800 bg-green-50 text-green-800 font-medium'
                                             : 'border-transparent text-gray-600 hover:bg-gray-50' }}">
@@ -97,6 +96,27 @@
                         </div>
                     </div>
 
+                    {{-- Refund Management --}}
+                    @php
+                    $pendingRefundsCount = \App\Models\Refund::where('status', 'pending')->count();
+                    @endphp
+                    <a href="{{ route('admin.refunds.index') }}"
+                        class="flex items-center justify-between px-3 py-2.5 rounded-lg transition
+                               {{ request()->routeIs('admin.refunds.*') ? 'bg-green-800 text-white' : 'text-gray-700 hover:bg-gray-50' }}">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-medium">Refund</span>
+                        </div>
+                        @if($pendingRefundsCount > 0)
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold
+                                     {{ request()->routeIs('admin.refunds.*') ? 'bg-white text-green-800' : 'bg-red-600 text-white' }}">
+                            {{ $pendingRefundsCount }}
+                        </span>
+                        @endif
+                    </a>
+
                     {{-- Logout --}}
                     <form action="{{ route('admin.logout') }}" method="POST" class="pt-4 mt-4 border-t border-gray-100">
                         @csrf
@@ -109,8 +129,10 @@
                 </div>
             </aside>
 
+            <!-- Main Content -->
             <main class="flex-1 overflow-y-auto">
-                <div class="p-8"> @yield('content')
+                <div class="p-8">
+                    @yield('content')
                 </div>
             </main>
         </div>
@@ -129,18 +151,22 @@
             </div>
             <div class="p-3 overflow-y-auto">
                 <a href="{{ route('admin.mitra.index') }}"
-                    class="block px-3 py-2 mb-1 rounded-lg text-xs font-medium bg-green-50 text-green-800">Semua
-                    Mitra</a>
+                    class="block px-3 py-2 mb-1 rounded-lg text-xs font-medium bg-green-50 text-green-800">
+                    Semua Mitra
+                </a>
                 @foreach($allSidebarStores as $store)
                 <a href="{{ route('admin.mitra.show', $store->id) }}"
                     onclick="document.getElementById('allMitraModal').classList.add('hidden');"
-                    class="block px-3 py-2 mb-1 rounded-lg text-xs hover:bg-gray-50 text-gray-600">{{
-                    $store->store_name }}</a>
+                    class="block px-3 py-2 mb-1 rounded-lg text-xs hover:bg-gray-50 text-gray-600">
+                    {{ $store->store_name }}
+                </a>
                 @endforeach
             </div>
             <div class="px-4 py-3 border-t flex justify-end">
                 <button type="button" onclick="document.getElementById('allMitraModal').classList.add('hidden');"
-                    class="px-4 py-1.5 text-xs rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">Tutup</button>
+                    class="px-4 py-1.5 text-xs rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">
+                    Tutup
+                </button>
             </div>
         </div>
     </div>

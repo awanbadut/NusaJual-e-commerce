@@ -111,54 +111,60 @@ class MitraController extends Controller
         // 3. Chart Data (Real - 12 bulan)
         $chartData = $this->getPerformanceChartData($id);
 
-        // 4. Pending Payments
+        // ✅ FIX 1: PENDING PAYMENTS - EXCLUDE CANCELLED ORDERS
         $pendingPayments = Payment::whereHas('order', function($q) use ($id) {
-                $q->where('store_id', $id);
+                $q->where('store_id', $id)
+                  ->where('status', '!=', 'cancelled'); // EXCLUDE CANCELLED ORDERS
             })
             ->where('status', 'pending')
             ->with(['order.user'])
             ->latest()
             ->paginate(5, ['*'], 'payments_page');
 
-        // 5. Withdrawals
+        // 5. Withdrawals - Hanya yang sudah di-request
         $withdrawals = $store->withdrawals()
-            ->with('bankAccount')
-            ->latest()
-            ->paginate(5, ['*'], 'withdrawals_page');
+    ->with('bankAccount')
+    ->latest()
+    ->paginate(5, ['*'], 'withdrawals_page');
 
-        // 6. Confirmed Payments
+        // ✅ FIX 2: CONFIRMED PAYMENTS - EXCLUDE CANCELLED
         $confirmedPayments = Payment::whereHas('order', function($q) use ($id) {
-                $q->where('store_id', $id);
+                $q->where('store_id', $id)
+                  ->where('status', '!=', 'cancelled'); // EXCLUDE CANCELLED
             })
             ->where('status', 'confirmed')
             ->with('order')
             ->latest()
             ->paginate(5, ['*'], 'confirmed_page');
 
-        // 7. Completed Orders
+        // ✅ FIX 3: COMPLETED ORDERS (untuk Tabel Pencairan Dana)
         $completedOrders = Order::where('store_id', $id)
             ->where('status', 'completed')
             ->with(['items.product', 'payment'])
-            ->latest()
+            ->latest('delivered_at')
             ->paginate(5, ['*'], 'orders_page');
 
-        // 8. Dana Calculations (Real)
-        $totalWithdrawn = $store->withdrawals()
-            ->whereIn('status', ['approved', 'completed'])
-            ->sum('amount');
+       // 8. Dana Calculations (Real)
+$totalWithdrawn = $store->withdrawals()
+    ->whereIn('status', ['approved', 'completed'])
+    ->sum('amount');
 
-        $sisaDana = ($store->total_sales ?? 0) - $totalWithdrawn;
+// Calculate total pending withdrawals
+$danaTeralokasi = $store->withdrawals()
+    ->where('status', 'pending')
+    ->sum('amount');
+
+// Dana Tersedia = Total Sales - (Withdrawn + Pending)
+$sisaDana = ($store->total_sales ?? 0) - $totalWithdrawn - $danaTeralokasi;
+
         
-        $danaTeralokasi = $store->withdrawals()
-            ->where('status', 'pending')
-            ->sum('amount');
+        // Total bank accounts
+        $totalBankAccounts = $store->bankAccounts->count();
         
+        // Total completed withdrawals
         $totalPencairan = $store->withdrawals()
             ->where('status', 'completed')
             ->count();
-
-        // 9. Bank Accounts Count
-        $totalBankAccounts = $store->bankAccounts()->count();
 
         return view('admin.mitra.show', compact(
             'store',
@@ -172,50 +178,51 @@ class MitraController extends Controller
             'completedOrders',
             'sisaDana',
             'danaTeralokasi',
-            'totalPencairan',
-            'totalBankAccounts'
+            'totalBankAccounts',
+            'totalPencairan'
         ));
     }
 
     /**
-     * Generate real chart data untuk 12 bulan terakhir
+     * Get performance chart data for last 12 months
      */
     private function getPerformanceChartData($storeId)
     {
-        $months = [];
+        $currentYear = now()->year;
+        $lastYear = $currentYear - 1;
+        
+        $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        
+        // Current year data
         $currentYearData = [];
-        $lastYearData = [];
-
-        for ($i = 11; $i >= 0; $i--) {
-            $date = now()->subMonths($i);
-            $months[] = $date->format('M');
-
-            // Data tahun ini
-            $currentYearSales = Order::where('store_id', $storeId)
+        for ($i = 1; $i <= 12; $i++) {
+            $sales = Order::where('store_id', $storeId)
                 ->where('status', 'completed')
-                ->whereYear('created_at', $date->year)
-                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $currentYear)
+                ->whereMonth('created_at', $i)
                 ->sum('total_amount');
-
-            $currentYearData[] = round($currentYearSales / 1000000, 2);
-
-            // Data tahun lalu
-            $lastYearDate = $date->copy()->subYear();
-            $lastYearSales = Order::where('store_id', $storeId)
-                ->where('status', 'completed')
-                ->whereYear('created_at', $lastYearDate->year)
-                ->whereMonth('created_at', $lastYearDate->month)
-                ->sum('total_amount');
-
-            $lastYearData[] = round($lastYearSales / 1000000, 2);
+            
+            $currentYearData[] = round($sales / 1000000, 2); // Convert to millions
         }
-
+        
+        // Last year data
+        $lastYearData = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $sales = Order::where('store_id', $storeId)
+                ->where('status', 'completed')
+                ->whereYear('created_at', $lastYear)
+                ->whereMonth('created_at', $i)
+                ->sum('total_amount');
+            
+            $lastYearData[] = round($sales / 1000000, 2); // Convert to millions
+        }
+        
         return [
             'labels' => $months,
             'currentYear' => $currentYearData,
             'lastYear' => $lastYearData,
-            'currentYearLabel' => now()->year,
-            'lastYearLabel' => now()->subYear()->year
+            'currentYearLabel' => $currentYear,
+            'lastYearLabel' => $lastYear,
         ];
     }
 }

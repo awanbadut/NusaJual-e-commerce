@@ -20,11 +20,15 @@
                 <span class="text-gray-900 font-medium">Detail Pesanan</span>
             </nav>
             <div class="flex items-center gap-3">
-                <h1 class="text-3xl font-bold text-green-800">Detail Pelanggan 
+                <h1 class="text-3xl font-bold text-green-800">Detail Pesanan 
                     <span class="text-gray-900">{{ $order->order_number }}</span>
                 </h1>
                 @if($order->status == 'processing')
                     <span class="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-500 text-gray-900">Diproses</span>
+                @elseif($order->status == 'packing')
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500 text-white">Dikemas</span>
+                @elseif($order->status == 'shipped')
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-600 text-white">Dikirim</span>
                 @elseif($order->status == 'completed')
                     <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-600 text-white">Selesai</span>
                 @elseif($order->status == 'pending')
@@ -36,6 +40,39 @@
         </div>
     </div>
 
+    <!-- Success/Error Messages -->
+    @if(session('success'))
+    <div class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded">
+        <div class="flex items-center">
+            <svg class="w-6 h-6 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <p class="text-sm font-semibold text-green-800">{{ session('success') }}</p>
+        </div>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded">
+        <div class="flex items-center">
+            <svg class="w-6 h-6 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+            </svg>
+            <p class="text-sm font-semibold text-red-800">{{ session('error') }}</p>
+        </div>
+    </div>
+    @endif
+
+    @if($errors->any())
+    <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded">
+        <ul class="list-disc list-inside text-sm text-red-800">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Left Column: Order Details -->
         <div class="lg:col-span-2 space-y-6">
@@ -45,6 +82,21 @@
                     <h2 class="text-lg font-bold text-gray-900">Nomor Pesanan</h2>
                 </div>
                 <p class="text-xl font-bold text-gray-900">{{ $order->order_number }}</p>
+                
+                @if($order->tracking_number)
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Kurir</p>
+                            <p class="text-base font-semibold text-gray-900">{{ $order->courier }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-600">Nomor Resi</p>
+                            <p class="text-base font-semibold text-gray-900">{{ $order->tracking_number }}</p>
+                        </div>
+                    </div>
+                </div>
+                @endif
             </div>
 
             <!-- Products List -->
@@ -73,9 +125,9 @@
 
                         <!-- Product Info -->
                         <div class="flex-1">
-                            <p class="text-xs text-gray-500">{{ $item->product->category->name ?? 'Kopi' }}</p>
+                            <p class="text-xs text-gray-500">{{ $item->product->category->name ?? 'Produk' }}</p>
                             <p class="text-sm font-semibold text-gray-900">{{ $item->product->name }}</p>
-                            <p class="text-sm text-gray-600">{{ $item->quantity }} {{ $item->product->unit }}</p>
+                            <p class="text-sm text-gray-600">{{ $item->quantity }} {{ $item->product->unit ?? 'pcs' }}</p>
                         </div>
 
                         <!-- Price -->
@@ -97,14 +149,14 @@
                         @php
                             $statuses = [
                                 'pending' => 'Menunggu Pembayaran',
-                                'processing' => 'Menunggu Konfirmasi',
-                                'shipping' => 'Dikirim',
+                                'processing' => 'Diproses',
+                                'shipped' => 'Dikirim',
                                 'completed' => 'Selesai'
                             ];
                             $currentStep = match($order->status) {
                                 'pending' => 1,
-                                'processing' => 2,
-                                'shipping' => 3,
+                                'processing', 'packing' => 2,
+                                'shipped' => 3,
                                 'completed' => 4,
                                 default => 1
                             };
@@ -112,7 +164,7 @@
 
                         @foreach($statuses as $key => $label)
                         <div class="flex flex-col items-center {{ $loop->first ? '' : 'flex-1' }}">
-                            <div class="w-8 h-8 rounded-full flex items-center justify-center {{ $loop->iteration <= $currentStep ? 'bg-orange-700' : 'bg-gray-300' }}">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center {{ $loop->iteration <= $currentStep ? 'bg-green-600' : 'bg-gray-300' }}">
                                 <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                                 </svg>
@@ -123,7 +175,7 @@
 
                     <!-- Progress Line -->
                     <div class="absolute top-4 left-0 right-0 h-1 bg-gray-300 -z-10" style="width: calc(100% - 2rem); margin-left: 1rem;">
-                        <div class="h-full bg-orange-700 transition-all" style="width: {{ (($currentStep - 1) / 3) * 100 }}%"></div>
+                        <div class="h-full bg-green-600 transition-all" style="width: {{ (($currentStep - 1) / 3) * 100 }}%"></div>
                     </div>
 
                     <!-- Labels -->
@@ -146,6 +198,7 @@
                 </div>
                 <div>
                     <p class="text-sm font-semibold text-gray-900 mb-1">{{ $order->recipient_name ?? $order->user->name }}</p>
+                    <p class="text-sm text-gray-600 mb-2">{{ $order->recipient_phone }}</p>
                     <p class="text-sm text-gray-600">{{ $order->shipping_address }}</p>
                 </div>
             </div>
@@ -160,16 +213,23 @@
                 <div class="space-y-3 text-sm mb-4">
                     <div class="flex justify-between">
                         <span class="text-gray-600">Tanggal Pesanan</span>
-                        <span class="font-semibold text-gray-900">{{ date('d M Y', strtotime($order->created_at)) }}</span>
+                        <span class="font-semibold text-gray-900">{{ $order->created_at->format('d M Y') }}</span>
                     </div>
+                    @if($order->payment && $order->payment->payment_proof)
                     <div class="flex justify-between">
                         <span class="text-gray-600">Bukti Pembayaran</span>
-                        <a href="#" class="text-green-800 font-semibold underline">Lihat Bukti Pembayaran</a>
+                        <a href="{{ asset('storage/' . $order->payment->payment_proof) }}" target="_blank" 
+                           class="text-green-800 font-semibold underline hover:text-green-900">
+                            Lihat Bukti
+                        </a>
                     </div>
-                    <div class="flex justify-between">
+                    @endif
+                    <div class="flex justify-between items-center">
                         <span class="text-gray-600">Status Pembayaran</span>
-                        @if($order->payment_status == 'paid')
-                            <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-400 text-gray-900">Lunas</span>
+                        @if($order->payment_status == 'confirmed')
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-500 text-white">Terkonfirmasi</span>
+                        @elseif($order->payment_status == 'paid')
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-400 text-gray-900">Menunggu Konfirmasi</span>
                         @else
                             <span class="px-2 py-1 rounded-full text-xs font-semibold bg-orange-600 text-white">Pending</span>
                         @endif
@@ -228,10 +288,6 @@
                         <span class="text-gray-900">Rp {{ number_format($order->sub_total, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-600">Layanan</span>
-                        <span class="text-gray-900">Rp {{ number_format(1000, 0, ',', '.') }}</span>
-                    </div>
-                    <div class="flex justify-between">
                         <span class="text-gray-600">Pengiriman</span>
                         <span class="text-gray-900">Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</span>
                     </div>
@@ -246,5 +302,116 @@
             </div>
         </div>
     </div>
+
+    <!-- UPDATE STATUS FORM -->
+    @if($order->payment_status == 'confirmed' && !in_array($order->status, ['completed', 'cancelled']))
+    <div class="bg-white rounded-lg shadow-sm p-6 mt-6">
+        <h3 class="text-lg font-bold text-green-800 mb-4">Update Status Pesanan</h3>
+        
+        <form action="{{ route('seller.orders.updateStatus', $order->id) }}" method="POST" x-data="orderStatusForm()">
+            @csrf
+            @method('PATCH')
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Status -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Status Pesanan *</label>
+                    <select name="status" required x-model="status"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600">
+                        <option value="">Pilih Status</option>
+                        <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>
+                            Processing - Sedang Diproses
+                        </option>
+                        <option value="packing" {{ $order->status == 'packing' ? 'selected' : '' }}>
+                            Packing - Sedang Dikemas
+                        </option>
+                        <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>
+                            Shipped - Dalam Pengiriman
+                        </option>
+                        <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>
+                            Completed - Selesai/Diterima
+                        </option>
+                        <option value="cancelled">Cancelled - Dibatalkan</option>
+                    </select>
+                </div>
+
+                <!-- Courier (show only when shipped) -->
+                <div x-show="status === 'shipped'" x-cloak>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Kurir *</label>
+                    <select name="courier"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600">
+                        <option value="">Pilih Kurir</option>
+                        <option value="JNE" {{ $order->courier == 'JNE' ? 'selected' : '' }}>JNE</option>
+                        <option value="J&T" {{ $order->courier == 'J&T' ? 'selected' : '' }}>J&T Express</option>
+                        <option value="SiCepat" {{ $order->courier == 'SiCepat' ? 'selected' : '' }}>SiCepat</option>
+                        <option value="POS" {{ $order->courier == 'POS' ? 'selected' : '' }}>POS Indonesia</option>
+                        <option value="TIKI" {{ $order->courier == 'TIKI' ? 'selected' : '' }}>TIKI</option>
+                        <option value="AnterAja" {{ $order->courier == 'AnterAja' ? 'selected' : '' }}>AnterAja</option>
+                    </select>
+                </div>
+
+                <!-- Tracking Number -->
+                <div x-show="status === 'shipped'" x-cloak>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nomor Resi *</label>
+                    <input type="text" name="tracking_number" value="{{ $order->tracking_number }}"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600"
+                           placeholder="Contoh: JNE12345678">
+                </div>
+            </div>
+
+            <div class="mt-6 flex gap-3">
+                <button type="submit" 
+                        class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition">
+                    Update Status
+                </button>
+                <a href="{{ route('seller.orders.index') }}" 
+                   class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 font-semibold text-center transition">
+                    Kembali ke Daftar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    @elseif($order->payment_status !== 'confirmed' && $order->status !== 'cancelled')
+    <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mt-6 rounded">
+        <div class="flex items-center">
+            <svg class="w-6 h-6 text-yellow-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+                <p class="text-sm font-semibold text-yellow-800">Pembayaran belum dikonfirmasi admin</p>
+                <p class="text-xs text-yellow-700 mt-1">Anda belum bisa mengubah status pesanan sampai admin mengkonfirmasi pembayaran.</p>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    @if(in_array($order->status, ['completed', 'cancelled']))
+    <div class="bg-gray-50 border-l-4 border-gray-400 p-4 mt-6 rounded">
+        <div class="flex items-center">
+            <svg class="w-6 h-6 text-gray-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+            </svg>
+            <p class="text-sm font-semibold text-gray-700">
+                Pesanan sudah {{ $order->status == 'completed' ? 'selesai' : 'dibatalkan' }}. Status tidak bisa diubah lagi.
+            </p>
+        </div>
+    </div>
+    @endif
 </div>
 @endsection
+
+@push('scripts')
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script>
+    function orderStatusForm() {
+        return {
+            status: '{{ $order->status }}'
+        }
+    }
+</script>
+
+<style>
+    [x-cloak] { display: none !important; }
+</style>
+@endpush

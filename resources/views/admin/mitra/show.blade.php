@@ -239,18 +239,21 @@
     <!-- Tabel Pencairan Dana -->
     <div class="bg-white px-6 py-5 rounded-2xl shadow-sm mb-8 border border-[#E5E7EB]">
         <div class="flex justify-between items-center mb-4">
-            <h2 class="font-bold text-[16px] text-[#111827]">Tabel Pencairan Dana</h2>
-            <button class="px-4 py-1.5 rounded-lg border border-[#D1D5DB] text-[12px] text-[#111827] hover:bg-[#F3F4F6]">
-                Urutkan Berdasarkan
-            </button>
+            <h2 class="font-bold text-[16px] text-[#111827]">Permintaan Pencairan Dana</h2>
+            <a href="{{ route('admin.withdrawals.index') }}" class="px-4 py-1.5 rounded-lg border border-[#D1D5DB] text-[12px] text-[#111827] hover:bg-[#F3F4F6]">
+                Lihat Semua
+            </a>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-[12px]">
                 <thead class="bg-[#DCFCE7] border-t border-b border-[#BBF7D0]">
                     <tr class="text-left">
-                        <th class="px-4 py-3 font-semibold text-[#15803D]">Tanggal Transaksi</th>
+                        <th class="px-4 py-3 font-semibold text-[#15803D]">Tanggal Request</th>
                         <th class="px-4 py-3 font-semibold text-[#15803D]">ID Pencairan</th>
-                        <th class="px-4 py-3 font-semibold text-[#15803D]">Total Transaksi</th>
+                        <th class="px-4 py-3 font-semibold text-[#15803D]">Bank</th>
+                        <th class="px-4 py-3 font-semibold text-[#15803D]">Jumlah</th>
+                        <th class="px-4 py-3 font-semibold text-[#15803D]">Biaya Admin</th>
+                        <th class="px-4 py-3 font-semibold text-[#15803D]">Dana Transfer</th>
                         <th class="px-4 py-3 font-semibold text-[#15803D]">Status</th>
                         <th class="px-4 py-3 font-semibold text-[#15803D]">Aksi</th>
                     </tr>
@@ -258,47 +261,66 @@
                 <tbody class="bg-[#F9FDF7]">
                     @forelse($withdrawals as $withdrawal)
                     <tr class="border-b border-[#E5E7EB] hover:bg-white">
-                        <td class="px-4 py-3 text-[#111827]">{{ $withdrawal->created_at->format('d F Y') }}</td>
+                        <td class="px-4 py-3 text-[#111827]">
+                            {{ $withdrawal->requested_at->format('d F Y') }}
+                        </td>
                         <td class="px-4 py-3 font-mono text-[#111827]">#WD-{{ str_pad($withdrawal->id, 4, '0', STR_PAD_LEFT) }}</td>
+                        <td class="px-4 py-3 text-[#111827]">
+                            <div class="text-[12px] font-semibold">{{ $withdrawal->bankAccount->bank_name }}</div>
+                            <div class="text-[10px] text-[#78716C]">{{ $withdrawal->bankAccount->account_number }}</div>
+                        </td>
                         <td class="px-4 py-3 font-semibold text-[#111827]">
                             Rp {{ number_format($withdrawal->amount, 0, ',', '.') }}
                         </td>
+                        <td class="px-4 py-3 text-red-600 font-semibold">
+                            -Rp {{ number_format($withdrawal->admin_fee, 0, ',', '.') }}
+                        </td>
+                        <td class="px-4 py-3 font-bold text-[#15803D]">
+                            Rp {{ number_format($withdrawal->total_received, 0, ',', '.') }}
+                        </td>
                         <td class="px-4 py-3">
                             @if($withdrawal->status == 'pending')
-                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-[11px] font-semibold">
-                                    Pending
-                                </span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-[11px] font-semibold">
+                                Pending
+                            </span>
                             @elseif($withdrawal->status == 'approved')
-                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#DBEAFE] text-[#1E40AF] text-[11px] font-semibold">
-                                    Approved
-                                </span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#DBEAFE] text-[#1E40AF] text-[11px] font-semibold">
+                                Disetujui
+                            </span>
                             @elseif($withdrawal->status == 'completed')
-                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#15803D] text-white text-[11px] font-semibold">
-                                    Selesai
-                                </span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#15803D] text-white text-[11px] font-semibold">
+                                Selesai
+                            </span>
                             @else
-                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#FEE2E2] text-[#991B1B] text-[11px] font-semibold">
-                                    {{ ucfirst($withdrawal->status) }}
-                                </span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#FEE2E2] text-[#991B1B] text-[11px] font-semibold">
+                                Ditolak
+                            </span>
                             @endif
                         </td>
                         <td class="px-4 py-3">
                             @if($withdrawal->status == 'pending')
-                            <button onclick="openWithdrawalModal({{ $withdrawal->id }}, {{ $withdrawal->amount }})" 
+                            <button onclick="openWithdrawalModal({{ $withdrawal->id }})" 
                                     class="bg-[#FBBF24] text-white px-4 py-1.5 rounded-lg hover:bg-[#F59E0B] text-[11px] font-semibold">
                                 Proses
                             </button>
-                            @elseif($withdrawal->status == 'completed')
-                            <a href="{{ route('admin.withdrawals.print', $withdrawal->id) }}" target="_blank" class="text-[#6B7280] text-[11px] hover:underline">
-                                Cetak
-                            </a>
+                            @elseif($withdrawal->status == 'completed' && $withdrawal->withdrawal_proof)
+                            <button onclick="viewProof('{{ asset('storage/' . $withdrawal->withdrawal_proof) }}')" 
+                                    class="text-[#2563EB] hover:underline text-[11px] inline-flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                </svg>
+                                Lihat Bukti
+                            </button>
+                            @else
+                            <span class="text-[#9CA3AF] text-[11px]">-</span>
                             @endif
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-10 text-center text-[#9CA3AF]">
-                            Belum ada pencairan
+                        <td colspan="8" class="px-4 py-10 text-center text-[#9CA3AF]">
+                            Belum ada permintaan pencairan
                         </td>
                     </tr>
                     @endforelse
@@ -489,18 +511,28 @@
 
                     <hr class="border-dashed border-[#E5E7EB]">
 
-                    <!-- Mission Dana Warning -->
-                    <div class="bg-[#FEF3C7] px-4 py-3 rounded-xl border border-[#FCD34D]">
-                        <p class="text-[10px] text-[#78716C] mb-1 font-semibold">⚠️ Mission Dana</p>
-                        <p class="text-[11px] text-[#92400E] font-medium">
-                            Dana ini adalah hak mitra dari hasil penjualan produknya
-                        </p>
+                    <!-- Total Breakdown -->
+                    <div class="bg-[#F9FAFB] px-4 py-3 rounded-xl space-y-2">
+                        <div class="flex justify-between text-[12px]">
+                            <span class="text-[#78716C]">Jumlah Pencairan:</span>
+                            <span class="font-semibold text-[#111827]" id="modal_amount">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-[12px]">
+                            <span class="text-[#78716C]">Biaya Admin:</span>
+                            <span class="font-semibold text-red-600" id="modal_admin_fee">Rp 0</span>
+                        </div>
+                        <hr class="border-dashed border-[#E5E7EB]">
+                        <div class="flex justify-between text-[14px]">
+                            <span class="font-bold text-[#111827]">Dana Transfer:</span>
+                            <span class="font-bold text-[#15803D]" id="modal_total_amount">Rp 0</span>
+                        </div>
                     </div>
 
-                    <!-- Total Transaksi -->
-                    <div class="bg-gradient-to-br from-[#15803D] to-[#166534] px-4 py-4 rounded-xl text-white">
-                        <p class="text-[10px] text-white/80 mb-1">TOTAL TRANSAKSI</p>
-                        <p class="text-[22px] font-bold" id="modal_total_amount">Rp 0</p>
+                    <div class="bg-[#FEF3C7] px-4 py-3 rounded-xl border border-[#FCD34D]">
+                        <p class="text-[10px] text-[#78716C] mb-1 font-semibold">⚠️ Perhatian</p>
+                        <p class="text-[11px] text-[#92400E] font-medium">
+                            Transfer sejumlah <strong id="modal_transfer_amount">Rp 0</strong> ke rekening mitra
+                        </p>
                     </div>
 
                     <!-- Tanggal Pencairan -->
@@ -516,22 +548,9 @@
                         <label class="text-[11px] font-semibold text-[#111827] mb-2 block">
                             Upload Bukti Pencairan <span class="text-red-500">*</span>
                         </label>
-                        <div id="upload_area" class="border-2 border-dashed border-[#D1D5DB] rounded-xl p-6 text-center hover:border-[#15803D] transition cursor-pointer" onclick="document.getElementById('withdrawal_proof').click()">
-                            <div class="w-12 h-12 bg-[#F3F4F6] rounded-full flex items-center justify-center mx-auto mb-2">
-                                <svg class="w-6 h-6 text-[#6B7280]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                </svg>
-                            </div>
-                            <p class="text-[11px] text-[#111827] font-medium mb-1">Klik Untuk Upload</p>
-                            <p class="text-[10px] text-[#78716C]">Atau tarik file kesini (Max 2MB)</p>
-                            <input type="file" id="withdrawal_proof" name="withdrawal_proof" accept="image/jpeg,image/png,image/jpg" class="hidden" required onchange="showFileName(this)">
-                        </div>
-                        <p id="file_name" class="text-[10px] text-[#15803D] mt-2 hidden flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <span></span>
-                        </p>
+                        <input type="file" id="withdrawal_proof" name="withdrawal_proof" accept="image/jpeg,image/png,image/jpg" required
+                               class="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl text-[12px] focus:ring-2 focus:ring-[#15803D] focus:border-transparent">
+                        <p class="text-[10px] text-[#78716C] mt-1">Format: JPG, PNG (Max 2MB)</p>
                     </div>
 
                     <!-- Admin Notes -->
@@ -653,29 +672,28 @@
         }
     }
 
-    // Open Withdrawal Modal
-    function openWithdrawalModal(id, amount) {
-        // Fetch withdrawal details
+    // Open Withdrawal Modal (UPDATED WITH ADMIN FEE)
+    function openWithdrawalModal(id) {
         fetch(`/admin/withdrawals/${id}/details`)
             .then(response => response.json())
             .then(data => {
-                // Populate modal fields
                 document.getElementById('modal_mitra_name').textContent = data.store_name;
                 document.getElementById('modal_withdrawal_number').textContent = '#WD-' + String(id).padStart(4, '0');
                 document.getElementById('modal_bank_name').textContent = data.bank_name || '-';
                 document.getElementById('modal_account_number').textContent = data.account_number || '-';
                 document.getElementById('modal_account_holder').textContent = data.account_holder || '-';
-                document.getElementById('modal_total_amount').textContent = 'Rp ' + amount.toLocaleString('id-ID');
                 
-                // Set tanggal pencairan (hari ini)
+                // NEW: Tampilkan breakdown biaya
+                document.getElementById('modal_amount').textContent = 'Rp ' + data.amount.toLocaleString('id-ID');
+                document.getElementById('modal_admin_fee').textContent = 'Rp ' + data.admin_fee.toLocaleString('id-ID');
+                document.getElementById('modal_total_amount').textContent = 'Rp ' + data.total_received.toLocaleString('id-ID');
+                document.getElementById('modal_transfer_amount').textContent = 'Rp ' + data.total_received.toLocaleString('id-ID');
+                
                 const today = new Date();
                 const options = { day: 'numeric', month: 'long', year: 'numeric' };
                 document.getElementById('modal_withdrawal_date').textContent = today.toLocaleDateString('id-ID', options);
 
-                // Set form action
                 document.getElementById('withdrawalForm').action = `/admin/withdrawals/${id}/process`;
-
-                // Show modal
                 document.getElementById('withdrawalModal').classList.remove('hidden');
                 document.body.style.overflow = 'hidden';
             })
@@ -689,40 +707,15 @@
     function closeWithdrawalModal() {
         document.getElementById('withdrawalModal').classList.add('hidden');
         document.getElementById('withdrawalForm').reset();
-        document.getElementById('file_name').classList.add('hidden');
-        document.getElementById('file_name').querySelector('span').textContent = '';
         document.body.style.overflow = 'auto';
-    }
-
-    // Show Selected File Name
-    function showFileName(input) {
-        const fileName = input.files[0]?.name;
-        const fileSize = input.files[0]?.size;
-        
-        if (fileName) {
-            // Check file size (max 2MB)
-            if (fileSize > 2 * 1024 * 1024) {
-                alert('Ukuran file maksimal 2MB!');
-                input.value = '';
-                return;
-            }
-            
-            document.getElementById('file_name').querySelector('span').textContent = 'File dipilih: ' + fileName;
-            document.getElementById('file_name').classList.remove('hidden');
-            
-            // Change upload area appearance
-            document.getElementById('upload_area').classList.add('border-[#15803D]', 'bg-[#F0FDF4]');
-        }
     }
 
     // Close modal when clicking outside
     document.getElementById('withdrawalModal')?.addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeWithdrawalModal();
-        }
+        if (e.target === this) closeWithdrawalModal();
     });
 
-    // Prevent form submission if file not selected
+    // Validate form before submit
     document.getElementById('withdrawalForm')?.addEventListener('submit', function(e) {
         const fileInput = document.getElementById('withdrawal_proof');
         if (!fileInput.files.length) {
