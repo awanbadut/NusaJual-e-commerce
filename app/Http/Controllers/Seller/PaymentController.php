@@ -34,7 +34,7 @@ class PaymentController extends Controller
             ->whereHas('order', function($q) use ($storeId) {
                 $q->where('store_id', $storeId);
             })
-            ->orderBy('disbursement_date', 'desc');
+            ->orderBy('updated_at', 'desc');
         
         // Filter by status
         if ($request->has('status') && $request->status) {
