@@ -113,13 +113,13 @@ class MitraController extends Controller
 
         // ✅ FIX 1: PENDING PAYMENTS - EXCLUDE CANCELLED ORDERS
         $pendingPayments = Payment::whereHas('order', function($q) use ($id) {
-                $q->where('store_id', $id)
-                  ->where('status', '!=', 'cancelled'); // EXCLUDE CANCELLED ORDERS
-            })
-            ->where('status', 'pending')
-            ->with(['order.user'])
-            ->latest()
-            ->paginate(5, ['*'], 'payments_page');
+        $q->where('store_id', $id)
+          ->where('status', '!=', 'cancelled'); // Exclude cancelled orders
+    })
+    ->where('status', 'paid') // ✅ GANTI DARI 'pending' KE 'paid'
+    ->with(['order.user', 'order.items.product'])
+    ->latest('paid_at')
+    ->paginate(5, ['*'], 'payments_page');
 
         // 5. Withdrawals - Hanya yang sudah di-request
         $withdrawals = $store->withdrawals()

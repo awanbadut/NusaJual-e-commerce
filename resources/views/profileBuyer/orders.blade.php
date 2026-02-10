@@ -59,30 +59,40 @@
                 </div>
 
                 @php
-                $badgeStyle = match($order->status) {
-                    'pending' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
-                    'processing', 'packing', 'shipped' => 'bg-blue-50 text-blue-700 border-blue-200',
-                    'completed' => 'bg-green-50 text-green-700 border-green-200',
-                    'cancelled' => 'bg-red-50 text-red-700 border-red-200',
-                    default => 'bg-gray-50 text-gray-600 border-gray-200'
-                };
-
-                if($order->payment_status == 'pending' && $order->status != 'cancelled') {
+                // ✅ FIXED: Badge logic berdasarkan payment->status
+                if ($order->status === 'cancelled') {
+                    $displayText = 'Dibatalkan';
+                    $badgeStyle = 'bg-red-50 text-red-700 border-red-200';
+                } elseif ($order->status === 'completed') {
+                    $displayText = 'Selesai';
+                    $badgeStyle = 'bg-green-50 text-green-700 border-green-200';
+                } elseif (!$order->payment || $order->payment->status === 'pending') {
+                    // Belum bayar
                     $displayText = 'Menunggu Pembayaran';
                     $badgeStyle = 'bg-orange-50 text-orange-700 border-orange-200';
-                } elseif ($order->payment_status == 'paid' && $order->status == 'pending') {
+                } elseif ($order->payment->status === 'paid') {
+                    // Sudah upload bukti, tunggu konfirmasi admin
                     $displayText = 'Menunggu Konfirmasi';
                     $badgeStyle = 'bg-blue-50 text-blue-700 border-blue-200';
-                } elseif ($order->status == 'shipped') {
-                    $displayText = 'Dalam Pengiriman';
-                } elseif ($order->status == 'processing') {
-                    $displayText = 'Diproses';
-                } elseif ($order->status == 'completed') {
-                    $displayText = 'Selesai';
-                } elseif ($order->status == 'cancelled') {
-                    $displayText = 'Dibatalkan';
+                } elseif ($order->payment->status === 'confirmed') {
+                    // Payment confirmed, cek order status
+                    if ($order->status === 'processing' || $order->status === 'packing') {
+                        $displayText = 'Diproses';
+                        $badgeStyle = 'bg-blue-50 text-blue-700 border-blue-200';
+                    } elseif ($order->status === 'shipped') {
+                        $displayText = 'Dalam Pengiriman';
+                        $badgeStyle = 'bg-purple-50 text-purple-700 border-purple-200';
+                    } else {
+                        $displayText = 'Dikonfirmasi';
+                        $badgeStyle = 'bg-green-50 text-green-700 border-green-200';
+                    }
+                } elseif ($order->payment->status === 'rejected') {
+                    $displayText = 'Pembayaran Ditolak';
+                    $badgeStyle = 'bg-red-50 text-red-700 border-red-200';
                 } else {
+                    // Default fallback
                     $displayText = ucfirst($order->status);
+                    $badgeStyle = 'bg-gray-50 text-gray-600 border-gray-200';
                 }
                 @endphp
 
@@ -132,52 +142,66 @@
                         <div class="absolute top-1/2 left-0 w-full h-1.5 bg-gray-200 -translate-y-1/2 rounded-full z-0"></div>
 
                         @php
-                        $width = match($order->status) {
-                            'pending' => '0%',
-                            'processing', 'packing' => '33%',
-                            'shipped' => '66%',
-                            'completed' => '100%',
-                            default => '0%'
-                        };
-
-                        if($order->payment_status == 'paid' && $order->status == 'pending') {
-                            $width = '33%';
+                        // ✅ FIXED: Width berdasarkan payment & order status
+                        $progressWidth = '0%';
+                        
+                        if ($order->status === 'completed') {
+                            $progressWidth = '100%';
+                        } elseif ($order->status === 'shipped') {
+                            $progressWidth = '66%';
+                        } elseif ($order->payment && $order->payment->status === 'confirmed') {
+                            $progressWidth = '33%';
+                        } elseif ($order->payment && $order->payment->status === 'paid') {
+                            $progressWidth = '16%'; // Sudah bayar tapi belum confirmed
+                        } else {
+                            $progressWidth = '0%'; // Belum bayar
                         }
                         @endphp
+                        
                         <div class="absolute top-1/2 left-0 h-1.5 bg-[#8B4513] -translate-y-1/2 rounded-full transition-all duration-1000 ease-out z-0"
-                            style="width: {{ $width }}"></div>
+                            style="width: {{ $progressWidth }}"></div>
 
                         <div class="relative z-10 flex justify-between w-full">
+                            <!-- Step 1: Belum Bayar -->
                             <div class="flex flex-col items-center gap-2">
                                 <div class="w-5 h-5 rounded-full border-4 border-white shadow-sm flex items-center justify-center 
-                    {{ in_array($order->status, ['pending', 'processing', 'packing', 'shipped', 'completed']) ? 'bg-[#8B4513]' : 'bg-gray-300' }}">
+                                    {{ $order->payment && $order->payment->status !== 'pending' ? 'bg-[#8B4513]' : 'bg-gray-300' }}">
                                 </div>
-                                <span class="text-[10px] sm:text-xs font-bold text-[#8B4513] text-center w-20">Belum Bayar</span>
+                                <span class="text-[10px] sm:text-xs font-bold text-center w-20 
+                                    {{ $order->payment && $order->payment->status !== 'pending' ? 'text-[#8B4513]' : 'text-gray-400' }}">
+                                    Belum Bayar
+                                </span>
                             </div>
 
+                            <!-- Step 2: Diproses -->
                             <div class="flex flex-col items-center gap-2">
                                 <div class="w-5 h-5 rounded-full border-4 border-white shadow-sm flex items-center justify-center
-                    {{ ($order->payment_status == 'paid' || in_array($order->status, ['processing', 'packing', 'shipped', 'completed'])) ? 'bg-[#8B4513]' : 'bg-gray-300' }}">
+                                    {{ $order->payment && $order->payment->status === 'confirmed' ? 'bg-[#8B4513]' : 'bg-gray-300' }}">
                                 </div>
-                                <span class="text-[10px] sm:text-xs font-bold {{ ($order->payment_status == 'paid' || in_array($order->status, ['processing', 'packing', 'shipped', 'completed'])) ? 'text-gray-700' : 'text-gray-400' }} text-center w-20">
+                                <span class="text-[10px] sm:text-xs font-bold text-center w-20
+                                    {{ $order->payment && $order->payment->status === 'confirmed' ? 'text-gray-700' : 'text-gray-400' }}">
                                     Diproses
                                 </span>
                             </div>
 
+                            <!-- Step 3: Dikirim -->
                             <div class="flex flex-col items-center gap-2">
                                 <div class="w-5 h-5 rounded-full border-4 border-white shadow-sm flex items-center justify-center
-                    {{ in_array($order->status, ['shipped', 'completed']) ? 'bg-[#8B4513]' : 'bg-gray-300' }}">
+                                    {{ in_array($order->status, ['shipped', 'completed']) ? 'bg-[#8B4513]' : 'bg-gray-300' }}">
                                 </div>
-                                <span class="text-[10px] sm:text-xs font-bold {{ in_array($order->status, ['shipped', 'completed']) ? 'text-gray-700' : 'text-gray-400' }} text-center w-20">
+                                <span class="text-[10px] sm:text-xs font-bold text-center w-20
+                                    {{ in_array($order->status, ['shipped', 'completed']) ? 'text-gray-700' : 'text-gray-400' }}">
                                     Dikirim
                                 </span>
                             </div>
 
+                            <!-- Step 4: Selesai -->
                             <div class="flex flex-col items-center gap-2">
                                 <div class="w-5 h-5 rounded-full border-4 border-white shadow-sm flex items-center justify-center
-                    {{ $order->status == 'completed' ? 'bg-[#8B4513]' : 'bg-gray-300' }}">
+                                    {{ $order->status == 'completed' ? 'bg-[#8B4513]' : 'bg-gray-300' }}">
                                 </div>
-                                <span class="text-[10px] sm:text-xs font-bold {{ $order->status == 'completed' ? 'text-gray-700' : 'text-gray-400' }} text-center w-20">
+                                <span class="text-[10px] sm:text-xs font-bold text-center w-20
+                                    {{ $order->status == 'completed' ? 'text-gray-700' : 'text-gray-400' }}">
                                     Selesai
                                 </span>
                             </div>
@@ -185,6 +209,7 @@
                     </div>
                 </div>
                 @else
+                <!-- Cancelled State -->
                 <div class="mb-6 p-4 bg-red-50 border border-red-100 rounded-lg">
                     <div class="flex items-center gap-3 text-red-700 mb-3">
                         <x-heroicon-s-x-circle class="w-6 h-6 shrink-0" />
@@ -288,7 +313,7 @@
 
                 <!-- Shipping & Payment Info -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Shipping Address -->
+                    <!-- ✅ SHIPPING ADDRESS WITH COURIER & TRACKING -->
                     <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm h-full flex flex-col">
                         <h4 class="font-bold text-[#2E3B27] text-sm flex items-center gap-2 border-b border-gray-100 pb-2 mb-3">
                             <x-heroicon-s-map-pin class="w-4 h-4 text-[#8B4513]" /> Alamat Pengiriman
@@ -300,6 +325,67 @@
                             <p class="italic text-gray-400 mt-2">"{{ $order->notes }}"</p>
                             @endif
                         </div>
+
+                        {{-- ✅ NEW: Shipping Info (Kurir & Resi) --}}
+                        @if($order->courier || $order->tracking_number)
+                        <div class="mt-4 pt-3 border-t border-gray-100 space-y-3">
+                            @if($order->courier)
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-[#8B4513] shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+                                    <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/>
+                                </svg>
+                                <div>
+                                    <p class="text-[10px] text-gray-500 font-medium">Kurir Pengiriman</p>
+                                    <p class="text-xs font-bold text-gray-800">{{ strtoupper($order->courier) }}</p>
+                                </div>
+                            </div>
+                            @endif
+
+                            @if($order->tracking_number)
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-[#8B4513] shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
+                                </svg>
+                                <div class="flex-1">
+                                    <p class="text-[10px] text-gray-500 font-medium">Nomor Resi</p>
+                                    <p class="text-xs font-bold text-gray-800 font-mono">{{ $order->tracking_number }}</p>
+                                </div>
+                                {{-- Copy Button --}}
+                                <button onclick="navigator.clipboard.writeText('{{ $order->tracking_number }}'); alert('✅ Resi disalin: {{ $order->tracking_number }}')"
+                                        class="px-2 py-1 bg-green-50 text-green-700 rounded text-[10px] font-bold hover:bg-green-100 transition">
+                                    Salin
+                                </button>
+                            </div>
+                            @endif
+
+                            {{-- ✅ Track Shipment Link (JNE, J&T, dll) --}}
+                            @php
+                                $trackingUrl = match(strtoupper($order->courier ?? '')) {
+                                    'JNE' => 'https://www.jne.co.id/id/tracking/trace',
+                                    'J&T', 'J&T EXPRESS', 'JNT' => 'https://www.jet.co.id/track',
+                                    'SICEPAT' => 'https://www.sicepat.com/checkAwb',
+                                    'TIKI' => 'https://www.tiki.id/id/track',
+                                    'ANTERAJA' => 'https://anteraja.id/tracking',
+                                    'NINJA', 'NINJA EXPRESS' => 'https://www.ninjaxpress.co/id-id/tracking',
+                                    'POS INDONESIA', 'POS' => 'https://www.posindonesia.co.id/id/tracking',
+                                    'LION PARCEL' => 'https://www.lionparcel.com/tracking',
+                                    default => null
+                                };
+                            @endphp
+
+                            @if($trackingUrl)
+                            <a href="{{ $trackingUrl }}" target="_blank"
+                               class="flex items-center justify-center gap-2 w-full py-2 rounded-md bg-[#0F4C20] text-white text-xs font-bold hover:bg-[#0b3a18] transition">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
+                                    <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
+                                </svg>
+                                Lacak Paket di {{ strtoupper($order->courier) }}
+                            </a>
+                            @endif
+                        </div>
+                        @endif
 
                         @if($order->payment && $order->payment->payment_proof)
                         <div class="mt-4 pt-3 border-t border-gray-100">
@@ -351,7 +437,7 @@
                     @php
                         $canCancel = $order->canBeCancelled();
                         $remainingMinutes = $order->getCancelTimeRemaining();
-                        $needsRefund = $order->payment_status === 'paid';
+                        $needsRefund = $order->payment && $order->payment->status === 'paid';
                     @endphp
 
                     @if($canCancel)
@@ -542,7 +628,7 @@
                     @endif
 
                     <!-- Pay Now Button -->
-                    @if($order->payment_status == 'pending' && $order->status != 'cancelled')
+                    @if((!$order->payment || $order->payment->status === 'pending') && $order->status != 'cancelled')
                     <a href="{{ route('payment.show', $order->id) }}"
                         class="px-5 py-2.5 rounded-lg bg-[#0F4C20] text-white text-sm font-bold hover:bg-[#0b3a18] shadow-md hover:shadow-lg transition flex items-center gap-2">
                         <x-heroicon-s-credit-card class="w-4 h-4" />

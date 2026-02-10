@@ -1,24 +1,15 @@
 <?php
 
 return [
-    /*
-    |--------------------------------------------------------------------------
-    | Withdrawal Fee Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Configure withdrawal fee settings
-    |
-    */
-
-    // Biaya admin tetap (fixed fee)
-    'admin_fee_fixed' => 5000, // Rp 5.000
-
-    // Biaya admin persentase (percentage)
-    'admin_fee_percentage' => 1, // 1%
-
-    // Minimal withdrawal amount
-    'minimum_amount' => 50000, // Rp 50.000
-
-    // Maksimal withdrawal per request
-    'maximum_amount' => 50000000, // Rp 50 juta
+    // ✅ BIAYA ADMIN FLAT
+    'admin_fee_flat' => 10000, // Rp 10.000 per withdrawal
+    
+    // Minimum withdrawal amount
+    'minimum_amount' => 50000, // Minimal Rp 50.000
+    
+    // Maximum withdrawal amount (optional, bisa null untuk unlimited)
+    'maximum_amount' => null,
+    
+    // Auto-approve small amounts (future feature)
+    'auto_approve_threshold' => null,
 ];

@@ -13,21 +13,22 @@ class PaymentController extends Controller
 {
     /**
      * 1. Menampilkan Halaman Pembayaran (GET)
-     * URL: /payment/{id}
      */
     public function show($id)
     {
-        // Cari Order berdasarkan ID dan User yang login
-        // Kita gunakan 'with('items')' agar bisa menghitung jumlah produk di sidebar
         $order = Order::with('items')
             ->where('id', $id)
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        // (Opsional) Jika status sudah paid/selesai, lempar ke halaman sukses
-        // Agar user tidak bayar dua kali
-        if ($order->payment_status == 'paid' || $order->status == 'completed') {
-            return redirect()->route('payment.success');
+        // ✅ FIX: Cek apakah order sudah cancelled
+        if ($order->status === 'cancelled') {
+            return redirect()->route('profile.orders')->with('error', 'Pesanan sudah dibatalkan.');
+        }
+
+        // Jika sudah bayar dan confirmed
+        if ($order->payment && $order->payment->status == 'confirmed') {
+            return redirect()->route('payment.success', $id);
         }
 
         return view('payment', compact('order'));
@@ -35,67 +36,62 @@ class PaymentController extends Controller
 
     /**
      * 2. Memproses Upload Bukti Bayar (POST)
-     * URL: /payment/{id}
      */
     public function process(Request $request, $id)
     {
-        // Validasi input gambar
         $request->validate([
-            'payment_proof' => 'required|image|mimes:jpeg,png,jpg,svg|max:2048', // Maks 2MB
+            'payment_proof' => 'required|image|mimes:jpeg,png,jpg,svg|max:2048',
         ]);
 
-        // Ambil data order
         $order = Order::where('id', $id)
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
+        // ✅ FIX: Cek apakah order sudah cancelled
+        if ($order->status === 'cancelled') {
+            return back()->with('error', 'Pesanan sudah dibatalkan. Tidak bisa upload bukti bayar.');
+        }
+
         if ($request->hasFile('payment_proof')) {
 
-            // A. Simpan file ke storage (folder public/payment-proofs)
             $path = $request->file('payment_proof')->store('payment-proofs', 'public');
 
-            // B. Simpan data ke tabel PAYMENTS
-            // Kita cek dulu apa user pernah upload sebelumnya (untuk update)
             $payment = Payment::where('order_id', $order->id)->first();
 
             if ($payment) {
-                // Jika re-upload (misal ditolak admin atau salah upload)
+                // Update existing payment
                 $payment->update([
                     'payment_proof' => $path,
-                    'status' => 'pending', // Reset status konfirmasi
+                    'status' => 'paid', // ✅ Status jadi 'paid' (menunggu konfirmasi admin)
                     'paid_at' => now(),
                 ]);
             } else {
-                // Buat data pembayaran baru
+                // Create new payment
                 Payment::create([
                     'order_id' => $order->id,
-                    'amount' => $order->total_amount, // Sesuai total tagihan
+                    'amount' => $order->total_amount,
                     'payment_proof' => $path,
-                    'status' => 'pending', // Menunggu konfirmasi admin
+                    'status' => 'paid', // ✅ Status 'paid' bukan 'pending'
                     'paid_at' => now(),
                 ]);
             }
 
-            // C. Update status di tabel ORDERS
-            // Ubah status pembayaran jadi 'paid' (atau 'waiting_verification')
+            // ✅ Update order status
             $order->update([
-                'payment_status' => 'paid',     // Anggap sudah bayar (menunggu verifikasi)
-                'status' => 'processing',       // Pesanan masuk tahap diproses
+                'status' => 'pending', // Order masih pending sampai payment confirmed
                 'payment_method' => 'manual_transfer'
             ]);
         }
 
-        // Redirect ke halaman sukses
         return redirect()->route('payment.success', $id);
     }
 
     /**
      * 3. Menampilkan Halaman Sukses
-     * URL: /payment/success
      */
     public function success($id)
     {
-        $order = Order::with(['items.product.category', 'payment']) // Saya tambah .category biar lengkap
+        $order = Order::with(['items.product.category', 'payment'])
             ->where('id', $id)
             ->where('user_id', Auth::id())
             ->firstOrFail();

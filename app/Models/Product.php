@@ -60,4 +60,26 @@ class Product extends Model
     {
         return $this->stock <= 0;
     }
+
+    // ✅ NEW: Stock management methods
+    public function hasStock($quantity = 1)
+    {
+        return $this->stock >= $quantity;
+    }
+
+    public function reduceStock($quantity)
+    {
+        if (!$this->hasStock($quantity)) {
+            throw new \Exception("Stok {$this->name} tidak mencukupi.");
+        }
+
+        $this->decrement('stock', $quantity);
+        return $this;
+    }
+
+    public function restoreStock($quantity)
+    {
+        $this->increment('stock', $quantity);
+        return $this;
+    }
 }

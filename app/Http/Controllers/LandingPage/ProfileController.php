@@ -191,11 +191,10 @@ class ProfileController extends Controller
 
         if ($status !== 'all') {
             if ($status == 'pending') {
-                $query->where('payment_status', 'pending')
+                $query->where('status', 'pending')
                     ->where('status', '!=', 'cancelled');
             } elseif ($status == 'processing') {
-                $query->whereIn('status', ['processing', 'shipped'])
-                    ->where('payment_status', 'paid');
+                $query->whereIn('status', ['processing', 'packing', 'shipped']);
             } else {
                 $query->where('status', $status);
             }
@@ -207,85 +206,125 @@ class ProfileController extends Controller
     }
 
     /**
-     * Cancel Order (Buyer) - WITH REFUND LOGIC
+     * ✅ FIXED: Cancel Order (Buyer) - WITH PAYMENT STATUS UPDATE
      */
     public function cancelOrder(Request $request, $id)
-    {
-        $order = Order::with('payment')
-            ->where('id', $id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
+{
+    $order = Order::with(['payment', 'items.product'])
+        ->where('id', $id)
+        ->where('user_id', Auth::id())
+        ->firstOrFail();
 
-        if (!$order->canBeCancelled()) {
-            return back()->with('error', 'Pesanan tidak dapat dibatalkan. Waktu pembatalan sudah habis atau pesanan sudah diproses.');
-        }
-
-        DB::beginTransaction();
-        try {
-            // Scenario 1: Belum bayar (payment_status = pending)
-            if ($order->payment_status === 'pending') {
-                $order->update([
-                    'status' => 'cancelled',
-                    'cancelled_at' => now(),
-                    'cancellation_reason' => $request->input('reason', 'Dibatalkan oleh pembeli'),
-                    'refund_status' => 'none'
-                ]);
-
-                DB::commit();
-                return back()->with('success', 'Pesanan berhasil dibatalkan.');
-            }
-
-            // Scenario 2: Sudah bayar - REFUND REQUIRED
-            if ($order->payment_status === 'paid') {
-                $validated = $request->validate([
-                    'bank_name' => 'required|string|max:100',
-                    'account_number' => 'required|string|max:50',
-                    'account_holder' => 'required|string|max:255',
-                    'reason' => 'nullable|string|max:500',
-                ]);
-
-                $orderAmount = $order->total_amount;
-                $adminFee = Refund::calculateAdminFee($orderAmount);
-                $refundAmount = Refund::calculateRefundAmount($orderAmount);
-
-                Refund::create([
-                    'order_id' => $order->id,
-                    'user_id' => Auth::id(),
-                    'order_amount' => $orderAmount,
-                    'admin_fee' => $adminFee,
-                    'refund_amount' => $refundAmount,
-                    'bank_name' => $validated['bank_name'],
-                    'account_number' => $validated['account_number'],
-                    'account_holder' => $validated['account_holder'],
-                    'status' => 'pending',
-                    'cancellation_reason' => $validated['reason'] ?? 'Dibatalkan oleh pembeli',
-                    'requested_at' => now(),
-                ]);
-
-                $order->update([
-                    'status' => 'cancelled',
-                    'cancelled_at' => now(),
-                    'cancellation_reason' => $validated['reason'] ?? 'Dibatalkan oleh pembeli',
-                    'refund_status' => 'pending',
-                    'refund_amount' => $refundAmount,
-                ]);
-
-                DB::commit();
-
-                return back()->with('success', 
-                    "Pesanan berhasil dibatalkan. Dana sebesar Rp " . number_format($refundAmount, 0, ',', '.') . 
-                    " akan dikembalikan ke rekening Anda setelah diproses admin (1-3 hari kerja)."
-                );
-            }
-
-            DB::rollBack();
-            return back()->with('error', 'Tidak dapat membatalkan pesanan.');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-        }
+    // Cek apakah order bisa dibatalkan
+    if (in_array($order->status, ['shipped', 'completed', 'cancelled'])) {
+        return back()->with('error', 'Pesanan tidak dapat dibatalkan karena sudah ' . $order->status);
     }
+
+    DB::beginTransaction();
+    try {
+        // ✅ SCENARIO 1: Belum bayar (payment belum ada atau status pending)
+        if (!$order->payment || $order->payment->status === 'pending') {
+            
+            // Update payment jadi rejected (jika ada)
+            if ($order->payment) {
+                $order->payment->update([
+                    'status' => 'rejected',
+                    'rejection_reason' => 'Order dibatalkan buyer: ' . ($request->input('reason', 'Dibatalkan oleh pembeli')),
+                    'rejected_at' => now()
+                ]);
+            }
+            
+            // Update order
+            $order->update([
+                'status' => 'cancelled',
+                'cancelled_at' => now(),
+                'cancelled_by' => Auth::id(),
+                'cancellation_reason' => $request->input('reason', 'Dibatalkan oleh pembeli'),
+                'refund_status' => 'none'
+            ]);
+
+            // ✅ RESTORE STOCK
+            foreach ($order->items as $item) {
+                $item->product->increment('stock', $item->quantity);
+            }
+
+            DB::commit();
+            return back()->with('success', 'Pesanan berhasil dibatalkan. Stok produk telah dikembalikan.');
+        }
+
+        // ✅ SCENARIO 2: Sudah bayar (payment_status = paid) - REFUND REQUIRED
+        if ($order->payment && $order->payment->status === 'paid') {
+            
+            $validated = $request->validate([
+                'bank_name' => 'required|string|max:100',
+                'account_number' => 'required|string|max:50',
+                'account_holder' => 'required|string|max:255',
+                'reason' => 'nullable|string|max:500',
+            ]);
+
+            $orderAmount = $order->total_amount;
+            $adminFee = Refund::calculateAdminFee($orderAmount);
+            $refundAmount = Refund::calculateRefundAmount($orderAmount);
+
+            // Create refund request
+            Refund::create([
+                'order_id' => $order->id,
+                'user_id' => Auth::id(),
+                'order_amount' => $orderAmount,
+                'admin_fee' => $adminFee,
+                'refund_amount' => $refundAmount,
+                'bank_name' => $validated['bank_name'],
+                'account_number' => $validated['account_number'],
+                'account_holder' => $validated['account_holder'],
+                'status' => 'pending',
+                'cancellation_reason' => $validated['reason'] ?? 'Dibatalkan oleh pembeli',
+                'requested_at' => now(),
+            ]);
+
+            // Update payment status
+            $order->payment->update([
+                'status' => 'rejected',
+                'rejection_reason' => 'Order dibatalkan buyer (refund pending): ' . ($validated['reason'] ?? 'Dibatalkan oleh pembeli'),
+                'rejected_at' => now()
+            ]);
+
+            // Update order
+            $order->update([
+                'status' => 'cancelled',
+                'cancelled_at' => now(),
+                'cancelled_by' => Auth::id(),
+                'cancellation_reason' => $validated['reason'] ?? 'Dibatalkan oleh pembeli',
+                'refund_status' => 'pending',
+                'refund_amount' => $refundAmount,
+            ]);
+
+            // ✅ RESTORE STOCK
+            foreach ($order->items as $item) {
+                $item->product->increment('stock', $item->quantity);
+            }
+
+            DB::commit();
+
+            return back()->with('success', 
+                "Pesanan berhasil dibatalkan. Stok produk telah dikembalikan. Dana sebesar Rp " . number_format($refundAmount, 0, ',', '.') . 
+                " akan dikembalikan ke rekening Anda setelah diproses admin (1-3 hari kerja)."
+            );
+        }
+
+        // ✅ SCENARIO 3: Payment confirmed - tidak bisa cancel manual
+        if ($order->payment && $order->payment->status === 'confirmed') {
+            DB::rollBack();
+            return back()->with('error', 'Pesanan sudah dikonfirmasi admin. Silakan hubungi admin untuk pembatalan.');
+        }
+
+        DB::rollBack();
+        return back()->with('error', 'Tidak dapat membatalkan pesanan.');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    }
+}
 
     public function completeOrder($id)
     {
@@ -293,7 +332,7 @@ class ProfileController extends Controller
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        if (!$order->canBeCompleted()) {
+        if ($order->status !== 'shipped') {
             return back()->with('error', 'Pesanan belum dapat diselesaikan. Pastikan pesanan sudah dikirim.');
         }
 

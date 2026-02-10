@@ -8,7 +8,7 @@
 <div class="max-w-7xl">
     <!-- Success/Error Messages -->
     @if(session('success'))
-    <div class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded">
+    <div class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-lg">
         <div class="flex items-center">
             <svg class="w-6 h-6 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
@@ -19,7 +19,7 @@
     @endif
 
     @if(session('error'))
-    <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded">
+    <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
         <div class="flex items-center">
             <svg class="w-6 h-6 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
@@ -28,6 +28,67 @@
         </div>
     </div>
     @endif
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-orange-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-gray-600 mb-1">Pending</p>
+                    <p class="text-2xl font-bold text-orange-600">{{ $stats['pending'] }}</p>
+                </div>
+                <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-yellow-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-gray-600 mb-1">Processing</p>
+                    <p class="text-2xl font-bold text-yellow-600">{{ $stats['processing'] }}</p>
+                </div>
+                <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3z"/>
+                        <path d="M16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-purple-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-gray-600 mb-1">Shipped</p>
+                    <p class="text-2xl font-bold text-purple-600">{{ $stats['shipped'] }}</p>
+                </div>
+                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+                        <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-green-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-gray-600 mb-1">Completed</p>
+                    <p class="text-2xl font-bold text-green-600">{{ $stats['completed'] }}</p>
+                </div>
+                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Search & Filter Bar -->
     <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
@@ -51,7 +112,7 @@
                 <option value="pending" {{ request('payment_status') == 'pending' ? 'selected' : '' }}>Menunggu Pembayaran</option>
                 <option value="paid" {{ request('payment_status') == 'paid' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
                 <option value="confirmed" {{ request('payment_status') == 'confirmed' ? 'selected' : '' }}>Terkonfirmasi</option>
-                <option value="failed" {{ request('payment_status') == 'failed' ? 'selected' : '' }}>Gagal</option>
+                <option value="rejected" {{ request('payment_status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
             </select>
 
             <!-- Filter Order Status -->
@@ -126,16 +187,21 @@
 
                         <!-- Payment Status -->
                         <td class="px-6 py-4 whitespace-nowrap">
-                            @if($order->payment_status == 'confirmed')
-                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-500 text-white">Terkonfirmasi</span>
-                            @elseif($order->payment_status == 'paid')
-                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-400 text-gray-900">Menunggu Konfirmasi</span>
-                            @elseif($order->payment_status == 'pending')
+                            @if($order->status == 'cancelled')
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-500 text-white">Dibatalkan</span>
+                            @elseif(!$order->payment)
                                 <span class="px-3 py-1 rounded-full text-xs font-semibold bg-orange-500 text-white">Pending</span>
+                            @elseif($order->payment->status == 'confirmed')
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-500 text-white">Terkonfirmasi</span>
+                            @elseif($order->payment->status == 'paid')
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-400 text-gray-900">Menunggu Konfirmasi</span>
+                            @elseif($order->payment->status == 'rejected')
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-600 text-white">Ditolak</span>
                             @else
-                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-600 text-white">Gagal</span>
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-orange-500 text-white">Pending</span>
                             @endif
                         </td>
+
 
                         <!-- Order Status -->
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -200,38 +266,7 @@
                     <span class="font-semibold text-gray-900">{{ $orders->total() }}</span> pesanan
                 </p>
                 
-                <div class="flex items-center gap-2">
-                    @if($orders->onFirstPage())
-                        <button disabled class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-400 cursor-not-allowed bg-gray-100">
-                            ← Previous
-                        </button>
-                    @else
-                        <a href="{{ $orders->previousPageUrl() }}" class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition">
-                            ← Previous
-                        </a>
-                    @endif
-
-                    <!-- Page Numbers -->
-                    <div class="hidden sm:flex items-center gap-1">
-                        @foreach(range(1, min(5, $orders->lastPage())) as $page)
-                            @if($page == $orders->currentPage())
-                                <span class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold">{{ $page }}</span>
-                            @else
-                                <a href="{{ $orders->url($page) }}" class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition">{{ $page }}</a>
-                            @endif
-                        @endforeach
-                    </div>
-
-                    @if($orders->hasMorePages())
-                        <a href="{{ $orders->nextPageUrl() }}" class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition">
-                            Next →
-                        </a>
-                    @else
-                        <button disabled class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-400 cursor-not-allowed bg-gray-100">
-                            Next →
-                        </button>
-                    @endif
-                </div>
+                {{ $orders->appends(request()->query())->links() }}
             </div>
         </div>
         @endif

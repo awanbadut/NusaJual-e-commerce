@@ -15,42 +15,46 @@ class Withdrawal extends Model
         'amount',
         'admin_fee',
         'total_received',
-        'withdrawal_proof',
         'notes',
         'admin_notes',
         'status',
         'requested_at',
         'processed_at',
+        'withdrawal_proof',
     ];
 
     protected $casts = [
-        'requested_at' => 'datetime',
-        'processed_at' => 'datetime',
         'amount' => 'decimal:2',
         'admin_fee' => 'decimal:2',
         'total_received' => 'decimal:2',
+        'requested_at' => 'datetime',
+        'processed_at' => 'datetime',
     ];
 
+    // ✅ BIAYA ADMIN FLAT RP 10.000
+    const ADMIN_FEE_FLAT = 10000;
+
     /**
-     * Calculate admin fee
+     * Calculate admin fee (FLAT Rp 10.000)
      */
     public static function calculateAdminFee($amount)
     {
-        $fixedFee = config('withdrawal.admin_fee_fixed', 5000);
-        $percentageFee = ($amount * config('withdrawal.admin_fee_percentage', 1)) / 100;
-        
-        // Total fee = fixed + percentage
-        return $fixedFee + $percentageFee;
+        return self::ADMIN_FEE_FLAT;
     }
 
     /**
-     * Calculate total received (amount - admin fee)
+     * Calculate total received by seller
      */
-    public static function calculateTotalReceived($amount, $adminFee)
+    public static function calculateTotalReceived($amount, $adminFee = null)
     {
+        if ($adminFee === null) {
+            $adminFee = self::calculateAdminFee($amount);
+        }
+        
         return $amount - $adminFee;
     }
 
+    // Relationships
     public function store()
     {
         return $this->belongsTo(Store::class);
@@ -59,5 +63,26 @@ class Withdrawal extends Model
     public function bankAccount()
     {
         return $this->belongsTo(BankAccount::class);
+    }
+
+    // Status helpers
+    public function isPending()
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isApproved()
+    {
+        return $this->status === 'approved';
+    }
+
+    public function isCompleted()
+    {
+        return $this->status === 'completed';
+    }
+
+    public function isRejected()
+    {
+        return $this->status === 'rejected';
     }
 }

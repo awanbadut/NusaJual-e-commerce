@@ -8,28 +8,39 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+    /**
+     * Display orders list
+     */
     public function index(Request $request)
     {
-        $storeId = auth()->user()->store->id;
+        $store = auth()->user()->store;
         
-        $query = Order::where('store_id', $storeId)
-            ->with(['user', 'items.product', 'payment'])
+        if (!$store) {
+            return redirect()->route('seller.dashboard')
+                ->with('error', 'Toko belum terdaftar');
+        }
+        
+        $query = Order::where('store_id', $store->id)
+            ->with(['user', 'items.product.images', 'payment'])
             ->orderBy('created_at', 'desc');
 
-        // Search
+        // Search by order number or customer name/email
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('order_number', 'like', '%' . $request->search . '%')
-                  ->orWhereHas('user', function($q2) use ($request) {
-                      $q2->where('name', 'like', '%' . $request->search . '%')
-                         ->orWhere('email', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('order_number', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($q2) use ($search) {
+                      $q2->where('name', 'like', "%{$search}%")
+                         ->orWhere('email', 'like', "%{$search}%");
                   });
             });
         }
 
         // Filter by payment status
         if ($request->filled('payment_status')) {
-            $query->where('payment_status', $request->payment_status);
+            $query->whereHas('payment', function($q) use ($request) {
+                $q->where('status', $request->payment_status);
+            });
         }
 
         // Filter by order status
@@ -37,61 +48,111 @@ class OrderController extends Controller
             $query->where('status', $request->status);
         }
 
-        $orders = $query->paginate(10)->withQueryString();
+        $orders = $query->paginate(15)->withQueryString();
 
-        return view('seller.orders.index', compact('orders'));
+        // Get statistics for quick view
+        $stats = [
+            'pending' => Order::where('store_id', $store->id)->where('status', 'pending')->count(),
+            'processing' => Order::where('store_id', $store->id)->whereIn('status', ['processing', 'packing'])->count(),
+            'shipped' => Order::where('store_id', $store->id)->where('status', 'shipped')->count(),
+            'completed' => Order::where('store_id', $store->id)->where('status', 'completed')->count(),
+        ];
+
+        return view('seller.orders.index', compact('orders', 'stats'));
     }
 
+    /**
+     * Show order details
+     */
     public function show($id)
     {
-        $storeId = auth()->user()->store->id;
+        $store = auth()->user()->store;
         
-        $order = Order::where('store_id', $storeId)
-            ->with(['user', 'items.product', 'store', 'payment'])
+        $order = Order::where('store_id', $store->id)
+            ->with(['user', 'items.product.images', 'store', 'payment.confirmedBy'])
             ->findOrFail($id);
 
         return view('seller.orders.show', compact('order'));
     }
 
     /**
-     * Update order status (HANYA jika payment sudah confirmed)
+     * Update order status
      */
-    public function updateStatus(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|in:processing,packing,shipped,completed,cancelled',
-            'tracking_number' => 'required_if:status,shipped|nullable|string|max:100',
-            'courier' => 'required_if:status,shipped|nullable|string|max:50'
-        ], [
-            'tracking_number.required_if' => 'Nomor resi wajib diisi saat status Shipped',
-            'courier.required_if' => 'Kurir wajib dipilih saat status Shipped'
-        ]);
+    /**
+ * Update order status
+ */
+public function updateStatus(Request $request, $id)
+{
+    $request->validate([
+        'status' => 'required|in:processing,packing,shipped,completed,cancelled',
+        'tracking_number' => 'required_if:status,shipped|nullable|string|max:100',
+        'cancellation_reason' => 'required_if:status,cancelled|nullable|string|max:500'
+    ], [
+        'tracking_number.required_if' => 'Nomor resi wajib diisi saat status Shipped',
+        'cancellation_reason.required_if' => 'Alasan pembatalan wajib diisi'
+    ]);
 
-        $order = Order::where('store_id', auth()->user()->store->id)->findOrFail($id);
-        
-        // Validasi: Pembayaran harus sudah confirmed
-        if ($order->payment_status !== 'confirmed' && $request->status !== 'cancelled') {
-            return back()->with('error', 'Pembayaran belum dikonfirmasi admin! Anda belum bisa update status pesanan.');
+    $store = auth()->user()->store;
+    $order = Order::with('items.product')->where('store_id', $store->id)->findOrFail($id);
+    
+    // Validasi pembayaran harus confirmed (kecuali cancel)
+    if ($request->status !== 'cancelled') {
+        if (!$order->payment || $order->payment->status !== 'confirmed') {
+            return back()->with('error', 'Pembayaran belum dikonfirmasi admin! Anda belum bisa mengubah status pesanan.');
         }
-        
-        $updateData = [
-            'status' => $request->status,
-        ];
-        
-        // Jika status shipped, simpan resi & kurir
-        if ($request->status === 'shipped') {
-            $updateData['tracking_number'] = $request->tracking_number;
-            $updateData['courier'] = $request->courier;
-            $updateData['shipped_at'] = now();
-        }
-        
-        // Jika completed, set delivered_at
-        if ($request->status === 'completed') {
-            $updateData['delivered_at'] = now();
-        }
-        
-        $order->update($updateData);
-
-        return back()->with('success', 'Status pesanan berhasil diupdate!');
     }
+    
+    // Prevent update if already completed or cancelled
+    if (in_array($order->status, ['completed', 'cancelled'])) {
+        return back()->with('error', 'Status pesanan tidak bisa diubah karena sudah ' . ($order->status == 'completed' ? 'selesai' : 'dibatalkan'));
+    }
+    
+    $updateData = [
+        'status' => $request->status,
+    ];
+    
+    // Handle different status
+    switch ($request->status) {
+        case 'shipped':
+            // ✅ COURIER SUDAH ADA DI ORDER, TIDAK PERLU INPUT LAGI
+            $updateData['tracking_number'] = $request->tracking_number;
+            $updateData['shipped_at'] = now();
+            break;
+            
+        case 'completed':
+            $updateData['delivered_at'] = now();
+            break;
+            
+        case 'cancelled':
+            $updateData['cancellation_reason'] = $request->cancellation_reason;
+            $updateData['cancelled_at'] = now();
+            $updateData['cancelled_by'] = auth()->id();
+            
+            // Update payment status to 'rejected'
+            if ($order->payment) {
+                $order->payment->update([
+                    'status' => 'rejected',
+                    'rejection_reason' => 'Order dibatalkan seller: ' . $request->cancellation_reason,
+                    'rejected_at' => now(),
+                    'rejected_by' => auth()->id()
+                ]);
+            }
+            
+            // RESTORE STOCK when cancelled
+            foreach ($order->items as $item) {
+                $item->product->increment('stock', $item->quantity);
+            }
+            break;
+    }
+    
+    $order->update($updateData);
+
+    $successMessage = 'Status pesanan berhasil diupdate!';
+    if ($request->status === 'cancelled') {
+        $successMessage .= ' Stok produk telah dikembalikan.';
+    }
+
+    return back()->with('success', $successMessage);
+}
+
 }
