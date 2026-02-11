@@ -4,72 +4,46 @@ namespace App\Http\Controllers\LandingPage;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
 
 class LocationController extends Controller
 {
     private function fetchApi($endpoint, $params = [])
     {
-        $baseUrl = env('API_CO_ID_BASE_URL');
-        $apiKey = env('API_CO_ID_KEY');
-        $url = $baseUrl . $endpoint;
-        
-        $cacheKey = 'location_' . md5($endpoint . json_encode($params));
-        
-        return Cache::remember($cacheKey, 86400, function () use ($url, $apiKey, $params) {
-            try {
-                $response = Http::withHeaders([
-                    'x-api-co-id' => $apiKey,
-                    'Accept' => 'application/json'
-                ])->timeout(15)->get($url, $params);
+        $url = env('API_CO_ID_BASE_URL') . $endpoint;
 
-                if ($response->failed()) {
-                    \Log::error('Location API Error', [
-                        'Status' => $response->status(),
-                        'URL' => $url,
-                        'Body' => $response->body()
-                    ]);
-                    return [];
-                }
+        $response = Http::withHeaders([
+            'x-api-co-id' => env('API_CO_ID_KEY')
+        ])->get($url, $params);
 
-                $data = $response->json();
-                return $data['data'] ?? [];
-                
-            } catch (\Exception $e) {
-                \Log::error('Location API Exception', [
-                    'Message' => $e->getMessage(),
-                    'URL' => $url
-                ]);
-                return [];
-            }
-        });
+        // --- DEBUGGING ERROR ---
+        if ($response->failed()) {
+            // Tampilkan Status Code & Isi Pesan Errornya
+            dd([
+                'Status' => $response->status(),
+                'URL' => $url,
+                'Body' => $response->body() // Ini akan menampilkan pesan error asli dari server
+            ]);
+        }
+
+        return $response->json()['data'] ?? [];
     }
-    
     public function getProvinces()
     {
-        // Endpoint: /regional/indonesia/provinces
-        $data = $this->fetchApi('/regional/indonesia/provinces');
-        return response()->json($data);
+        return $this->fetchApi('/provinces');
     }
 
     public function getCities($provinceCode)
     {
-        // Endpoint: /regional/indonesia/provinces/{code}/regencies
-        $data = $this->fetchApi("/regional/indonesia/provinces/{$provinceCode}/regencies");
-        return response()->json($data);
+        return $this->fetchApi('/regencies', ['province_code' => $provinceCode]);
     }
 
     public function getDistricts($cityCode)
     {
-        // Endpoint: /regional/indonesia/regencies/{code}/districts
-        $data = $this->fetchApi("/regional/indonesia/regencies/{$cityCode}/districts");
-        return response()->json($data);
+        return $this->fetchApi('/districts', ['regency_code' => $cityCode]);
     }
 
     public function getVillages($districtCode)
     {
-        // Endpoint: /regional/indonesia/districts/{code}/villages
-        $data = $this->fetchApi("/regional/indonesia/districts/{$districtCode}/villages");
-        return response()->json($data);
+        return $this->fetchApi('/villages', ['district_code' => $districtCode]);
     }
 }

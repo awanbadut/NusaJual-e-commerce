@@ -9,227 +9,232 @@
 
     @if(session('success'))
     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-6 flex items-center gap-3">
-        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-        </svg>
+        <x-heroicon-s-check-circle class="w-5 h-5" />
         {{ session('success') }}
     </div>
     @endif
 
-    <!-- Date Filter & Export -->
     <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-        <form method="GET" class="flex items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <input 
-                    type="date" 
-                    name="start_date" 
-                    value="{{ request('start_date', $startDate->format('Y-m-d')) }}"
-                    class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600">
-                
+        <form method="GET" class="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <div class="relative flex-1 md:flex-none">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    </div>
+                    <input type="date" name="start_date"
+                        value="{{ request('start_date', $startDate->format('Y-m-d')) }}"
+                        class="pl-10 px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600 w-full">
+                </div>
+
                 <span class="text-gray-500">-</span>
-                
-                <input 
-                    type="date" 
-                    name="end_date" 
-                    value="{{ request('end_date', $endDate->format('Y-m-d')) }}"
-                    class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600">
-                
-                <button type="submit" class="px-4 py-2.5 bg-green-800 text-white rounded-lg hover:bg-green-900 transition text-sm font-medium">
+
+                <div class="relative flex-1 md:flex-none">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+
+                    </div>
+                    <input type="date" name="end_date" value="{{ request('end_date', $endDate->format('Y-m-d')) }}"
+                        class="pl-10 px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600 w-full">
+                </div>
+
+                <button type="submit"
+                    class="px-6 py-2.5 bg-[#15803D] text-white rounded-lg hover:bg-[#166534] transition text-sm font-semibold shadow-sm">
                     Filter
                 </button>
 
                 @if(request('start_date') || request('end_date'))
-                <a href="{{ route('seller.sales.index') }}" class="px-4 py-2.5 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition text-sm font-medium">
+                <a href="{{ route('seller.sales.index') }}"
+                    class="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-semibold text-center">
                     Reset
                 </a>
                 @endif
             </div>
 
-            <a href="{{ route('seller.sales.export', request()->query()) }}" class="px-4 py-2.5 bg-green-800 text-white rounded-lg hover:bg-green-900 transition text-sm font-medium flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
+            <a href="{{ route('seller.sales.export', request()->query()) }}"
+                class="w-full md:w-auto px-6 py-2.5 bg-green-800 text-white rounded-lg hover:bg-green-900 transition text-sm font-semibold flex items-center justify-center gap-2 shadow-sm">
+                <x-heroicon-o-arrow-down-tray class="w-5 h-5" />
                 Download CSV
             </a>
         </form>
     </div>
 
-    <!-- Statistics Cards -->
-    <div class="grid grid-cols-3 gap-4 mb-6">
-        <!-- Total Revenue -->
-        <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-blue-500">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
             <div class="flex items-center justify-between mb-2">
                 <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span class="text-sm font-semibold text-gray-700">Total Pendapatan</span>
+                    <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
+                        <x-heroicon-o-currency-dollar class="w-5 h-5" />
+                    </div>
+                    <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Pendapatan</span>
                 </div>
-                <span class="text-xs font-semibold {{ $revenueChange >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                <span
+                    class="text-xs font-bold {{ $revenueChange >= 0 ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50' }} px-2 py-1 rounded-full">
                     {{ $revenueChange >= 0 ? '+' : '' }}{{ number_format($revenueChange, 1) }}%
                 </span>
             </div>
-            <p class="text-2xl font-bold text-gray-900">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</p>
+            <p class="text-2xl font-bold text-gray-900 mt-2">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</p>
             <p class="text-xs text-gray-500 mt-1">vs periode sebelumnya</p>
         </div>
 
-        <!-- Total Orders -->
-        <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-green-500">
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
             <div class="flex items-center justify-between mb-2">
                 <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                    </svg>
-                    <span class="text-sm font-semibold text-gray-700">Total Pesanan</span>
+                    <div class="p-2 bg-green-50 rounded-lg text-green-600">
+                        <x-heroicon-o-shopping-bag class="w-5 h-5" />
+                    </div>
+                    <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Pesanan</span>
                 </div>
-                <span class="text-xs font-semibold {{ $ordersChange >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                <span
+                    class="text-xs font-bold {{ $ordersChange >= 0 ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50' }} px-2 py-1 rounded-full">
                     {{ $ordersChange >= 0 ? '+' : '' }}{{ number_format($ordersChange, 1) }}%
                 </span>
             </div>
-            <p class="text-2xl font-bold text-gray-900">{{ number_format($totalOrders) }}</p>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ number_format($totalOrders) }}</p>
             <p class="text-xs text-gray-500 mt-1">vs periode sebelumnya</p>
         </div>
 
-        <!-- Average Order Value -->
-        <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-yellow-500">
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
             <div class="flex items-center justify-between mb-2">
                 <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </svg>
-                    <span class="text-sm font-semibold text-gray-700">Rata-Rata Order</span>
+                    <div class="p-2 bg-yellow-50 rounded-lg text-yellow-600">
+                        <x-heroicon-o-chart-bar class="w-5 h-5" />
+                    </div>
+                    <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Rata-Rata Order</span>
                 </div>
-                <span class="text-xs font-semibold {{ $avgChange >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                <span
+                    class="text-xs font-bold {{ $avgChange >= 0 ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50' }} px-2 py-1 rounded-full">
                     {{ $avgChange >= 0 ? '+' : '' }}{{ number_format($avgChange, 1) }}%
                 </span>
             </div>
-            <p class="text-2xl font-bold text-gray-900">Rp {{ number_format($avgOrderValue, 0, ',', '.') }}</p>
+            <p class="text-2xl font-bold text-gray-900 mt-2">Rp {{ number_format($avgOrderValue, 0, ',', '.') }}</p>
             <p class="text-xs text-gray-500 mt-1">vs periode sebelumnya</p>
         </div>
     </div>
 
-    <!-- Sales Chart -->
-    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-lg font-bold text-gray-900">Sales Trend (7 Hari Terakhir)</h3>
         </div>
-        
-        <!-- Chart -->
+
         <div class="h-64">
             <canvas id="salesChart"></canvas>
         </div>
     </div>
 
-    <!-- Search & Filter -->
     <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-        <form method="GET" class="flex items-center gap-4">
-            <!-- Preserve date filters -->
+        <form method="GET" class="flex flex-col md:flex-row items-center gap-4">
             <input type="hidden" name="start_date" value="{{ request('start_date', $startDate->format('Y-m-d')) }}">
             <input type="hidden" name="end_date" value="{{ request('end_date', $endDate->format('Y-m-d')) }}">
 
-            <!-- Search -->
-            <div class="flex-1 relative">
-                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                <input 
-                    type="text" 
-                    name="search"
-                    value="{{ request('search') }}"
+            <div class="flex-1 relative w-full">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <x-heroicon-o-magnifying-glass class="text-gray-400 w-5 h-5" />
+                </div>
+                <input type="text" name="search" value="{{ request('search') }}"
                     placeholder="Cari nomor order atau nama customer..."
                     class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm">
             </div>
 
-            <!-- Sort -->
-            <select name="sort" class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600" onchange="this.form.submit()">
-                <option value="">Urutkan Berdasarkan</option>
-                <option value="date_desc" {{ request('sort') == 'date_desc' ? 'selected' : '' }}>Tanggal Terbaru</option>
-                <option value="date_asc" {{ request('sort') == 'date_asc' ? 'selected' : '' }}>Tanggal Terlama</option>
-                <option value="total_desc" {{ request('sort') == 'total_desc' ? 'selected' : '' }}>Total Tertinggi</option>
-                <option value="total_asc" {{ request('sort') == 'total_asc' ? 'selected' : '' }}>Total Terendah</option>
-            </select>
+            <div class="relative w-full md:w-auto">
+                <select name="sort"
+                    class="w-full md:w-auto px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none pr-10 cursor-pointer"
+                    onchange="this.form.submit()">
+                    <option value="">Urutkan Berdasarkan</option>
+                    <option value="date_desc" {{ request('sort')=='date_desc' ? 'selected' : '' }}>Tanggal Terbaru
+                    </option>
+                    <option value="date_asc" {{ request('sort')=='date_asc' ? 'selected' : '' }}>Tanggal Terlama
+                    </option>
+                    <option value="total_desc" {{ request('sort')=='total_desc' ? 'selected' : '' }}>Total Tertinggi
+                    </option>
+                    <option value="total_asc" {{ request('sort')=='total_asc' ? 'selected' : '' }}>Total Terendah
+                    </option>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <x-heroicon-m-chevron-down class="w-5 h-5 text-gray-400" />
+                </div>
+            </div>
 
-            <button type="submit" class="px-4 py-2.5 bg-green-800 text-white rounded-lg hover:bg-green-900 transition text-sm font-medium">
+            <button type="submit"
+                class="w-full md:w-auto px-6 py-2.5 bg-[#15803D] text-white rounded-lg hover:bg-[#166534] transition text-sm font-semibold shadow-sm">
                 Cari
             </button>
         </form>
     </div>
 
-    <!-- Sales Table -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
         <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-green-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nomor Order</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Pelanggan</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tanggal</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Produk</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Total Belanja</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Aksi</th>
+            <table class="w-full text-[13px]">
+                <thead class="bg-[#DCFCE7] border-t border-b border-[#BBF7D0]">
+                    <tr class="text-left">
+                        <th class="px-5 py-4 font-semibold text-[#15803D]">Nomor Order</th>
+                        <th class="px-5 py-4 font-semibold text-[#15803D]">Pelanggan</th>
+                        <th class="px-5 py-4 font-semibold text-[#15803D]">Tanggal</th>
+                        <th class="px-5 py-4 font-semibold text-[#15803D]">Produk</th>
+                        <th class="px-5 py-4 font-semibold text-[#15803D]">Total Belanja</th>
+                        <th class="px-5 py-4 font-semibold text-[#15803D] text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
+                <tbody class="divide-y divide-gray-200 bg-white">
                     @forelse($sales as $order)
-                    <tr class="hover:bg-gray-50">
-                        <!-- Order Number -->
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">
+                    <tr class="hover:bg-[#F9FDF7] transition">
+                        <td class="px-5 py-4 whitespace-nowrap text-sm font-mono font-bold text-gray-900">
                             {{ $order->order_number }}
                         </td>
 
-                        <!-- Customer -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">{{ $order->user->name }}</p>
-                                <p class="text-xs text-gray-500">{{ $order->user->email }}</p>
+                        <td class="px-5 py-4 whitespace-nowrap">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-xs shrink-0"
+                                    style="background-color: {{ '#' . substr(md5($order->user->name), 0, 6) }}">
+                                    {{ strtoupper(substr($order->user->name, 0, 2)) }}
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">{{ $order->user->name }}</p>
+                                    <p class="text-[11px] text-gray-500">{{ Str::limit($order->user->email, 20) }}</p>
+                                </div>
                             </div>
                         </td>
 
-                        <!-- Date -->
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        <td class="px-5 py-4 whitespace-nowrap text-[13px] text-gray-700">
                             {{ $order->created_at->format('d/m/Y') }}<br>
-                            <span class="text-xs text-gray-500">{{ $order->created_at->format('H:i') }}</span>
+                            <span class="text-[11px] text-gray-500">{{ $order->created_at->format('H:i') }} WIB</span>
                         </td>
 
-                        <!-- Products -->
-                        <td class="px-6 py-4">
+                        <td class="px-5 py-4">
                             <div class="space-y-1">
                                 @foreach($order->items->take(2) as $item)
                                 <div>
-                                    <p class="text-sm font-medium text-gray-900">{{ $item->product->name }}</p>
-                                    <p class="text-xs text-gray-500">{{ $item->quantity }} x Rp {{ number_format($item->price, 0, ',', '.') }}</p>
+                                    <p class="text-[13px] font-medium text-gray-900 line-clamp-1">{{
+                                        $item->product->name }}</p>
+                                    <p class="text-[11px] text-gray-500">{{ $item->quantity }} x Rp {{
+                                        number_format($item->price, 0, ',', '.') }}</p>
                                 </div>
                                 @endforeach
                                 @if($order->items->count() > 2)
-                                <p class="text-xs text-green-600 font-semibold">+{{ $order->items->count() - 2 }} produk lainnya</p>
+                                <p class="text-[11px] text-green-600 font-semibold">+{{ $order->items->count() - 2 }}
+                                    produk lainnya</p>
                                 @endif
                             </div>
                         </td>
 
-                        <!-- Total -->
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
+                        <td class="px-5 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
                             Rp {{ number_format($order->total_amount, 0, ',', '.') }}
                         </td>
 
-                        <!-- Action -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('seller.orders.show', $order->id) }}" 
-                               class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-600 hover:bg-green-700 transition"
-                               title="Lihat Detail">
-                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
+                        <td class="px-5 py-4 whitespace-nowrap text-center">
+                            <a href="{{ route('seller.orders.show', $order->id) }}"
+                                class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#15803D] hover:bg-[#166534] transition text-white shadow-sm"
+                                title="Lihat Detail">
+                                <x-heroicon-s-eye class="w-4 h-4" />
                             </a>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-12 text-center text-sm text-gray-500">
-                            <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            <p>Belum ada data penjualan untuk periode ini</p>
+                        <td colspan="6" class="px-6 py-12 text-center">
+                            <div class="flex flex-col items-center justify-center">
+                                <x-heroicon-o-clipboard-document-list class="w-12 h-12 text-gray-300 mb-3" />
+                                <p class="text-sm font-medium text-gray-900">Belum ada data penjualan</p>
+                                <p class="text-xs text-gray-500 mt-1">Data penjualan yang selesai akan muncul di sini
+                                </p>
+                            </div>
                         </td>
                     </tr>
                     @endforelse
@@ -237,16 +242,15 @@
             </table>
         </div>
 
-        <!-- Pagination -->
         @if($sales->hasPages())
-        <div class="px-6 py-4 border-t border-gray-200">
-            <div class="flex items-center justify-between">
-                <p class="text-sm text-gray-600">
-                    Menampilkan <span class="font-medium">{{ $sales->firstItem() }}</span> sampai 
-                    <span class="font-medium">{{ $sales->lastItem() }}</span> dari 
-                    <span class="font-medium">{{ $sales->total() }}</span> data
+        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-[13px] text-gray-600">
+                    Menampilkan <span class="font-medium text-gray-900">{{ $sales->firstItem() }}</span> sampai
+                    <span class="font-medium text-gray-900">{{ $sales->lastItem() }}</span> dari
+                    <span class="font-medium text-gray-900">{{ $sales->total() }}</span> data
                 </p>
-                
+
                 {{ $sales->appends(request()->query())->links() }}
             </div>
         </div>
@@ -258,7 +262,7 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Sales Chart
+    // Sales Chart
 const ctx = document.getElementById('salesChart').getContext('2d');
 const salesChart = new Chart(ctx, {
     type: 'bar',

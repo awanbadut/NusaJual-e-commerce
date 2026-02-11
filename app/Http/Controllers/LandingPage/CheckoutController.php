@@ -39,7 +39,8 @@ class CheckoutController extends Controller
         // ✅ FIX: Validasi stok sebelum checkout
         foreach ($cartItems as $item) {
             if ($item->product->stock < $item->quantity) {
-                return redirect()->route('keranjang')->with('error', 
+                return redirect()->route('keranjang')->with(
+                    'error',
                     "Stok {$item->product->name} tidak mencukupi. Stok tersedia: {$item->product->stock}"
                 );
             }
@@ -117,96 +118,96 @@ class CheckoutController extends Controller
 
     // 2. Memproses Simpan Order
     public function store(Request $request)
-{
-    $request->validate([
-        'selected_items' => 'required|string',
-        'shipping_cost' => 'required|numeric',
-        'shipping_courier' => 'required|string',
-        'address_id' => 'required|exists:addresses,id',
-        'notes' => 'nullable|string|max:500', // ✅ TAMBAHKAN VALIDASI NOTES
-    ]);
-
-    $selectedItemIds = explode(',', $request->selected_items);
-    $cartItems = Cart::with('product')->whereIn('id', $selectedItemIds)->get();
-
-    if ($cartItems->isEmpty()) {
-        return back()->with('error', 'Terjadi kesalahan, item tidak ditemukan.');
-    }
-
-    // ✅ Validasi stok lagi sebelum create order
-    foreach ($cartItems as $item) {
-        if ($item->product->stock < $item->quantity) {
-            return back()->with('error', 
-                "Stok {$item->product->name} tidak mencukupi. Stok tersedia: {$item->product->stock}"
-            );
-        }
-    }
-
-    $shippingAddress = Address::find($request->address_id);
-
-    $fullAddressString = $shippingAddress->detail_address . ', ' .
-        $shippingAddress->village_name . ', ' .
-        $shippingAddress->district_name . ', ' .
-        $shippingAddress->city_name . ', ' .
-        $shippingAddress->province_name . ' ' .
-        $shippingAddress->postal_code;
-
-    $storeId = $cartItems->first()->product->store_id;
-    $subtotal = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
-    $totalPrice = $subtotal + $request->shipping_cost;
-
-    try {
-        DB::beginTransaction();
-
-        // Generate Order Number
-        $today = now()->format('Ymd');
-        $orderCountToday = Order::whereDate('created_at', now()->today())->count();
-        $nextSequence = $orderCountToday + 1;
-        $newOrderNumber = 'NB-' . $today . '-' . str_pad($nextSequence, 4, '0', STR_PAD_LEFT);
-
-        // ✅ FIX: Buat Order - SIMPAN COURIER DI KOLOM courier
-        $order = Order::create([
-            'user_id' => Auth::id(),
-            'store_id' => $storeId,
-            'order_number' => $newOrderNumber,
-            'total_amount' => $totalPrice,
-            'sub_total' => $subtotal,
-            'shipping_cost' => $request->shipping_cost,
-            'courier' => $request->shipping_courier, // ✅ SAVE COURIER
-            'status' => 'pending',
-            'payment_status' => 'pending',
-            'recipient_name' => $shippingAddress->receiver_name,
-            'recipient_phone' => $shippingAddress->phone,
-            'shipping_address' => $fullAddressString,
-            'notes' => $request->notes, // ✅ NOTES SEKARANG OPTIONAL
+    {
+        $request->validate([
+            'selected_items' => 'required|string',
+            'shipping_cost' => 'required|numeric',
+            'shipping_courier' => 'required|string',
+            'address_id' => 'required|exists:addresses,id',
+            'notes' => 'nullable|string|max:500', // ✅ TAMBAHKAN VALIDASI NOTES
         ]);
 
-        // Simpan order items & KURANGI STOK
-        foreach ($cartItems as $item) {
-            // Create order item
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $item->product_id,
-                'quantity' => $item->quantity,
-                'price' => $item->product->price,
-                'total' => $item->quantity * $item->product->price,
-            ]);
+        $selectedItemIds = explode(',', $request->selected_items);
+        $cartItems = Cart::with('product')->whereIn('id', $selectedItemIds)->get();
 
-            // KURANGI STOK PRODUK
-            $product = Product::find($item->product_id);
-            $product->decrement('stock', $item->quantity);
+        if ($cartItems->isEmpty()) {
+            return back()->with('error', 'Terjadi kesalahan, item tidak ditemukan.');
         }
 
-        // Hapus dari cart
-        Cart::whereIn('id', $selectedItemIds)->delete();
+        // ✅ Validasi stok lagi sebelum create order
+        foreach ($cartItems as $item) {
+            if ($item->product->stock < $item->quantity) {
+                return back()->with(
+                    'error',
+                    "Stok {$item->product->name} tidak mencukupi. Stok tersedia: {$item->product->stock}"
+                );
+            }
+        }
 
-        DB::commit();
+        $shippingAddress = Address::find($request->address_id);
 
-        return redirect()->route('payment.show', $order->id);
-    } catch (\Exception $e) {
-        DB::rollback();
-        return back()->with('error', 'Gagal checkout: ' . $e->getMessage());
+        $fullAddressString = $shippingAddress->detail_address . ', ' .
+            $shippingAddress->village_name . ', ' .
+            $shippingAddress->district_name . ', ' .
+            $shippingAddress->city_name . ', ' .
+            $shippingAddress->province_name . ' ' .
+            $shippingAddress->postal_code;
+
+        $storeId = $cartItems->first()->product->store_id;
+        $subtotal = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
+        $totalPrice = $subtotal + $request->shipping_cost;
+
+        try {
+            DB::beginTransaction();
+
+            // Generate Order Number
+            $today = now()->format('Ymd');
+            $orderCountToday = Order::whereDate('created_at', now()->today())->count();
+            $nextSequence = $orderCountToday + 1;
+            $newOrderNumber = 'NB-' . $today . '-' . str_pad($nextSequence, 4, '0', STR_PAD_LEFT);
+
+            // ✅ FIX: Buat Order - SIMPAN COURIER DI KOLOM courier
+            $order = Order::create([
+                'user_id' => Auth::id(),
+                'store_id' => $storeId,
+                'order_number' => $newOrderNumber,
+                'total_amount' => $totalPrice,
+                'sub_total' => $subtotal,
+                'shipping_cost' => $request->shipping_cost,
+                'courier' => $request->shipping_courier, // ✅ SAVE COURIER
+                'status' => 'pending',
+                'payment_status' => 'pending',
+                'recipient_name' => $shippingAddress->receiver_name,
+                'recipient_phone' => $shippingAddress->phone,
+                'shipping_address' => $fullAddressString,
+                'notes' => $request->notes, // ✅ NOTES SEKARANG OPTIONAL
+            ]);
+
+            // Simpan order items & KURANGI STOK
+            foreach ($cartItems as $item) {
+                // Create order item
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'price' => $item->product->price,
+                    'total' => $item->quantity * $item->product->price,
+                ]);
+
+                // KURANGI STOK PRODUK
+                $product = Product::find($item->product_id);
+                $product->decrement('stock', $item->quantity);
+            }
+
+            // Hapus dari cart
+            Cart::whereIn('id', $selectedItemIds)->delete();
+
+            DB::commit();
+
+            return redirect()->route('payment.show', $order->id);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Gagal checkout: ' . $e->getMessage());
+        }
     }
-}
-
 }

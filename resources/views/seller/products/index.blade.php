@@ -11,7 +11,10 @@
         <div class="flex flex-col md:flex-row gap-4 items-center">
             <!-- Search -->
             <div class="flex-1 relative">
-                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <x-heroicon-o-magnifying-glass class="text-gray-400 w-5 h-5" />
+                </div>
+
                 <input type="text" id="searchInput" placeholder="Cari produk yang terdaftar"
                     value="{{ request('search') }}"
                     class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent">
@@ -49,18 +52,18 @@
     </div>
 
     <!-- Tabel Produk -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-        <table class="w-full">
-            <thead class="bg-white border-b-2 border-gray-200">
-                <tr>
-                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Nama Produk</th>
-                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Satuan</th>
-                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Berat</th>
-                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Kategori</th>
-                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Stok</th>
-                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Harga</th>
-                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
-                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Aksi</th>
+    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <table class="w-full text-[13px]">
+            <thead class="bg-[#DCFCE7] border-t border-b border-[#BBF7D0]">
+                <tr class="text-left">
+                    <th class="px-5 py-4 font-semibold text-[#15803D]">Nama Produk</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D]">Satuan</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D]">Berat</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D]">Kategori</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D]">Stok</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D]">Harga</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D]">Status</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D]">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">

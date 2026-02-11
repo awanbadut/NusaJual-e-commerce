@@ -1,149 +1,166 @@
 @extends('layouts.seller')
 
 @section('title', 'Pencairan Dana')
-
+@section('page-title', 'Pencairan Dana Penjualan')
+@section('page-subtitle', 'Kelola pencairan dana dari penjualan Anda')
 @section('content')
-<div class="container mx-auto px-6 py-8">
-    <!-- Header -->
-    <div class="mb-8">
-        <h1 class="text-2xl font-bold text-gray-800">Pencairan Dana</h1>
-        <p class="text-sm text-gray-600 mt-1">Kelola pencairan dana dari penjualan Anda</p>
-    </div>
+
+<div class="max-w-7xl">
 
     @if(session('success'))
-    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-xl mb-6 flex items-center gap-3">
-        <svg class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-        </svg>
+    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-6 flex items-center gap-3">
+        <x-heroicon-s-check-circle class="w-5 h-5" />
         <span>{!! session('success') !!}</span>
     </div>
     @endif
 
     @if(session('error'))
-    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-xl mb-6 flex items-center gap-3">
-        <svg class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-        </svg>
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 flex items-center gap-3">
+        <x-heroicon-s-x-circle class="w-5 h-5" />
         <span>{!! session('error') !!}</span>
     </div>
     @endif
 
-    <!-- Balance Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        {{-- ✅ UPDATED: Total Sales + Shipping --}}
-        <div class="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-xl shadow-lg text-dark">
-            <p class="text-xs opacity-80 mb-2">Total Penjualan + Ongkir</p>
-            <p class="text-2xl font-bold">
-                Rp {{ number_format($totalSales, 0, ',', '.') }}
-            </p>
-            <p class="text-xs opacity-70 mt-2">Produk + Ongkir (Completed)</p>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        {{-- Total Sales --}}
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
+                    <x-heroicon-o-banknotes class="w-5 h-5" />
+                </div>
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Penjualan</span>
+            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">Rp {{ number_format($totalSales, 0, ',', '.') }}</p>
+            <p class="text-xs text-gray-500 mt-1">Produk + Ongkir (Completed)</p>
         </div>
 
-        <div class="bg-gradient-to-br from-green-500 to-green-600 p-6 rounded-xl shadow-lg text-dark">
-            <p class="text-xs opacity-80 mb-2">Dana Tersedia</p>
-            <p class="text-2xl font-bold">
-                Rp {{ number_format($withdrawableBalance, 0, ',', '.') }}
+        {{-- Dana Tersedia --}}
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="p-2 bg-green-50 rounded-lg text-green-600">
+                    <x-heroicon-o-wallet class="w-5 h-5" />
+                </div>
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Dana Tersedia</span>
+            </div>
+            <p class="text-2xl font-bold text-green-600 mt-2">Rp {{ number_format($withdrawableBalance, 0, ',', '.') }}
             </p>
-            <p class="text-xs opacity-70 mt-2">Siap dicairkan</p>
+            <p class="text-xs text-gray-500 mt-1">Siap dicairkan</p>
         </div>
 
-        <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 p-6 rounded-xl shadow-lg text-dark">
-            <p class="text-xs opacity-80 mb-2">Pending</p>
-            <p class="text-2xl font-bold">
-                Rp {{ number_format($pendingWithdrawals, 0, ',', '.') }}
+        {{-- Pending --}}
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="p-2 bg-yellow-50 rounded-lg text-yellow-600">
+                    <x-heroicon-o-clock class="w-5 h-5" />
+                </div>
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Pending</span>
+            </div>
+            <p class="text-2xl font-bold text-yellow-600 mt-2">Rp {{ number_format($pendingWithdrawals, 0, ',', '.') }}
             </p>
-            <p class="text-xs opacity-70 mt-2">Menunggu proses</p>
+            <p class="text-xs text-gray-500 mt-1">Menunggu proses</p>
         </div>
 
-        <div class="bg-gradient-to-br from-gray-500 to-gray-600 p-6 rounded-xl shadow-lg text-dark">
-            <p class="text-xs opacity-80 mb-2">Sudah Ditarik</p>
-            <p class="text-2xl font-bold">
-                Rp {{ number_format($totalWithdrawn, 0, ',', '.') }}
-            </p>
-            <p class="text-xs opacity-70 mt-2">Total penarikan</p>
+        {{-- Sudah Ditarik --}}
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="p-2 bg-gray-100 rounded-lg text-gray-600">
+                    <x-heroicon-o-archive-box-arrow-down class="w-5 h-5" />
+                </div>
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Sudah Ditarik</span>
+            </div>
+            <p class="text-2xl font-bold text-gray-700 mt-2">Rp {{ number_format($totalWithdrawn, 0, ',', '.') }}</p>
+            <p class="text-xs text-gray-500 mt-1">Total penarikan sukses</p>
         </div>
     </div>
 
-    <!-- Request Withdrawal Form -->
-    <div class="bg-white p-6 rounded-xl shadow-sm border mb-8">
-        <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
-            </svg>
-            Ajukan Pencairan Dana
-        </h2>
-        
-        {{-- ✅ UPDATED: Admin Fee Info --}}
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                </svg>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+        <div class="p-5 border-b border-gray-200 bg-gray-50 flex items-center gap-2">
+            <x-heroicon-s-currency-dollar class="w-5 h-5 text-gray-700" />
+            <h2 class="text-lg font-bold text-gray-900">Ajukan Pencairan Dana</h2>
+        </div>
+
+        <div class="p-6">
+            {{-- Admin Fee Info --}}
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex items-start gap-3">
+                <x-heroicon-s-information-circle class="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                 <div class="text-sm text-blue-800">
                     <p class="font-semibold mb-1">Informasi Biaya Admin:</p>
-                    <ul class="space-y-1">
-                        <li>• Biaya tetap: <strong>Rp {{ number_format($adminFeeFlat, 0, ',', '.') }}</strong> per pencairan</li>
-                        <li>• Dana yang Anda terima = Jumlah Pencairan - Rp {{ number_format($adminFeeFlat, 0, ',', '.') }}</li>
+                    <ul class="space-y-1 text-xs">
+                        <li>• Biaya tetap: <strong>Rp {{ number_format($adminFeeFlat, 0, ',', '.') }}</strong> per
+                            pencairan</li>
+                        <li>• Dana yang Anda terima = Jumlah Pencairan - Rp {{ number_format($adminFeeFlat, 0, ',', '.')
+                            }}</li>
                         <li>• Ongkir sudah termasuk dalam saldo (untuk order completed)</li>
                     </ul>
                 </div>
             </div>
-        </div>
-        
-        @if($bankAccounts->count() == 0)
-        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded flex items-center gap-3">
-            <svg class="w-6 h-6 text-yellow-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-            </svg>
-            <p class="text-sm text-yellow-700">
-                Anda belum menambahkan rekening bank. 
-                <a href="{{ route('seller.profile') }}" class="underline font-semibold hover:text-yellow-900">Tambahkan rekening</a> terlebih dahulu.
-            </p>
-        </div>
-        @elseif($withdrawableBalance < $minAmount)
-        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded flex items-center gap-3">
-            <svg class="w-6 h-6 text-yellow-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-            </svg>
-            <p class="text-sm text-yellow-700">
-                Saldo minimal untuk pencairan adalah <strong>Rp {{ number_format($minAmount, 0, ',', '.') }}</strong>
-            </p>
+
+            @if($bankAccounts->count() == 0)
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded flex items-center gap-3">
+                <x-heroicon-s-exclamation-triangle class="w-6 h-6 text-yellow-600" />
+                <p class="text-sm text-yellow-700">
+                    Anda belum menambahkan rekening bank.
+                    <a href="{{ route('seller.profile') }}"
+                        class="underline font-semibold hover:text-yellow-900">Tambahkan rekening</a> terlebih dahulu.
+                </p>
+            </div>
+            @elseif($withdrawableBalance < $minAmount) <div
+                class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded flex items-center gap-3">
+                <x-heroicon-s-exclamation-triangle class="w-6 h-6 text-yellow-600" />
+                <p class="text-sm text-yellow-700">
+                    Saldo minimal untuk pencairan adalah <strong>Rp {{ number_format($minAmount, 0, ',', '.')
+                        }}</strong>
+                </p>
         </div>
         @else
         <form action="{{ route('seller.withdrawals.store') }}" method="POST" id="withdrawalForm">
             @csrf
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Rekening Tujuan <span class="text-red-500">*</span></label>
-                    <select name="bank_account_id" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
-                        <option value="">Pilih Rekening</option>
-                        @foreach($bankAccounts as $account)
-                        <option value="{{ $account->id }}">
-                            {{ $account->bank_name }} - {{ $account->account_number }} ({{ $account->account_name }})
-                        </option>
-                        @endforeach
-                    </select>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Rekening Tujuan <span
+                            class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <select name="bank_account_id"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none pr-10 cursor-pointer text-sm"
+                            required>
+                            <option value="">Pilih Rekening</option>
+                            @foreach($bankAccounts as $account)
+                            <option value="{{ $account->id }}">
+                                {{ $account->bank_name }} - {{ $account->account_number }} ({{ $account->account_name
+                                }})
+                            </option>
+                            @endforeach
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <x-heroicon-m-chevron-down class="w-5 h-5 text-gray-400" />
+                        </div>
+                    </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Jumlah Pencairan <span class="text-red-500">*</span></label>
-                    <input type="number" name="amount" id="withdrawalAmount"
-                           class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" 
-                           placeholder="Minimal Rp {{ number_format($minAmount, 0, ',', '.') }}" 
-                           min="{{ $minAmount }}" 
-                           max="{{ $withdrawableBalance }}" 
-                           required>
-                    <p class="text-xs text-gray-500 mt-1">Maksimal: Rp {{ number_format($withdrawableBalance, 0, ',', '.') }}</p>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Jumlah Pencairan <span
+                            class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <span
+                            class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-semibold">Rp</span>
+                        <input type="number" name="amount" id="withdrawalAmount"
+                            class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
+                            placeholder="Minimal {{ number_format($minAmount, 0, ',', '.') }}" min="{{ $minAmount }}"
+                            max="{{ $withdrawableBalance }}" required>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Maksimal: Rp {{ number_format($withdrawableBalance, 0, ',',
+                        '.') }}</p>
                 </div>
 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Catatan (Opsional)</label>
-                    <textarea name="notes" rows="2" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Tambahkan catatan jika diperlukan"></textarea>
+                    <textarea name="notes" rows="2"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
+                        placeholder="Tambahkan catatan jika diperlukan"></textarea>
                 </div>
             </div>
 
-            {{-- ✅ Fee Calculation Preview --}}
+            {{-- Fee Calculation Preview --}}
             <div id="feePreview" class="hidden mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <h3 class="text-sm font-bold text-gray-800 mb-3">Rincian Pencairan:</h3>
                 <div class="space-y-2 text-sm">
@@ -153,7 +170,8 @@
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-600">Biaya Admin (Flat):</span>
-                        <span class="font-semibold text-red-600" id="previewAdminFee">- Rp {{ number_format($adminFeeFlat, 0, ',', '.') }}</span>
+                        <span class="font-semibold text-red-600" id="previewAdminFee">- Rp {{
+                            number_format($adminFeeFlat, 0, ',', '.') }}</span>
                     </div>
                     <hr class="border-gray-300">
                     <div class="flex justify-between">
@@ -163,84 +181,115 @@
                 </div>
             </div>
 
-            <button type="submit" class="mt-6 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition shadow-md hover:shadow-lg flex items-center gap-2">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
+            <button type="submit"
+                class="mt-6 bg-[#15803D] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#166534] transition shadow-md flex items-center justify-center gap-2 w-full md:w-auto">
+                <x-heroicon-s-paper-airplane class="w-5 h-5" />
                 Ajukan Pencairan
             </button>
         </form>
         @endif
     </div>
+</div>
 
-    <!-- Withdrawal History -->
-    <div class="bg-white p-6 rounded-xl shadow-sm border">
-        <h2 class="text-lg font-bold text-gray-800 mb-4">Riwayat Pencairan</h2>
-        
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b">
-                    <tr>
-                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Tanggal</th>
-                        <th class="px-4 py-3 text-left font-semibold text-gray-700">ID</th>
-                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Rekening</th>
-                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Jumlah</th>
-                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Biaya Admin</th>
-                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Diterima</th>
-                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
-                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($withdrawals as $withdrawal)
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="px-4 py-3">{{ $withdrawal->requested_at->format('d M Y H:i') }}</td>
-                        <td class="px-4 py-3 font-mono text-xs">#WD-{{ str_pad($withdrawal->id, 4, '0', STR_PAD_LEFT) }}</td>
-                        <td class="px-4 py-3">
-                            <div class="text-sm font-semibold">{{ $withdrawal->bankAccount->bank_name }}</div>
-                            <div class="text-xs text-gray-500">{{ $withdrawal->bankAccount->account_number }}</div>
-                        </td>
-                        <td class="px-4 py-3 font-semibold">Rp {{ number_format($withdrawal->amount, 0, ',', '.') }}</td>
-                        <td class="px-4 py-3 text-red-600 font-semibold">Rp {{ number_format($withdrawal->admin_fee, 0, ',', '.') }}</td>
-                        <td class="px-4 py-3 font-bold text-green-600">Rp {{ number_format($withdrawal->total_received, 0, ',', '.') }}</td>
-                        <td class="px-4 py-3">
-                            @if($withdrawal->status == 'pending')
-                            <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">Pending</span>
-                            @elseif($withdrawal->status == 'approved')
-                            <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">Disetujui</span>
-                            @elseif($withdrawal->status == 'completed')
-                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">Selesai</span>
-                            @else
-                            <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">Ditolak</span>
-                            @endif
-                        </td>
-                        <td class="px-4 py-3">
-                            <a href="{{ route('seller.withdrawals.show', $withdrawal->id) }}" class="text-green-600 hover:underline text-xs font-semibold">Detail</a>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="8" class="px-4 py-8 text-center text-gray-500">
-                            Belum ada riwayat pencairan
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        @if($withdrawals->hasPages())
-        <div class="mt-4">
-            {{ $withdrawals->links() }}
-        </div>
-        @endif
+<div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
+    <div class="p-5 border-b border-gray-200 bg-white">
+        <h3 class="text-lg font-bold text-gray-900">Riwayat Pencairan</h3>
     </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-[13px]">
+            <thead class="bg-[#DCFCE7] border-t border-b border-[#BBF7D0]">
+                <tr class="text-left">
+                    <th class="px-5 py-4 font-semibold text-[#15803D]">Tanggal</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D]">ID</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D]">Rekening</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D]">Jumlah</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D]">Biaya Admin</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D]">Diterima</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D]">Status</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D]">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white">
+                @forelse($withdrawals as $withdrawal)
+                <tr class="hover:bg-[#F9FDF7] transition">
+                    <td class="px-5 py-4 whitespace-nowrap text-gray-700">
+                        {{ $withdrawal->requested_at->format('d M Y') }}<br>
+                        <span class="text-[11px] text-gray-500">{{ $withdrawal->requested_at->format('H:i') }}</span>
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap font-mono font-bold text-gray-900 text-xs">
+                        #WD-{{ str_pad($withdrawal->id, 4, '0', STR_PAD_LEFT) }}
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap">
+                        <div class="font-medium text-gray-900">{{ $withdrawal->bankAccount->bank_name }}</div>
+                        <div class="text-[11px] text-gray-500">{{ $withdrawal->bankAccount->account_number }}</div>
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap font-semibold text-gray-900">
+                        Rp {{ number_format($withdrawal->amount, 0, ',', '.') }}
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap text-red-600 font-semibold text-xs">
+                        Rp {{ number_format($withdrawal->admin_fee, 0, ',', '.') }}
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap font-bold text-green-600">
+                        Rp {{ number_format($withdrawal->total_received, 0, ',', '.') }}
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap">
+                        @if($withdrawal->status == 'pending')
+                        <span
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                            Pending
+                        </span>
+                        @elseif($withdrawal->status == 'approved')
+                        <span
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                            Disetujui
+                        </span>
+                        @elseif($withdrawal->status == 'completed')
+                        <span
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#DCFCE7] text-[#166534] border border-[#BBF7D0]">
+                            Selesai
+                        </span>
+                        @else
+                        <span
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-red-100 text-red-800 border border-red-200">
+                            Ditolak
+                        </span>
+                        @endif
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap">
+                        <a href="{{ route('seller.withdrawals.show', $withdrawal->id) }}"
+                            class="text-[#15803D] hover:underline text-[12px] font-medium flex items-center gap-1">
+                            Detail
+                            <x-heroicon-m-arrow-right class="w-3 h-3" />
+                        </a>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="8" class="px-6 py-12 text-center text-gray-500">
+                        <div class="flex flex-col items-center justify-center">
+                            <x-heroicon-o-inbox class="w-12 h-12 text-gray-300 mb-3" />
+                            <p class="text-sm font-medium text-gray-900">Belum ada riwayat pencairan</p>
+                        </div>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    @if($withdrawals->hasPages())
+    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+        {{ $withdrawals->links() }}
+    </div>
+    @endif
+</div>
 </div>
 @endsection
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
     const amountInput = document.getElementById('withdrawalAmount');
     const feePreview = document.getElementById('feePreview');
     
