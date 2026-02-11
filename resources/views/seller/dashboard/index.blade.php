@@ -7,69 +7,97 @@
 @section('content')
 <div class="space-y-6">
     <!-- Top Stats Cards (4 columns) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Total Pendapatan -->
-        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-dark">
-            <div class="flex items-center justify-between mb-2">
-                <h3 class="text-sm font-medium opacity-90">Total Pendapatan</h3>
-                <svg class="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+
+        <div
+            class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex flex-col justify-between hover:shadow-md transition">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 mb-1">Total Pendapatan</p>
+                    <h3 class="text-2xl font-bold text-gray-900">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</h3>
+                </div>
+                <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                    <x-heroicon-s-banknotes class="w-6 h-6" />
+                </div>
             </div>
-            <p class="text-3xl font-bold mb-2">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</p>
-            <p class="text-sm opacity-90">
+            <div class="flex items-center text-xs font-medium">
                 @if($revenueGrowth > 0)
-                    <span class="text-green-200">↗ {{ $revenueGrowth }}%</span>
-                @elseif($revenueGrowth < 0)
-                    <span class="text-red-200">↘ {{ abs($revenueGrowth) }}%</span>
-                @else
-                    <span>→ 0%</span>
-                @endif
-                <span class="opacity-75">vs bulan lalu</span>
-            </p>
+                <span class="text-green-600 bg-green-50 px-2 py-1 rounded-md flex items-center gap-1">
+                    <x-heroicon-s-arrow-trending-up class="w-3 h-3" /> {{ $revenueGrowth }}%
+                </span>
+                @elseif($revenueGrowth < 0) <span
+                    class="text-red-600 bg-red-50 px-2 py-1 rounded-md flex items-center gap-1">
+                    <x-heroicon-s-arrow-trending-down class="w-3 h-3" /> {{ abs($revenueGrowth) }}%
+                    </span>
+                    @else
+                    <span class="text-gray-600 bg-gray-100 px-2 py-1 rounded-md">0%</span>
+                    @endif
+                    <span class="ml-2 text-gray-400">vs bulan lalu</span>
+            </div>
         </div>
 
-        <!-- Dana Tersedia -->
-        <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-dark">
-            <div class="flex items-center justify-between mb-2">
-                <h3 class="text-sm font-medium opacity-90">Dana Tersedia</h3>
-                <svg class="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                </svg>
+        <div
+            class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex flex-col justify-between hover:shadow-md transition">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 mb-1">Dana Tersedia</p>
+                    <h3 class="text-2xl font-bold text-gray-900">Rp {{ number_format($availableBalance, 0, ',', '.') }}
+                    </h3>
+                </div>
+                <div class="p-3 bg-green-50 text-green-600 rounded-xl">
+                    <x-heroicon-s-wallet class="w-6 h-6" />
+                </div>
             </div>
-            <p class="text-3xl font-bold mb-2">Rp {{ number_format($availableBalance, 0, ',', '.') }}</p>
-            <a href="{{ route('seller.withdrawals.index') }}" class="text-sm opacity-90 hover:opacity-100 underline">
-                Cairkan Dana →
-            </a>
+            <div>
+                <a href="{{ route('seller.withdrawals.index') }}"
+                    class="text-xs font-semibold text-green-700 hover:text-green-800 inline-flex items-center gap-1">
+                    Cairkan Dana
+                    <x-heroicon-m-arrow-right class="w-3 h-3" />
+                </a>
+            </div>
         </div>
 
-        <!-- Pesanan Baru -->
-        <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow-lg p-6 text-dark">
-            <div class="flex items-center justify-between mb-2">
-                <h3 class="text-sm font-medium opacity-90">Pesanan Baru</h3>
-                <svg class="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                </svg>
+        <div
+            class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex flex-col justify-between hover:shadow-md transition">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 mb-1">Pesanan Baru</p>
+                    <h3 class="text-2xl font-bold text-gray-900">{{ $newOrders }}</h3>
+                </div>
+                <div class="p-3 bg-yellow-50 text-yellow-600 rounded-xl">
+                    <x-heroicon-s-shopping-cart class="w-6 h-6" />
+                </div>
             </div>
-            <p class="text-3xl font-bold mb-2">{{ $newOrders }}</p>
-            <a href="{{ route('seller.orders.index') }}" class="text-sm opacity-90 hover:opacity-100 underline">
-                Lihat Pesanan →
-            </a>
+            <div>
+                <a href="{{ route('seller.orders.index') }}"
+                    class="text-xs font-semibold text-yellow-700 hover:text-yellow-800 inline-flex items-center gap-1">
+                    Lihat Pesanan
+                    <x-heroicon-m-arrow-right class="w-3 h-3" />
+                </a>
+            </div>
         </div>
 
-        <!-- Produk Aktif -->
-        <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-dark">
-            <div class="flex items-center justify-between mb-2">
-                <h3 class="text-sm font-medium opacity-90">Produk Aktif</h3>
-                <svg class="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                </svg>
+        <div
+            class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex flex-col justify-between hover:shadow-md transition">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 mb-1">Produk Aktif</p>
+                    <h3 class="text-2xl font-bold text-gray-900">{{ $activeProducts }} <span
+                            class="text-sm font-normal text-gray-400">/ {{ $totalProducts }}</span></h3>
+                </div>
+                <div class="p-3 bg-purple-50 text-purple-600 rounded-xl">
+                    <x-heroicon-s-archive-box class="w-6 h-6" />
+                </div>
             </div>
-            <p class="text-3xl font-bold mb-2">{{ $activeProducts }}/{{ $totalProducts }}</p>
-            <a href="{{ route('seller.products.index') }}" class="text-sm opacity-90 hover:opacity-100 underline">
-                Kelola Produk →
-            </a>
+            <div>
+                <a href="{{ route('seller.products.index') }}"
+                    class="text-xs font-semibold text-purple-700 hover:text-purple-800 inline-flex items-center gap-1">
+                    Kelola Produk
+                    <x-heroicon-m-arrow-right class="w-3 h-3" />
+                </a>
+            </div>
         </div>
+
     </div>
 
     <!-- Secondary Stats (2 columns) - REMOVED RATING -->
@@ -83,7 +111,8 @@
                 </div>
                 <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                     <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+                        <path
+                            d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
                     </svg>
                 </div>
             </div>
@@ -98,8 +127,10 @@
                 </div>
                 <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
                     <svg class="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                        <path fill-rule="evenodd"
+                            d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clip-rule="evenodd" />
                     </svg>
                 </div>
             </div>
@@ -108,47 +139,61 @@
 
     <!-- Charts & Tables -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Sales Trend Chart -->
-        <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800">Tren Penjualan (7 Hari Terakhir)</h3>
-                <div class="text-sm text-gray-500">
-                    Total: Rp {{ number_format($salesTrend->sum('total'), 0, ',', '.') }}
+        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">Tren Penjualan</h3>
+                    <p class="text-sm text-gray-500">Performa 7 hari terakhir</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-gray-500">Total Periode Ini</p>
+                    <p class="text-lg font-bold text-[#15803D]">Rp {{ number_format($salesTrend->sum('total'), 0, ',',
+                        '.') }}</p>
                 </div>
             </div>
-            <canvas id="salesChart" height="80"></canvas>
+            <div class="h-72">
+                <canvas id="salesChart"></canvas>
+            </div>
         </div>
 
-        <!-- Stok Menipis -->
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex flex-col h-full">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800">Stok Menipis</h3>
-                <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full font-semibold">
-                    {{ $lowStockProducts->count() }} Produk
+                <h3 class="text-lg font-bold text-gray-900">Stok Menipis</h3>
+                <span class="text-xs bg-red-100 text-red-700 px-2.5 py-1 rounded-full font-bold">
+                    {{ $lowStockProducts->count() }} Item
                 </span>
             </div>
-            <div class="space-y-3 max-h-80 overflow-y-auto">
+
+            <div class="flex-1 overflow-y-auto pr-2 space-y-3 max-h-[300px] custom-scrollbar">
                 @forelse($lowStockProducts as $product)
-                <div class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-                    <div class="w-12 h-12 bg-gray-200 rounded flex-shrink-0 mr-3 flex items-center justify-center">
-                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
-                        </svg>
+                <div class="flex items-center p-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition">
+                    <div
+                        class="w-10 h-10 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden">
+                        @if($product->primaryImage)
+                        <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}"
+                            class="w-full h-full object-cover">
+                        @else
+                        <x-heroicon-o-photo class="w-5 h-5 text-gray-400" />
+                        @endif
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-800 truncate">{{ $product->name }}</p>
-                        <p class="text-xs text-gray-500">{{ $product->category->name ?? 'No Category' }}</p>
+                    <div class="flex-1 min-w-0 ml-3">
+                        <p class="text-sm font-semibold text-gray-900 truncate">{{ $product->name }}</p>
+                        <p class="text-xs text-gray-500">{{ $product->category->name ?? 'Umum' }}</p>
                     </div>
-                    <span class="px-2 py-1 text-xs font-bold rounded {{ $product->stock <= 5 ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800' }}">
-                        {{ $product->stock }}
-                    </span>
+                    <div class="text-right">
+                        <span class="block text-xs font-medium text-gray-500">Sisa</span>
+                        <span class="text-sm font-bold {{ $product->stock <= 5 ? 'text-red-600' : 'text-yellow-600' }}">
+                            {{ $product->stock }}
+                        </span>
+                    </div>
                 </div>
                 @empty
-                <div class="text-center py-8">
-                    <svg class="w-12 h-12 text-green-400 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                    </svg>
-                    <p class="text-sm text-gray-500">Semua produk stok aman</p>
+                <div class="flex flex-col items-center justify-center h-full text-center py-8">
+                    <div class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center mb-3">
+                        <x-heroicon-o-check class="w-6 h-6 text-green-600" />
+                    </div>
+                    <p class="text-sm font-medium text-gray-900">Stok Aman</p>
+                    <p class="text-xs text-gray-500">Tidak ada produk dengan stok menipis.</p>
                 </div>
                 @endforelse
             </div>
@@ -157,61 +202,87 @@
 
     <!-- Top Products & Recent Orders -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Top Selling Products -->
-        <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Produk Terlaris</h3>
-            <div class="space-y-3">
+        <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <x-heroicon-s-trophy class="w-5 h-5 text-yellow-500" /> Produk Terlaris
+            </h3>
+            <div class="space-y-4">
                 @forelse($topProducts as $index => $product)
-                <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                    <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
-                        {{ $index + 1 }}
+                <div class="flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold {{ $index == 0 ? 'bg-yellow-100 text-yellow-700' : ($index == 1 ? 'bg-gray-100 text-gray-700' : ($index == 2 ? 'bg-orange-100 text-orange-800' : 'bg-white text-gray-500 border border-gray-200')) }}">
+                            {{ $index + 1 }}
+                        </div>
+                        <div>
+                            <p
+                                class="text-sm font-medium text-gray-900 line-clamp-1 group-hover:text-[#15803D] transition">
+                                {{ $product->name }}</p>
+                            <p class="text-xs text-gray-500">{{ $product->total_sold }} terjual</p>
+                        </div>
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-800 truncate">{{ $product->name }}</p>
-                        <p class="text-xs text-gray-500">Terjual: {{ $product->total_sold }} unit</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-sm font-bold text-green-600">Rp {{ number_format($product->revenue, 0, ',', '.') }}</p>
-                    </div>
+                    <p class="text-sm font-bold text-gray-900">Rp {{ number_format($product->revenue, 0, ',', '.') }}
+                    </p>
                 </div>
                 @empty
-                <p class="text-sm text-gray-500 text-center py-4">Belum ada penjualan</p>
+                <p class="text-sm text-gray-500 text-center py-4">Belum ada data penjualan.</p>
                 @endforelse
             </div>
         </div>
-
         <!-- Recent Orders -->
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800">Pesanan Terbaru</h3>
-                <a href="{{ route('seller.orders.index') }}" class="text-sm text-green-600 hover:text-green-700 font-medium">
-                    Lihat Semua →
+                <h3 class="text-lg font-bold text-gray-900">Pesanan Terbaru</h3>
+                <a href="{{ route('seller.orders.index') }}"
+                    class="text-sm font-medium text-[#15803D] hover:underline flex items-center gap-1">
+                    Lihat Semua
+                    <x-heroicon-m-arrow-right class="w-3 h-3" />
                 </a>
             </div>
-            <div class="space-y-3">
-                @forelse($recentOrders as $order)
-                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-                    <div class="flex-1">
-                        <p class="text-sm font-medium text-gray-800">#{{ $order->order_number }}</p>
-                        <p class="text-xs text-gray-500">{{ $order->user->name ?? 'Guest' }}</p>
-                        <p class="text-xs text-gray-400">{{ $order->created_at->diffForHumans() }}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-sm font-bold text-gray-800">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</p>
-                        @if($order->status == 'pending')
-                            <span class="text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 font-semibold">Pending</span>
-                        @elseif($order->status == 'completed')
-                            <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-800 font-semibold">Selesai</span>
-                        @elseif($order->status == 'cancelled')
-                            <span class="text-xs px-2 py-1 rounded-full bg-red-100 text-red-800 font-semibold">Dibatalkan</span>
-                        @else
-                            <span class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 font-semibold">{{ ucfirst($order->status) }}</span>
-                        @endif
-                    </div>
-                </div>
-                @empty
-                <p class="text-sm text-gray-500 text-center py-4">Belum ada pesanan</p>
-                @endforelse
+            <div class="overflow-hidden">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-[#DCFCE7] border-t border-b border-[#BBF7D0]">
+                        <tr>
+                            <th class="px-3 py-2 text-[#15803D]">ID</th>
+                            <th class="px-3 py-2 text-[#15803D]">Status</th>
+                            <th class="px-3 py-2 text-right text-[#15803D]">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        @forelse($recentOrders as $order)
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-3 py-3">
+                                <span class="font-mono font-medium text-gray-900">#{{ $order->order_number }}</span>
+                                <div class="text-xs text-gray-500 mt-0.5">{{ $order->created_at->diffForHumans() }}
+                                </div>
+                            </td>
+                            <td class="px-3 py-3">
+                                @if($order->status == 'pending')
+                                <span
+                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">Pending</span>
+                                @elseif($order->status == 'completed')
+                                <span
+                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">Selesai</span>
+                                @elseif($order->status == 'cancelled')
+                                <span
+                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Batal</span>
+                                @else
+                                <span
+                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">{{
+                                    ucfirst($order->status) }}</span>
+                                @endif
+                            </td>
+                            <td class="px-3 py-3 text-right font-bold text-gray-900">
+                                Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="3" class="text-center py-6 text-gray-500">Belum ada pesanan terbaru.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

@@ -22,20 +22,14 @@
             </form>
 
             <!-- Sort Dropdown -->
-            <div class="relative">
-                <select
-                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm appearance-none pr-10 cursor-pointer"
-                    onchange="this.form.submit()">
-                    <option>Urutkan Berdasarkan</option>
-                    <option>Total Belanja (Tertinggi)</option>
-                    <option>Total Belanja (Terendah)</option>
-                    <option>Total Pesanan (Terbanyak)</option>
-                    <option>Nama (A-Z)</option>
-                </select>
-                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <x-heroicon-m-chevron-down class="w-5 h-5 text-gray-400" />
-                </div>
-            </div>
+            <select
+                class="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm">
+                <option>Urutkan Berdasarkan</option>
+                <option>Total Belanja (Tertinggi)</option>
+                <option>Total Belanja (Terendah)</option>
+                <option>Total Pesanan (Terbanyak)</option>
+                <option>Nama (A-Z)</option>
+            </select>
 
         </div>
     </div>
