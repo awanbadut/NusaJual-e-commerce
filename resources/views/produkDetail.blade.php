@@ -13,6 +13,7 @@
 
     <x-navbar />
 
+    <!-- Breadcrumb -->
     <div class="pt-24 pb-4 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div class="flex items-center gap-2 text-sm font-medium text-[#8B4513]">
             <a href="{{ route('home') }}" class="hover:underline">Home</a>
@@ -27,6 +28,7 @@
         </div>
     </div>
 
+    <!-- Hero Banner -->
     <section class="px-4 sm:px-6 lg:px-8 mb-8">
         <div class="max-w-7xl mx-auto">
             <div
@@ -50,13 +52,20 @@
 
     // Jika tidak ada gambar galeri, pakai gambar utama
     if(empty($gallery) && $product->primaryImage) {
-    $gallery[] = asset('storage/' . $product->primaryImage->image_path);
+        $gallery[] = asset('storage/' . $product->primaryImage->image_path);
     }
 
     // Jika masih kosong, pakai placeholder
     if(empty($gallery)) {
-    $gallery[] = 'https://placehold.co/600x600/brown/white?text=' . urlencode($product->name);
+        $gallery[] = 'https://placehold.co/600x600/brown/white?text=' . urlencode($product->name);
     }
+
+    // Hitung total terjual
+    $totalSold = $product->orderItems()
+        ->whereHas('order', function($q) {
+            $q->where('status', 'completed');
+        })
+        ->sum('quantity');
     @endphp
 
     <section class="pb-20 px-4 sm:px-6 lg:px-8" x-data="{ 
@@ -78,10 +87,12 @@
 
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
 
+            <!-- Left: Product Images -->
             <div class="lg:col-span-7 flex flex-col gap-6">
 
                 <div class="flex flex-col-reverse md:flex-row gap-4 h-auto">
 
+                    <!-- Thumbnail Gallery -->
                     <div
                         class="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto no-scrollbar shrink-0 justify-center md:justify-start max-h-[500px]">
                         <template x-for="(img, index) in images" :key="index">
@@ -93,22 +104,26 @@
                         </template>
                     </div>
 
+                    <!-- Main Image -->
                     <div class="flex-1 flex flex-col gap-4">
                         <div
                             class="relative w-full aspect-square md:aspect-auto md:h-[500px] bg-gray-100 rounded-xl overflow-hidden shadow-sm border border-gray-200 group">
 
                             <img :src="images[active]" class="w-full h-full object-cover transition-all duration-300">
 
+                            <!-- Previous Button -->
                             <button x-show="images.length > 1" @click="prev()"
                                 class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-[#0F4C20] p-2 rounded-full shadow-lg transition transform hover:scale-110 active:scale-95 opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10">
                                 <x-heroicon-s-chevron-left class="w-6 h-6" />
                             </button>
 
+                            <!-- Next Button -->
                             <button x-show="images.length > 1" @click="next()"
                                 class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-[#0F4C20] p-2 rounded-full shadow-lg transition transform hover:scale-110 active:scale-95 opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10">
                                 <x-heroicon-s-chevron-right class="w-6 h-6" />
                             </button>
 
+                            <!-- Dots Indicator -->
                             <div x-show="images.length > 1"
                                 class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
                                 <template x-for="(img, index) in images" :key="index">
@@ -122,6 +137,7 @@
                     </div>
                 </div>
 
+                <!-- Store Info Card -->
                 <div class="bg-[#F0F2EE] rounded-xl p-4 flex items-center justify-between border border-[#CCD5C5]">
                     <div class="flex items-center gap-4">
                         <img src="{{ $product->store->logo ? asset('storage/'.$product->store->logo) : 'https://placehold.co/100x100/green/white?text='.substr($product->store->store_name, 0, 1) }}"
@@ -143,8 +159,10 @@
 
             </div>
 
+            <!-- Right: Product Info -->
             <div class="lg:col-span-5 flex flex-col gap-6">
 
+                <!-- Product Header -->
                 <div class="space-y-4 border-b border-gray-200 pb-6">
                     <span class="inline-block px-3 py-1 bg-[#0F4C20] text-white text-xs font-bold rounded-full">
                         {{ $product->category->name }}
@@ -154,13 +172,24 @@
                         {{ $product->name }}
                     </h1>
 
-                    <div class="flex items-center gap-4">
-                        <div class="flex items-center gap-1.5 text-sm text-gray-500 font-medium">
-                            <x-heroicon-s-shopping-bag class="w-5 h-5 text-[#F0C400]" />
-                            <span>{{ rand(10, 100) }} Terjual</span>
+                    <!-- Stats: Stock & Sold -->
+                    <div class="flex items-center gap-6 text-sm">
+                        <!-- Stock -->
+                        <div class="flex items-center gap-1.5 {{ $product->stock <= 10 ? 'text-yellow-600' : 'text-gray-600' }} font-medium">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+                            </svg>
+                            <span class="font-semibold">{{ $product->stock }} {{ $product->unit }}</span>
+                        </div>
+
+                        <!-- Sold -->
+                        <div class="flex items-center gap-1.5 text-green-600 font-medium">
+                            <x-heroicon-s-shopping-bag class="w-5 h-5" />
+                            <span class="font-semibold">{{ $totalSold }} Terjual</span>
                         </div>
                     </div>
 
+                    <!-- Price -->
                     <div class="flex items-baseline gap-1">
                         <span class="text-3xl font-bold text-[#8B4513]">
                             Rp {{ number_format($product->price, 0, ',', '.') }}
@@ -169,6 +198,7 @@
                     </div>
                 </div>
 
+                <!-- Description -->
                 <div class="space-y-2">
                     <h3 class="text-lg font-bold text-gray-800">Deskripsi :</h3>
                     <p class="text-gray-600 leading-relaxed text-sm md:text-base whitespace-pre-line">
@@ -176,6 +206,7 @@
                     </p>
                 </div>
 
+                <!-- Add to Cart Section -->
                 <div
                     class="bg-white rounded-xl shadow-[0px_4px_10px_rgba(0,0,0,0.05)] border border-gray-100 p-5 space-y-5 sticky top-28">
 
@@ -192,22 +223,14 @@
                             <span class="text-xl font-bold text-[#8B4513]">Rp <span x-text="total"></span></span>
                         </div>
 
-                        <form action="{{ route('keranjang.store') }}" method="POST" class="w-full" x-data="{ 
-        loading: false, 
-        added: false,
-        submitForm(e) {
-            this.loading = true;
-            // Simulasi delay sedikit biar animasi kelihatan (opsional, karena submit asli reload page)
-            // Tapi karena ini submit form biasa (bukan AJAX), loading akan muncul sampai page reload.
-            // Jika mau animasi 'berhasil' tanpa reload, harus pakai AJAX.
-            // Di sini kita pakai animasi klik simple saat submit.
-        }
-    }" @submit="submitForm">
+                        <!-- ✅ FORM SIMPLE (TANPA LOADING RIBET) -->
+                        <form action="{{ route('keranjang.store') }}" method="POST" class="w-full">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                             <input type="hidden" name="qty" :value="qty">
 
                             <div class="flex gap-4">
+                                <!-- Quantity Counter -->
                                 <div
                                     class="flex items-center border-2 border-[#0F4C20] rounded-lg h-12 w-32 justify-between px-2 shrink-0">
                                     <button type="button" @click="if(qty > 1) qty--"
@@ -221,31 +244,12 @@
                                     </button>
                                 </div>
 
+                                <!-- Add to Cart Button (SIMPLE) -->
                                 <button type="submit"
-                                    class="group relative flex-1 bg-[#0F4C20] hover:bg-[#0b3a18] text-white font-bold rounded-lg h-12 flex items-center justify-center gap-2 transition-all duration-300 shadow-md active:scale-95 overflow-hidden"
-                                    :class="{ 'cursor-not-allowed opacity-90': loading }" :disabled="loading">
-
-                                    <div class="flex items-center gap-2 transition-transform duration-300"
-                                        :class="{ '-translate-y-10': loading }">
-                                        <span>Tambah Keranjang</span>
-                                        <x-heroicon-s-shopping-cart class="w-5 h-5 group-hover:animate-bounce" />
-                                    </div>
-
-                                    <div class="absolute inset-0 flex items-center justify-center transition-transform duration-300 translate-y-10"
-                                        :class="{ 'translate-y-0': loading }">
-                                        <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg"
-                                            fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                                stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor"
-                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                            </path>
-                                        </svg>
-                                        <span class="ml-2">Memproses...</span>
-                                    </div>
-
-                                    <span
-                                        class="absolute inset-0 rounded-lg bg-white/20 scale-0 transition-transform duration-300 active:scale-100"></span>
+                                    @disabled($product->stock == 0)
+                                    class="flex-1 bg-[#0F4C20] hover:bg-[#0b3a18] disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold rounded-lg h-12 flex items-center justify-center gap-2 transition-all duration-300 shadow-md active:scale-95">
+                                    <span>{{ $product->stock > 0 ? 'Tambah Keranjang' : 'Stok Habis' }}</span>
+                                    <x-heroicon-s-shopping-cart class="w-5 h-5" />
                                 </button>
                             </div>
                         </form>
@@ -257,6 +261,7 @@
         </div>
     </section>
 
+    <!-- Related Products -->
     <section class="py-12 bg-[#F8FCF8] border-t border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-10">

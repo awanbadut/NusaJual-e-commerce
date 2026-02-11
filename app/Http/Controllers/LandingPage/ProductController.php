@@ -11,9 +11,17 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        // Query Dasar
-        $query = Product::with(['category', 'primaryImage'])
-            ->where('status', 'active');
+        // Query Dasar dengan eager load untuk performa
+        $query = Product::with([
+            'category', 
+            'primaryImage',
+            'store',
+            'orderItems' => function($q) {
+                $q->whereHas('order', function($order) {
+                    $order->where('status', 'completed');
+                });
+            }
+        ])->where('status', 'active');
 
         // 1. Filter Pencarian (Search)
         if ($request->filled('search')) {
@@ -25,11 +33,8 @@ class ProductController extends Controller
         }
 
         // 2. Filter Kategori (Checkbox)
-        // Menerima array category[] dari checkbox, atau single slug dari link menu
         if ($request->filled('category')) {
             $categories = is_array($request->category) ? $request->category : [$request->category];
-
-            // Jika input berupa slug, cari ID-nya dulu, atau filter by category name
             $query->whereHas('category', function ($q) use ($categories) {
                 $q->whereIn('name', $categories)->orWhereIn('slug', $categories);
             });
@@ -49,13 +54,20 @@ class ProductController extends Controller
 
         // Ambil Data Produk (Pagination)
         $products = $query->paginate(9)->withQueryString();
-        // Ambil List Kategori untuk Sidebar (yang punya produk saja biar rapi)
+
+        // Hitung total terjual untuk setiap produk (sudah eager load)
+        $products->getCollection()->transform(function($product) {
+            $product->total_sold = $product->orderItems->sum('quantity');
+            return $product;
+        });
+
+        // Ambil List Kategori untuk Sidebar
         $categoriesList = Category::has('products')->pluck('name');
 
         return view('catalog', compact('products', 'categoriesList'));
     }
 
-    // Method Detail Produk (Persiapan nanti)
+    // Method Detail Produk
     public function show($id)
     {
         // 1. Ambil detail produk
@@ -63,16 +75,16 @@ class ProductController extends Controller
             ->where('status', 'active')
             ->findOrFail($id);
 
-        // 2. Coba Ambil Produk Terkait (Satu Kategori)
+        // 2. Produk Terkait
         $relatedProducts = Product::with(['primaryImage', 'store'])
             ->where('category_id', $product->category_id)
-            ->where('id', '!=', $product->id) // Hindari produk yang sedang dibuka
+            ->where('id', '!=', $product->id)
             ->where('status', 'active')
             ->inRandomOrder()
             ->limit(4)
             ->get();
 
-        // [BARU] Fallback: Jika tidak ada produk sekategori, ambil produk acak dari kategori lain
+        // Fallback: Jika tidak ada produk sekategori
         if ($relatedProducts->isEmpty()) {
             $relatedProducts = Product::with(['primaryImage', 'store'])
                 ->where('id', '!=', $product->id)

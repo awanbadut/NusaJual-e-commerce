@@ -13,17 +13,16 @@
 
     <x-navbar />
 
+    <!-- Hero Section (SAMA - tidak perlu diubah) -->
     <section class="pt-28 pb-12 px-4 sm:px-6 lg:px-8 bg-white">
         <div class="max-w-[1440px] mx-auto relative group">
-
             <div class="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-4 no-scrollbar scroll-smooth"
                 id="hero-carousel">
-
+                <!-- Slide 1 -->
                 <div
                     class="snap-center shrink-0 w-full relative rounded-xl overflow-hidden shadow-md bg-[#F0EFE6] border border-[#496030] flex flex-col-reverse md:flex-row items-center min-h-[500px] md:h-[472px] h-auto px-4 md:px-10 py-8 md:py-0">
                     <div class="absolute inset-0 opacity-10"
                         style="background-image: url('/img/pattern-kopi1.png'); background-size: 100%;"></div>
-
                     <div
                         class="flex-1 flex flex-col justify-center items-start gap-4 md:gap-6 z-10 w-full md:pl-10 text-center md:text-left">
                         <h1 class="text-4xl md:text-[64px] font-bold text-[#045405] leading-tight">Nusa Belanja</h1>
@@ -37,12 +36,12 @@
                             <x-heroicon-s-arrow-right class="w-5 h-5" />
                         </a>
                     </div>
-
                     <div class="w-full md:w-[45%] h-48 md:h-full relative flex items-end justify-center md:justify-end">
                         <img src="img/kurir.png" class="h-full object-contain object-bottom">
                     </div>
                 </div>
 
+                <!-- Slide 2 -->
                 <div
                     class="snap-center shrink-0 w-full relative rounded-xl overflow-hidden shadow-md bg-[#7E4715] flex flex-col justify-center items-center min-h-[500px] md:h-[472px] h-auto text-center px-4 py-8 md:py-0">
                     <div class="absolute inset-0"
@@ -61,6 +60,7 @@
                     </div>
                 </div>
 
+                <!-- Slide 3 -->
                 <div
                     class="snap-center shrink-0 w-full relative rounded-xl overflow-hidden shadow-md bg-[#F5F5F1] border border-[#496030] flex flex-col-reverse md:flex-row items-center min-h-[500px] md:h-[472px] h-auto px-4 md:px-10 py-8 md:py-0">
                     <div
@@ -81,7 +81,6 @@
                             class="w-full h-full md:h-[90%] object-cover rounded-[24px] shadow-sm">
                     </div>
                 </div>
-
             </div>
 
             <button
@@ -94,10 +93,10 @@
                 class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg z-20 backdrop-blur-sm hidden md:flex items-center justify-center transition group">
                 <x-heroicon-o-chevron-right class="w-6 h-6 text-[#045406] group-hover:scale-110 transition" />
             </button>
-
         </div>
     </section>
 
+    <!-- Keunggulan Section (SAMA - tidak perlu diubah) -->
     <section class="py-16 px-4">
         <div class="max-w-7xl mx-auto text-center mb-12">
             <h2 class="text-3xl md:text-4xl font-extrabold text-[#0F4C20] mb-2">Kenalan Sama Nusa Belanja</h2>
@@ -126,6 +125,7 @@
         </div>
     </section>
 
+    <!-- Mitra Section (SAMA - tidak perlu diubah) -->
     <section class="py-16 px-4 bg-[#F8FCF8]">
         <div class="max-w-7xl mx-auto text-center mb-12 flex flex-col items-center gap-2">
             <h2 class="text-3xl md:text-4xl font-extrabold text-[#0F4C20]">Bareng Mitra Terbaik</h2>
@@ -133,12 +133,9 @@
         </div>
 
         <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center">
-
-            {{-- Loop 8 Mitra Teratas --}}
             @foreach($stores as $store)
             <div
                 class="bg-white rounded-lg p-3 shadow-sm border border-gray-100 flex flex-col items-center hover:shadow-md transition duration-300 h-full w-full max-w-xs">
-                {{-- ... (Isi card mitra kamu yang lama, biarkan sama) ... --}}
                 <div
                     class="w-[150px] h-[150px] md:w-[176px] md:h-[176px] rounded-full overflow-hidden mb-4 bg-gray-100 shrink-0">
                     <img src="{{ $store->logo ? asset('storage/'.$store->logo) : 'https://placehold.co/400x400/green/white?text='.substr($store->store_name, 0, 2) }}"
@@ -192,30 +189,27 @@
             </div>
             @endforeach
 
-            {{-- KARTU KHUSUS "SISA MITRA" --}}
             @if($sisaMitra > 0)
             <a href="#"
                 class="bg-[#F0EFE6] border-2 border-dashed border-[#496030] rounded-lg p-3 shadow-sm flex flex-col items-center justify-center hover:bg-[#e6e4d6] transition duration-300 h-full w-full max-w-xs group cursor-pointer min-h-[300px]">
-
                 <div
                     class="w-[80px] h-[80px] rounded-full bg-[#496030] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <span class="text-white font-bold text-2xl">+{{ $sisaMitra }}</span>
                 </div>
-
                 <h3 class="text-xl font-bold text-[#0F4C20] text-center">Mitra Lainnya</h3>
                 <p class="text-sm font-medium text-[#8B4513] text-center mt-2 px-4">
                     Masih banyak mitra lokal hebat lainnya yang siap melayani.
                 </p>
-
                 <div class="mt-6 flex items-center gap-2 text-[#0F4C20] font-bold text-sm">
                     Lihat Semua Mitra
                     <x-heroicon-s-arrow-right class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
             </a>
             @endif
-
         </div>
     </section>
+
+    <!-- Kategori Section (SAMA - tidak perlu diubah) -->
     <section class="py-24 px-4 bg-white">
         <div class="max-w-7xl mx-auto text-center mb-20 flex flex-col items-center gap-2">
             <h2 class="text-3xl md:text-4xl font-extrabold text-[#0F4C20]">Hasil Bumi Pilihan Kita</h2>
@@ -226,15 +220,12 @@
             @foreach($categories as $category)
             <a href="{{ route('katalog', ['category' => $category->slug]) }}"
                 class="relative flex flex-col items-center bg-[#fefefb] border border-[#e3fb9a] rounded-lg p-4 shadow-sm hover:shadow-md transition duration-300 cursor-pointer group mt-10 w-36 md:w-48">
-
                 <div
                     class="w-[100px] h-[100px] md:w-[129px] md:h-[129px] rounded-full overflow-hidden border-[4px] border-white shadow-sm absolute -top-[50px] md:-top-[64px] bg-gray-200 group-hover:scale-105 transition-transform">
                     <img src="https://placehold.co/300x300/brown/white?text={{ $category->name }}"
                         class="w-full h-full object-cover">
                 </div>
-
                 <div class="h-[50px] md:h-[60px]"></div>
-
                 <div class="flex flex-col items-center gap-1 w-full text-center mt-2">
                     <h4 class="text-lg font-bold text-[#0a0a0a] line-clamp-1">{{ $category->name }}</h4>
                     <span class="text-sm font-semibold text-[#87470c]">{{ $category->products_count }} Produk</span>
@@ -244,6 +235,7 @@
         </div>
     </section>
 
+    <!-- ✅ PRODUK SECTION - UPDATE DI SINI -->
     <section class="py-16 px-4 bg-[#F8FCF8]">
         <div class="max-w-7xl mx-auto text-center mb-12 flex flex-col items-center gap-2">
             <h2 class="text-3xl md:text-4xl font-extrabold text-[#0F4C20]">Produk Lokal Pilihan</h2>
@@ -252,6 +244,14 @@
 
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-center">
             @foreach($products as $product)
+            @php
+                // Hitung total terjual dari database
+                $totalSold = $product->orderItems()
+                    ->whereHas('order', function($q) {
+                        $q->where('status', 'completed');
+                    })
+                    ->sum('quantity');
+            @endphp
             <div
                 class="flex flex-col sm:flex-row bg-[#fefefb] border border-[#e3fb9a] rounded-lg p-3 shadow-sm hover:shadow-md transition duration-300 w-full max-w-xl">
                 <div class="w-full sm:w-[204px] h-[200px] sm:h-[178px] rounded-lg overflow-hidden shrink-0 bg-gray-100">
@@ -264,9 +264,10 @@
                 <div class="flex-1 flex flex-col justify-between px-2 sm:px-4 py-4 sm:py-2">
                     <div class="flex justify-between items-center w-full mb-2 sm:mb-0">
                         <span class="text-[#4b5563] text-sm font-medium">{{ $product->category->name ?? 'Umum' }}</span>
-                        <div class="flex items-center gap-2 text-[#030712] text-xs font-medium">
-                            <x-heroicon-s-shopping-bag class="w-4 h-4 text-[#f4b400]" />
-                            <span>0 terjual</span>
+                        <!-- ✅ TOTAL TERJUAL DARI DATABASE -->
+                        <div class="flex items-center gap-2 text-green-600 text-xs font-semibold">
+                            <x-heroicon-s-shopping-bag class="w-4 h-4" />
+                            <span>{{ number_format($totalSold, 0, ',', '.') }} terjual</span>
                         </div>
                     </div>
                     <div class="flex flex-col gap-1 mb-2 sm:mb-0">

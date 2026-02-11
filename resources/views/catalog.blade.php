@@ -35,9 +35,11 @@
     <section class="pb-20 px-4 sm:px-6 lg:px-8">
         <div class="max-w-[1440px] mx-auto flex flex-col lg:flex-row gap-8">
 
+            <!-- Sidebar Filter -->
             <x-ui.sidebarfilter title="Filter Produk">
                 <form action="{{ route('katalog') }}" method="GET">
 
+                    <!-- ✅ PRESERVE SEARCH QUERY -->
                     @if(request('search'))
                     <input type="hidden" name="search" value="{{ request('search') }}">
                     @endif
@@ -45,7 +47,6 @@
                     <div class="space-y-2">
                         <h4 class="text-sm font-bold text-gray-800">Pilih Kategori</h4>
                         <div class="space-y-2">
-
                             @foreach($categoriesList as $catName)
                             <label class="flex items-center gap-2.5 cursor-pointer group">
                                 <input type="checkbox" class="peer hidden" name="category[]" value="{{ $catName }}"
@@ -89,10 +90,12 @@
                 </form>
             </x-ui.sidebarfilter>
 
+            <!-- Main Content -->
             <div class="flex-1">
 
                 <div class="flex flex-col gap-4 mb-6">
                     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <!-- Product Count -->
                         <div class="flex items-center gap-2 text-lg">
                             <span class="text-gray-500 font-medium">Menampilkan</span>
                             <span class="font-bold text-[#0F4C20]">
@@ -104,26 +107,33 @@
                             </span>
                         </div>
 
+                        <!-- ✅ SEARCH FORM (FIXED) -->
                         <form action="{{ route('katalog') }}" method="GET" class="relative w-full md:w-[320px]">
+                            <!-- Preserve semua filter yang ada -->
                             @if(request('category'))
-                            @foreach(request('category') as $cat)
-                            <input type="hidden" name="category[]" value="{{ $cat }}">
-                            @endforeach
+                                @foreach(request('category') as $cat)
+                                <input type="hidden" name="category[]" value="{{ $cat }}">
+                                @endforeach
                             @endif
+                            
                             @if(request('sort_price'))
                             <input type="hidden" name="sort_price" value="{{ request('sort_price') }}">
                             @endif
 
-                            <input type="text" name="search" value="{{ request('search') }}"
-                                placeholder="Cari di Nusa Belanja"
+                            <input type="text" 
+                                name="search" 
+                                value="{{ request('search') }}"
+                                placeholder="Cari produk Nusa Belanja..."
                                 class="w-full pl-4 pr-10 py-2.5 rounded-lg border-2 border-[#0F4C20] focus:outline-none focus:ring-2 focus:ring-green-200 text-sm font-medium placeholder-gray-400">
+                            
                             <button type="submit"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#0F4C20]">
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#0F4C20] transition">
                                 <x-heroicon-o-magnifying-glass class="w-5 h-5" />
                             </button>
                         </form>
                     </div>
 
+                    <!-- Active Filters -->
                     @if(request('category') || request('sort_price') || request('search'))
                     <div class="flex flex-wrap items-center gap-3 animate-fade-in">
                         <span class="text-sm font-medium text-gray-600">Pilihanmu:</span>
@@ -131,8 +141,7 @@
                         @if(request('search'))
                         <div
                             class="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-[#0F4C20] rounded-full shadow-sm">
-                            <span class="text-[11px] font-bold text-[#0F4C20] uppercase tracking-wide">"{{
-                                request('search') }}"</span>
+                            <span class="text-[11px] font-bold text-[#0F4C20] uppercase tracking-wide">"{{ request('search') }}"</span>
                             <a href="{{ route('katalog', request()->except('search')) }}"
                                 class="text-[#0F4C20] hover:text-red-500 transition">
                                 <x-heroicon-s-x-mark class="w-4 h-4" />
@@ -145,7 +154,7 @@
                         <div
                             class="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-[#0F4C20] rounded-full shadow-sm">
                             <span class="text-[11px] font-bold text-[#0F4C20] uppercase tracking-wide">{{ $cat }}</span>
-                            <a href="{{ route('katalog', array_merge(request()->except('category'))) }}"
+                            <a href="{{ route('katalog', array_merge(request()->except('category'), request()->has('search') ? ['search' => request('search')] : [], request()->has('sort_price') ? ['sort_price' => request('sort_price')] : [])) }}"
                                 class="text-[#0F4C20] hover:text-red-500 transition">
                                 <x-heroicon-s-x-mark class="w-4 h-4" />
                             </a>
@@ -156,8 +165,7 @@
                         @if(request('sort_price'))
                         <div
                             class="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-[#0F4C20] rounded-full shadow-sm">
-                            <span class="text-[11px] font-bold text-[#0F4C20] uppercase tracking-wide">{{
-                                request('sort_price') }}</span>
+                            <span class="text-[11px] font-bold text-[#0F4C20] uppercase tracking-wide">{{ request('sort_price') }}</span>
                             <a href="{{ route('katalog', request()->except('sort_price')) }}"
                                 class="text-[#0F4C20] hover:text-red-500 transition">
                                 <x-heroicon-s-x-mark class="w-4 h-4" />
@@ -173,6 +181,7 @@
                     @endif
                 </div>
 
+                <!-- Product Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-3 gap-6">
                     @forelse($products as $product)
                     <x-ui.product-card :item="$product" />
@@ -182,13 +191,20 @@
                             <x-heroicon-o-face-frown class="w-8 h-8 text-gray-400" />
                         </div>
                         <h3 class="text-lg font-bold text-gray-700">Produk Tidak Ditemukan</h3>
-                        <p class="text-gray-500 text-sm">Coba kata kunci lain atau kurangi filter.</p>
+                        <p class="text-gray-500 text-sm">
+                            @if(request('search'))
+                                Tidak ada produk dengan kata kunci "<strong>{{ request('search') }}</strong>"
+                            @else
+                                Coba kata kunci lain atau kurangi filter.
+                            @endif
+                        </p>
                         <a href="{{ route('katalog') }}"
                             class="text-[#0F4C20] font-bold text-sm mt-2 inline-block hover:underline">Reset Filter</a>
                     </div>
                     @endforelse
                 </div>
 
+                <!-- Pagination -->
                 <div class="mt-8">
                     {{ $products->links() }}
                 </div>
