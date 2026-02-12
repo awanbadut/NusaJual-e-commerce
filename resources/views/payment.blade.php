@@ -88,16 +88,17 @@
                                 <div class="flex-1 text-center sm:text-left">
                                     <div class="flex items-center justify-center sm:justify-start gap-2">
                                         <h2 class="text-xl md:text-2xl font-bold text-gray-800 tracking-wide">
-                                            1234-5678-9012-346</h2>
+                                            {{ $activeBank->account_number }}
+                                        </h2>
 
-                                        <button @click="copyToClipboard('1234-5678-9012-346')"
+                                        <button @click="copyToClipboard('{{ $activeBank->account_number }}')"
                                             class="flex items-center gap-1 text-xs font-bold text-[#0F4C20] hover:bg-green-50 px-2 py-1 rounded transition relative">
                                             <x-heroicon-s-document-duplicate class="w-4 h-4" />
                                             <span x-text="copied ? 'Tersalin!' : 'Salin'"></span>
                                         </button>
                                     </div>
                                     <p class="text-sm text-gray-500 font-medium">a.n <span
-                                            class="font-bold text-gray-700">PT Nusa Belanja</span></p>
+                                            class="font-bold text-gray-700">{{ $activeBank->account_holder }}</span></p>
                                 </div>
                             </div>
                         </div>

@@ -47,7 +47,8 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 sm:gap-4">
+                <a href="{{ route('admin.profile.index') }}"
+                    class="flex items-center gap-2 sm:gap-4 hover:opacity-80 transition">
                     <span class="hidden sm:block text-sm font-medium text-gray-700">
                         {{ auth()->user()->name ?? 'Admin Nusa Belanja' }}
                     </span>
@@ -55,7 +56,7 @@
                         class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-green-800 text-white flex items-center justify-center font-semibold text-sm">
                         {{ isset(auth()->user()->name) ? strtoupper(substr(auth()->user()->name, 0, 1)) : 'A' }}
                     </div>
-                </div>
+                </a>
             </div>
         </nav>
 

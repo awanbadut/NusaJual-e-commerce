@@ -90,8 +90,7 @@ Route::middleware(['auth', 'buyer'])->group(function () {
     Route::post('/keranjang', [PublicCartController::class, 'store'])->name('keranjang.store');
     Route::delete('/keranjang/clear', [PublicCartController::class, 'clear'])->name('keranjang.clear');
     Route::patch('/keranjang/{id}', [PublicCartController::class, 'update'])->name('keranjang.update');
-    Route::delete('/keranjang/{id}', [PublicCartController::class, 'destroy'])->name('keranjang.destroy')
-    ;
+    Route::delete('/keranjang/{id}', [PublicCartController::class, 'destroy'])->name('keranjang.destroy');
 
     // 3. Checkout
     // Halaman Review (Terima GET & POST)
@@ -158,19 +157,19 @@ Route::prefix('seller')->name('seller.')->group(function () {
         Route::get('/customers/{id}', [CustomerController::class, 'show'])->name('customers.show');
 
         // 🔥 ORDERS (Manajemen Pesanan)
-    Route::get('/orders', [App\Http\Controllers\Seller\OrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/{id}', [App\Http\Controllers\Seller\OrderController::class, 'show'])->name('orders.show');
-    Route::patch('/orders/{id}/status', [App\Http\Controllers\Seller\OrderController::class, 'updateStatus'])->name('orders.updateStatus');
-    Route::post('/orders/{id}/cancel', [App\Http\Controllers\Seller\OrderController::class, 'cancel'])->name('orders.cancel');
+        Route::get('/orders', [App\Http\Controllers\Seller\OrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{id}', [App\Http\Controllers\Seller\OrderController::class, 'show'])->name('orders.show');
+        Route::patch('/orders/{id}/status', [App\Http\Controllers\Seller\OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+        Route::post('/orders/{id}/cancel', [App\Http\Controllers\Seller\OrderController::class, 'cancel'])->name('orders.cancel');
 
         // 🔥 SALES (Riwayat Penjualan)
-    Route::get('/sales', [App\Http\Controllers\Seller\SalesController::class, 'index'])->name('sales.index');
-    Route::get('/sales/export', [App\Http\Controllers\Seller\SalesController::class, 'export'])->name('sales.export');
+        Route::get('/sales', [App\Http\Controllers\Seller\SalesController::class, 'index'])->name('sales.index');
+        Route::get('/sales/export', [App\Http\Controllers\Seller\SalesController::class, 'export'])->name('sales.export');
 
-         // 🔥 PAYMENTS (Laporan Pembayaran Customer)
-    Route::get('/payments', [App\Http\Controllers\Seller\PaymentController::class, 'index'])->name('payments.index');
-    Route::get('/payments/export', [App\Http\Controllers\Seller\PaymentController::class, 'export'])->name('payments.export');
-    Route::get('/payments/{id}', [App\Http\Controllers\Seller\PaymentController::class, 'show'])->name('payments.show');
+        // 🔥 PAYMENTS (Laporan Pembayaran Customer)
+        Route::get('/payments', [App\Http\Controllers\Seller\PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/payments/export', [App\Http\Controllers\Seller\PaymentController::class, 'export'])->name('payments.export');
+        Route::get('/payments/{id}', [App\Http\Controllers\Seller\PaymentController::class, 'show'])->name('payments.show');
 
         // Profile
         Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
@@ -180,16 +179,16 @@ Route::prefix('seller')->name('seller.')->group(function () {
         Route::put('/profile/password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
 
         // Seller routes - Update Status
-Route::patch('/orders/{id}/status', [OrderController::class, 'updateStatus'])
-    ->name('orders.updateStatus');
+        Route::patch('/orders/{id}/status', [OrderController::class, 'updateStatus'])
+            ->name('orders.updateStatus');
 
-    // Withdrawals
-    Route::prefix('withdrawals')->name('withdrawals.')->group(function () {
-        Route::get('/', [App\Http\Controllers\Seller\WithdrawalController::class, 'index'])->name('index');
-        Route::post('/', [App\Http\Controllers\Seller\WithdrawalController::class, 'store'])->name('store');
-        Route::get('/{id}', [App\Http\Controllers\Seller\WithdrawalController::class, 'show'])->name('show');
-        Route::post('/calculate-fee', [App\Http\Controllers\Seller\WithdrawalController::class, 'calculateFee'])->name('calculate-fee');
-    });
+        // Withdrawals
+        Route::prefix('withdrawals')->name('withdrawals.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Seller\WithdrawalController::class, 'index'])->name('index');
+            Route::post('/', [App\Http\Controllers\Seller\WithdrawalController::class, 'store'])->name('store');
+            Route::get('/{id}', [App\Http\Controllers\Seller\WithdrawalController::class, 'show'])->name('show');
+            Route::post('/calculate-fee', [App\Http\Controllers\Seller\WithdrawalController::class, 'calculateFee'])->name('calculate-fee');
+        });
 
 
         // Logout
@@ -250,7 +249,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         ->name('withdrawals.print');
 
 
-        // Refund Management
+    // Refund Management
     Route::prefix('refunds')->name('refunds.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\RefundController::class, 'index'])->name('index');
         Route::get('/{id}/details', [\App\Http\Controllers\Admin\RefundController::class, 'getDetails'])->name('details');
@@ -260,10 +259,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     });
 
     // Mitra Management
-Route::get('/mitra', [App\Http\Controllers\Admin\MitraController::class, 'index'])->name('mitra.index');
-Route::get('/mitra/{id}', [App\Http\Controllers\Admin\MitraController::class, 'show'])->name('mitra.show');
+    Route::get('/mitra', [App\Http\Controllers\Admin\MitraController::class, 'index'])->name('mitra.index');
+    Route::get('/mitra/{id}', [App\Http\Controllers\Admin\MitraController::class, 'show'])->name('mitra.show');
 
-// Withdrawals
+    // Withdrawals
     Route::prefix('withdrawals')->name('withdrawals.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\WithdrawalController::class, 'index'])->name('index');
         Route::get('/{id}', [App\Http\Controllers\Admin\WithdrawalController::class, 'show'])->name('show');
@@ -271,5 +270,16 @@ Route::get('/mitra/{id}', [App\Http\Controllers\Admin\MitraController::class, 's
         Route::post('/{id}/process', [App\Http\Controllers\Admin\WithdrawalController::class, 'process'])->name('process');
         Route::post('/{id}/reject', [App\Http\Controllers\Admin\WithdrawalController::class, 'reject'])->name('reject');
         Route::get('/export', [App\Http\Controllers\Admin\WithdrawalController::class, 'export'])->name('export');
+    });
+
+    // Profile & Settings
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('index');
+        Route::put('/password', [App\Http\Controllers\Admin\ProfileController::class, 'updatePassword'])->name('password');
+
+        // Bank Accounts
+        Route::post('/bank', [App\Http\Controllers\Admin\ProfileController::class, 'storeBank'])->name('bank.store');
+        Route::patch('/bank/{id}/toggle', [App\Http\Controllers\Admin\ProfileController::class, 'toggleBank'])->name('bank.toggle');
+        Route::delete('/bank/{id}', [App\Http\Controllers\Admin\ProfileController::class, 'destroyBank'])->name('bank.destroy');
     });
 });

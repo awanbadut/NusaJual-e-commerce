@@ -21,17 +21,25 @@ class PaymentController extends Controller
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        // ✅ FIX: Cek apakah order sudah cancelled
+        // Check if order is cancelled
         if ($order->status === 'cancelled') {
-            return redirect()->route('profile.orders')->with('error', 'Pesanan sudah dibatalkan.');
+            return redirect()->route('profile.orders')->with('error', 'Order has been cancelled.');
         }
 
-        // Jika sudah bayar dan confirmed
+        // If already paid and confirmed
         if ($order->payment && $order->payment->status == 'confirmed') {
             return redirect()->route('payment.success', $id);
         }
 
-        return view('payment', compact('order'));
+        // ✅ PERBAIKAN: Gunakan first() bukan get()
+        $activeBank = \App\Models\AdminBankAccount::where('is_active', true)->first();
+
+        // Jika tidak ada bank yang aktif sama sekali, beri peringatan atau default
+        if (!$activeBank) {
+            return back()->with('error', 'Metode pembayaran transfer manual sedang tidak tersedia.');
+        }
+
+        return view('payment', compact('order', 'activeBank'));
     }
 
     /**
