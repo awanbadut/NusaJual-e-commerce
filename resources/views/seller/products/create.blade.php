@@ -124,9 +124,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-900 mb-2">Harga</label>
-                        <div class="relative">
-                            <span
-                                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
+                        <div class="relative flex items-center">
+                            <span class="absolute left-4 text-gray-500 text-sm font-medium pointer-events-none">
+                                Rp
+                            </span>
                             <input type="number" name="price" value="{{ old('price') }}"
                                 class="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent text-sm @error('price') border-red-500 @enderror"
                                 placeholder="0" min="0" required>
@@ -142,17 +143,17 @@
 
                     <div>
                         <label class="block text-sm font-semibold text-gray-900 mb-2">Berat (Gram)</label>
-                        <div class="relative">
+                        <div class="relative flex items-center">
                             <input type="number" name="weight" value="{{ old('weight') }}"
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent text-sm @error('weight') border-red-500 @enderror"
+                                class="w-full pl-4 pr-16 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent text-sm @error('weight') border-red-500 @enderror"
                                 placeholder="1000" min="1" required>
-                            <span
-                                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">gram</span>
+                            <span class="absolute right-4 text-gray-500 text-xs font-medium pointer-events-none">
+                                gram
+                            </span>
                         </div>
                         <p class="text-[10px] text-gray-500 mt-1">Wajib diisi dalam satuan gram.</p>
                     </div>
                 </div>
-
                 <!-- Status Produk -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-900 mb-2">Status Produk</label>

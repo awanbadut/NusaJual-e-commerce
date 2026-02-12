@@ -32,68 +32,59 @@
     </div>
     @endif
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Pending</p>
-                    <p class="text-2xl font-bold text-orange-600">{{ $stats['pending'] }}</p>
-                </div>
-                <div class="w-10 h-10 bg-orange-50 rounded-full flex items-center justify-center">
-                    <svg class="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" />
-                    </svg>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100 transition hover:shadow-md">
+            <div class="flex items-center justify-between mb-1 sm:mb-2">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 sm:p-2 bg-orange-50 rounded-lg text-orange-600">
+                        <x-heroicon-o-clock class="w-4 h-4 sm:w-5 sm:h-5" />
+                    </div>
+                    <span class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Pending</span>
                 </div>
             </div>
+            <p class="text-xl sm:text-2xl font-black text-gray-900 mt-1 sm:mt-2">{{ $stats['pending'] }}</p>
+            <p class="text-[10px] sm:text-xs text-gray-500 mt-1 truncate">Pesanan menunggu</p>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Processing</p>
-                    <p class="text-2xl font-bold text-yellow-600">{{ $stats['processing'] }}</p>
-                </div>
-                <div class="w-10 h-10 bg-yellow-50 rounded-full flex items-center justify-center">
-                    <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3z" />
-                        <path d="M16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-                    </svg>
+        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100 transition hover:shadow-md">
+            <div class="flex items-center justify-between mb-1 sm:mb-2">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 sm:p-2 bg-yellow-50 rounded-lg text-yellow-600">
+                        <x-heroicon-o-arrow-path class="w-4 h-4 sm:w-5 sm:h-5" />
+                    </div>
+                    <span
+                        class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Processing</span>
                 </div>
             </div>
+            <p class="text-xl sm:text-2xl font-black text-gray-900 mt-1 sm:mt-2">{{ $stats['processing'] }}</p>
+            <p class="text-[10px] sm:text-xs text-gray-500 mt-1 truncate">Sedang diproses</p>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Shipped</p>
-                    <p class="text-2xl font-bold text-purple-600">{{ $stats['shipped'] }}</p>
-                </div>
-                <div class="w-10 h-10 bg-purple-50 rounded-full flex items-center justify-center">
-                    <svg class="w-5 h-5 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
-                        <path
-                            d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
-                    </svg>
+        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100 transition hover:shadow-md">
+            <div class="flex items-center justify-between mb-1 sm:mb-2">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 sm:p-2 bg-purple-50 rounded-lg text-purple-600">
+                        <x-heroicon-o-truck class="w-4 h-4 sm:w-5 sm:h-5" />
+                    </div>
+                    <span class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Shipped</span>
                 </div>
             </div>
+            <p class="text-xl sm:text-2xl font-black text-gray-900 mt-1 sm:mt-2">{{ $stats['shipped'] }}</p>
+            <p class="text-[10px] sm:text-xs text-gray-500 mt-1 truncate">Dalam pengiriman</p>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Completed</p>
-                    <p class="text-2xl font-bold text-[#15803D]">{{ $stats['completed'] }}</p>
-                </div>
-                <div class="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center">
-                    <svg class="w-5 h-5 text-[#15803D]" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                            clip-rule="evenodd" />
-                    </svg>
+        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100 transition hover:shadow-md">
+            <div class="flex items-center justify-between mb-1 sm:mb-2">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 sm:p-2 bg-green-50 rounded-lg text-green-600">
+                        <x-heroicon-o-check-circle class="w-4 h-4 sm:w-5 sm:h-5" />
+                    </div>
+                    <span
+                        class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Completed</span>
                 </div>
             </div>
+            <p class="text-xl sm:text-2xl font-black text-gray-900 mt-1 sm:mt-2">{{ $stats['completed'] }}</p>
+            <p class="text-[10px] sm:text-xs text-gray-500 mt-1 truncate">Selesai</p>
         </div>
     </div>
 
@@ -160,124 +151,121 @@
         </form>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-        <table class="w-full text-[13px]">
-            <thead class="bg-[#DCFCE7] border-t border-b border-[#BBF7D0]">
-                <tr class="text-left">
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">ID Pesanan</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Pelanggan</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Total Belanja</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Status Pembayaran</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Status Pesanan</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Tanggal</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D] text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @forelse($orders as $order)
-                <tr class="hover:bg-[#F9FDF7] transition">
-                    <td class="px-5 py-4 whitespace-nowrap">
-                        <p class="text-sm font-bold text-gray-900 font-mono">{{ $order->order_number }}</p>
-                        <p class="text-[11px] text-gray-500">{{ $order->created_at->format('H:i WIB') }}</p>
-                    </td>
+    <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+        <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-[13px] min-w-[1000px]">
+                <thead class="bg-[#DCFCE7] border-t border-b border-[#BBF7D0]">
+                    <tr class="text-left">
+                        <th class="px-5 py-4 font-semibold text-[#15803D]">ID Pesanan</th>
+                        <th class="px-5 py-4 font-semibold text-[#15803D]">Pelanggan</th>
+                        <th class="px-5 py-4 font-semibold text-[#15803D]">Total Belanja</th>
+                        <th class="px-5 py-4 font-semibold text-[#15803D]">Status Pembayaran</th>
+                        <th class="px-5 py-4 font-semibold text-[#15803D]">Status Pesanan</th>
+                        <th class="px-5 py-4 font-semibold text-[#15803D]">Tanggal</th>
+                        <th class="px-5 py-4 font-semibold text-[#15803D] text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($orders as $order)
+                    <tr class="hover:bg-[#F9FDF7] transition">
+                        <td class="px-5 py-4 whitespace-nowrap">
+                            <p class="text-sm font-bold text-gray-900 font-mono">{{ $order->order_number }}</p>
+                            <p class="text-[11px] text-gray-500">{{ $order->created_at->format('H:i WIB') }}</p>
+                        </td>
 
-                    <td class="px-5 py-4 whitespace-nowrap">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-xs shrink-0"
-                                style="background-color: {{ '#' . substr(md5($order->user->name), 0, 6) }}">
-                                {{ strtoupper(substr($order->user->name, 0, 2)) }}
+                        <td class="px-5 py-4 whitespace-nowrap">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-xs shrink-0"
+                                    style="background-color: {{ '#' . substr(md5($order->user->name), 0, 6) }}">
+                                    {{ strtoupper(substr($order->user->name, 0, 2)) }}
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">{{ $order->user->name }}</p>
+                                    <p class="text-[11px] text-gray-500">{{ Str::limit($order->user->email, 20) }}</p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">{{ $order->user->name }}</p>
-                                <p class="text-[11px] text-gray-500">{{ Str::limit($order->user->email, 20) }}</p>
-                            </div>
-                        </div>
-                    </td>
+                        </td>
 
-                    <td class="px-5 py-4 whitespace-nowrap">
-                        <p class="text-sm font-bold text-gray-900">Rp {{ number_format($order->total_amount, 0, ',',
-                            '.') }}</p>
-                        <p class="text-[11px] text-gray-500">{{ $order->items->count() }} item</p>
-                    </td>
+                        <td class="px-5 py-4 whitespace-nowrap">
+                            <p class="text-sm font-bold text-gray-900">Rp {{ number_format($order->total_amount, 0, ',',
+                                '.') }}</p>
+                            <p class="text-[11px] text-gray-500">{{ $order->items->count() }} item</p>
+                        </td>
 
-                    <td class="px-5 py-4 whitespace-nowrap">
-                        @if($order->status == 'cancelled')
-                        <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 text-gray-800">Dibatalkan</span>
-                        @elseif(!$order->payment)
-                        <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-orange-100 text-orange-800">Pending</span>
-                        @elseif($order->payment->status == 'confirmed')
-                        <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-green-100 text-green-800">Terkonfirmasi</span>
-                        @elseif($order->payment->status == 'paid')
-                        <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-yellow-100 text-yellow-800">Menunggu
-                            Konfirmasi</span>
-                        @elseif($order->payment->status == 'rejected')
-                        <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-red-100 text-red-800">Ditolak</span>
-                        @else
-                        <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-orange-100 text-orange-800">Pending</span>
-                        @endif
-                    </td>
+                        <td class="px-5 py-4 whitespace-nowrap">
+                            @if($order->status == 'cancelled')
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 text-gray-800">Dibatalkan</span>
+                            @elseif(!$order->payment)
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-orange-100 text-orange-800">Pending</span>
+                            @elseif($order->payment->status == 'confirmed')
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-green-100 text-green-800">Terkonfirmasi</span>
+                            @elseif($order->payment->status == 'paid')
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-yellow-100 text-yellow-800">Menunggu
+                                Konfirmasi</span>
+                            @elseif($order->payment->status == 'rejected')
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-red-100 text-red-800">Ditolak</span>
+                            @else
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-orange-100 text-orange-800">Pending</span>
+                            @endif
+                        </td>
 
-                    <td class="px-5 py-4 whitespace-nowrap">
-                        @if($order->status == 'completed')
-                        <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#DCFCE7] text-[#15803D]">Selesai</span>
-                        @elseif($order->status == 'shipped')
-                        <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-purple-100 text-purple-800">Dikirim</span>
-                        @elseif($order->status == 'packing')
-                        <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-100 text-blue-800">Dikemas</span>
-                        @elseif($order->status == 'processing')
-                        <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-yellow-100 text-yellow-800">Diproses</span>
-                        @elseif($order->status == 'confirmed')
-                        <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-teal-100 text-teal-800">Confirmed</span>
-                        @elseif($order->status == 'pending')
-                        <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-orange-100 text-orange-800">Pending</span>
-                        @elseif($order->status == 'cancelled')
-                        <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-red-100 text-red-800">Dibatalkan</span>
-                        @else
-                        <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 text-gray-800">{{
-                            ucfirst($order->status) }}</span>
-                        @endif
-                    </td>
+                        <td class="px-5 py-4 whitespace-nowrap">
+                            @if($order->status == 'completed')
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#DCFCE7] text-[#15803D]">Selesai</span>
+                            @elseif($order->status == 'shipped')
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-purple-100 text-purple-800">Dikirim</span>
+                            @elseif($order->status == 'packing')
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-100 text-blue-800">Dikemas</span>
+                            @elseif($order->status == 'processing')
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-yellow-100 text-yellow-800">Diproses</span>
+                            @elseif($order->status == 'confirmed')
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-teal-100 text-teal-800">Confirmed</span>
+                            @elseif($order->status == 'pending')
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-orange-100 text-orange-800">Pending</span>
+                            @elseif($order->status == 'cancelled')
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-red-100 text-red-800">Dibatalkan</span>
+                            @else
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 text-gray-800">{{
+                                ucfirst($order->status) }}</span>
+                            @endif
+                        </td>
 
-                    <td class="px-5 py-4 whitespace-nowrap text-[13px] text-gray-600">
-                        {{ $order->created_at->format('d M Y') }}
-                    </td>
+                        <td class="px-5 py-4 whitespace-nowrap text-[13px] text-gray-600">
+                            {{ $order->created_at->format('d M Y') }}
+                        </td>
 
-                    <td class="px-5 py-4">
-                        <a href="{{ route('seller.orders.show', $order->id) }}"
-                            class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#15803D] hover:bg-[#166534] transition text-white"
-                            title="Lihat Detail">
-                            <x-heroicon-s-eye class="w-4 h-4" />
-                        </a>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="7" class="px-6 py-12 text-center">
-                        <div class="flex flex-col items-center justify-center">
-                            <x-heroicon-o-shopping-bag class="w-12 h-12 text-gray-300 mb-3" />
-                            <p class="text-sm font-medium text-gray-900">Belum ada pesanan</p>
-                            <p class="text-xs text-gray-500 mt-1">Pesanan dari pelanggan akan muncul di sini</p>
-                        </div>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-
+                        <td class="px-5 py-4 text-center">
+                            <a href="{{ route('seller.orders.show', $order->id) }}"
+                                class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#15803D] hover:bg-[#166534] transition text-white"
+                                title="Lihat Detail">
+                                <x-heroicon-s-eye class="w-4 h-4" />
+                            </a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="px-6 py-12 text-center text-gray-500 italic">
+                            Belum ada pesanan masuk.
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div> 
         @if($orders->hasPages())
         <div class="px-6 py-4 border-t border-gray-200">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -290,18 +278,18 @@
                 <div class="flex gap-2">
                     @if($orders->onFirstPage())
                     <button disabled
-                        class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-400 cursor-not-allowed">‹</button>
+                        class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-400 cursor-not-allowed bg-gray-50">‹</button>
                     @else
                     <a href="{{ $orders->previousPageUrl() }}"
-                        class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">‹</a>
+                        class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50 shadow-sm bg-white">‹</a>
                     @endif
 
                     @if($orders->hasMorePages())
                     <a href="{{ $orders->nextPageUrl() }}"
-                        class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">›</a>
+                        class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50 shadow-sm bg-white">›</a>
                     @else
                     <button disabled
-                        class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-400 cursor-not-allowed">›</button>
+                        class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-400 cursor-not-allowed bg-gray-50">›</button>
                     @endif
                 </div>
             </div>

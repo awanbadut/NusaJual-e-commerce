@@ -103,15 +103,43 @@ class Order extends Model
     {
         return $this->status === 'cancelled';
     }
-    
+
     public function isPaid()
     {
         return $this->payment_status === 'paid';
     }
-    
+
     public function isConfirmed()
     {
         return $this->payment_status === 'confirmed';
+    }
+
+    public function isPacking()
+    {
+        return $this->status === 'packing';
+    }
+
+    public function getStatusLabel()
+    {
+        if ($this->status === 'cancelled') return 'Pesanan Dibatalkan';
+        if ($this->status === 'completed') return 'Pesanan Selesai';
+
+        // Logic berdasarkan Payment
+        if (!$this->payment || $this->payment->status === 'pending') {
+            return 'Menunggu Pembayaran';
+        }
+
+        if ($this->payment->status === 'paid') {
+            return 'Menunggu Konfirmasi Admin';
+        }
+
+        if ($this->payment->status === 'confirmed') {
+            if ($this->status === 'processing') return 'Pesanan Dikonfirmasi';
+            if ($this->status === 'packing') return 'Pesanan Sedang Dikemas';
+            if ($this->status === 'shipped') return 'Pesanan Dalam Pengiriman';
+        }
+
+        return ucfirst($this->status);
     }
 
     // ==========================================
@@ -157,7 +185,7 @@ class Order extends Model
         }
 
         $hoursSincePaid = $this->payment->paid_at->diffInHours(now());
-        
+
         if ($hoursSincePaid >= 2) {
             return 0;
         }

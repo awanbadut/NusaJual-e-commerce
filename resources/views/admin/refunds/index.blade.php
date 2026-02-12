@@ -182,13 +182,8 @@
                         <td class="px-5 py-4">
                             @if($refund->refund_proof)
                             <a href="{{ route('admin.refunds.viewProof', $refund->id) }}" target="_blank"
-                                class="text-[#2563EB] hover:underline text-[11px] flex items-center gap-1">
-                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                    <path fill-rule="evenodd"
-                                        d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                                        clip-rule="evenodd" />
-                                </svg>
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 text-green-700 hover:bg-green-600 hover:text-white border border-green-200 transition-all shadow-sm text-[11px] font-medium">
+                                <x-heroicon-s-eye class="w-3.5 h-3.5" />
                                 Lihat Bukti
                             </a>
                             @else

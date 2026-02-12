@@ -141,8 +141,10 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Jumlah Pencairan <span
                             class="text-red-500">*</span></label>
                     <div class="relative">
-                        <span
-                            class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-semibold">Rp</span>
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-sm font-semibold">Rp</span>
+                        </div>
+
                         <input type="number" name="amount" id="withdrawalAmount"
                             class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
                             placeholder="Minimal {{ number_format($minAmount, 0, ',', '.') }}" min="{{ $minAmount }}"

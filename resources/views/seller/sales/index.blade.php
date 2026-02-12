@@ -14,44 +14,48 @@
     </div>
     @endif
 
-    <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-        <form method="GET" class="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-3 w-full md:w-auto">
-                <div class="relative flex-1 md:flex-none">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+    <div class="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
+        <form method="GET" action="{{ route('seller.sales.index') }}"
+            class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+
+                <div class="relative flex-1">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                     </div>
                     <input type="date" name="start_date"
                         value="{{ request('start_date', $startDate->format('Y-m-d')) }}"
-                        class="pl-10 px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600 w-full">
+                        class="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600 w-full transition shadow-sm">
                 </div>
 
-                <span class="text-gray-500">-</span>
+                <span class="text-gray-400 hidden sm:block font-bold">-</span>
 
-                <div class="relative flex-1 md:flex-none">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-
+                <div class="relative flex-1">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                     </div>
                     <input type="date" name="end_date" value="{{ request('end_date', $endDate->format('Y-m-d')) }}"
-                        class="pl-10 px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600 w-full">
+                        class="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600 w-full transition shadow-sm">
                 </div>
 
-                <button type="submit"
-                    class="px-6 py-2.5 bg-[#15803D] text-white rounded-lg hover:bg-[#166534] transition text-sm font-semibold shadow-sm">
-                    Filter
-                </button>
+                <div class="flex gap-2">
+                    <button type="submit"
+                        class="flex-1 sm:flex-none px-6 py-2.5 bg-[#15803D] text-white rounded-lg hover:bg-[#166534] transition text-sm font-semibold shadow-sm active:scale-95">
+                        Filter
+                    </button>
 
-                @if(request('start_date') || request('end_date'))
-                <a href="{{ route('seller.sales.index') }}"
-                    class="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-semibold text-center">
-                    Reset
-                </a>
-                @endif
+                    @if(request('start_date') || request('end_date'))
+                    <a href="{{ route('seller.sales.index') }}"
+                        class="flex-1 sm:flex-none px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-semibold text-center shadow-sm">
+                        Reset
+                    </a>
+                    @endif
+                </div>
             </div>
 
             <a href="{{ route('seller.sales.export', request()->query()) }}"
-                class="w-full md:w-auto px-6 py-2.5 bg-green-800 text-white rounded-lg hover:bg-green-900 transition text-sm font-semibold flex items-center justify-center gap-2 shadow-sm">
+                class="w-full lg:w-auto px-6 py-2.5 bg-green-800 text-white rounded-lg hover:bg-green-900 transition text-sm font-semibold flex items-center justify-center gap-2 shadow-sm active:scale-95">
                 <x-heroicon-o-arrow-down-tray class="w-5 h-5" />
-                Download CSV
+                <span>Download CSV</span>
             </a>
         </form>
     </div>

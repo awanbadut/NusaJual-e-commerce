@@ -7,137 +7,146 @@
 @endpush
 
 @section('content')
-    <!-- Header -->
-    <div class="mb-6">
-        <h1 class="text-[28px] font-bold text-[#15803D] mb-1">Dashboard</h1>
-        <p class="text-[13px] text-[#78716C]">Pantau Pendapatan dan Progress Nusa Belanja</p>
+<div class="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    <div class="mb-6 sm:mb-8">
+        <h1 class="text-2xl sm:text-[28px] font-bold text-[#15803D] mb-1">Dashboard</h1>
+        <p class="text-xs sm:text-[13px] text-[#78716C]">Pantau Pendapatan dan Progress Nusa Belanja</p>
     </div>
 
-    <!-- Cards Metrics - 100% Real Data -->
-    <div class="grid grid-cols-3 gap-6 mb-8">
-        <div class="bg-white rounded-2xl shadow-sm px-6 py-5 relative overflow-hidden">
-            <div class="flex justify-between items-start">
-                <div>
-                    <p class="text-[12px] text-[#78716C] mb-2">Total Mitra</p>
-                    <p class="text-[32px] font-bold text-[#111827] leading-none">
-                        {{ number_format($totalMitra) }}
-                    </p>
-                </div>
-                <div class="w-12 h-12 rounded-xl bg-[#E0F2FE] flex items-center justify-center">
-                    <svg class="w-6 h-6 text-[#0BA95B]" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
-                    </svg>
-                </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div class="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-gray-100 flex items-start justify-between">
+            <div>
+                <p class="text-[10px] sm:text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Total
+                    Mitra</p>
+                <p class="text-2xl sm:text-[32px] font-bold text-gray-900 leading-none">
+                    {{ number_format($totalMitra) }}
+                </p>
+                <p class="text-[10px] sm:text-[11px] text-gray-400 mt-2">Toko terdaftar aktif</p>
+            </div>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                <x-heroicon-s-building-storefront class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm px-6 py-5 relative overflow-hidden">
-            <div class="flex justify-between items-start">
-                <div>
-                    <p class="text-[12px] text-[#78716C] mb-2">Total Penjualan</p>
-                    <p class="text-[32px] font-bold text-[#111827] leading-none">
-                        @if($totalSales >= 1000000000)
-                            Rp {{ number_format($totalSales / 1000000000, 1) }}M
-                        @elseif($totalSales >= 1000000)
-                            Rp {{ number_format($totalSales / 1000000, 0) }}jt
-                        @else
-                            Rp {{ number_format($totalSales, 0, ',', '.') }}
-                        @endif
-                    </p>
-                </div>
-                <div class="w-12 h-12 rounded-xl bg-[#FEF3C7] flex items-center justify-center">
-                    <svg class="w-6 h-6 text-[#F59E0B]" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
-                    </svg>
-                </div>
+        <div class="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-gray-100 flex items-start justify-between">
+            <div>
+                <p class="text-[10px] sm:text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Total
+                    Penjualan</p>
+                <p class="text-2xl sm:text-[32px] font-bold text-gray-900 leading-none">
+                    @if($totalSales >= 1000000000)
+                    Rp {{ number_format($totalSales / 1000000000, 1) }}M
+                    @elseif($totalSales >= 1000000)
+                    Rp {{ number_format($totalSales / 1000000, 0) }}jt
+                    @else
+                    Rp {{ number_format($totalSales, 0, ',', '.') }}
+                    @endif
+                </p>
+                <p class="text-[10px] sm:text-[11px] text-gray-400 mt-2">Akumulasi pendapatan</p>
+            </div>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-green-50 flex items-center justify-center">
+                <x-heroicon-s-banknotes class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm px-6 py-5 relative overflow-hidden">
-            <div class="flex justify-between items-start">
-                <div>
-                    <p class="text-[12px] text-[#78716C] mb-2">Total Pesanan</p>
-                    <p class="text-[32px] font-bold text-[#111827] leading-none">
-                        {{ number_format($totalOrders) }}
-                    </p>
-                </div>
-                <div class="w-12 h-12 rounded-xl bg-[#EEF2FF] flex items-center justify-center">
-                    <svg class="w-6 h-6 text-[#6366F1]" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
-                    </svg>
-                </div>
+        <div
+            class="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-gray-100 flex items-start justify-between sm:col-span-2 lg:col-span-1">
+            <div>
+                <p class="text-[10px] sm:text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Total
+                    Pesanan</p>
+                <p class="text-2xl sm:text-[32px] font-bold text-gray-900 leading-none">
+                    {{ number_format($totalOrders) }}
+                </p>
+                <p class="text-[10px] sm:text-[11px] text-gray-400 mt-2">Transaksi berhasil</p>
+            </div>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-orange-50 flex items-center justify-center">
+                <x-heroicon-s-shopping-bag class="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" />
             </div>
         </div>
     </div>
 
-    <!-- Chart Tren Penjualan - Real Data dari Database -->
-    <div class="bg-white rounded-2xl shadow-sm px-6 py-5 mb-8">
-        <div class="mb-5">
-            <p class="text-[16px] font-bold text-[#111827] mb-1">Tren Penjualan</p>
-            <p class="text-[12px] text-[#78716C]">
-                Pergerakan penjualan produk mitra dari waktu ke waktu
-            </p>
+    <div class="bg-white rounded-2xl shadow-sm p-5 sm:p-6 mb-6 sm:mb-8 border border-gray-100">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 class="text-sm sm:text-[16px] font-bold text-gray-900">Tren Penjualan</h2>
+                <p class="text-[10px] sm:text-[12px] text-gray-500">Pergerakan penjualan produk mitra dari waktu ke
+                    waktu</p>
+            </div>
+            <div class="p-1.5 sm:p-2 bg-gray-50 rounded-lg">
+                <x-heroicon-o-chart-bar class="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
+            </div>
         </div>
-        <div style="height: 320px;">
+        <div class="h-60 sm:h-80 w-full relative">
             <canvas id="salesChart"></canvas>
         </div>
     </div>
 
-    <!-- Tabel Transaksi Terbaru - Real Data -->
-    <div class="bg-white rounded-2xl shadow-sm px-6 py-5">
-        <p class="text-[16px] font-bold text-[#111827] mb-5">Transaksi Baru Baru Ini</p>
-        <div class="overflow-x-auto">
-            <table class="w-full text-[13px]">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-5 sm:px-6 py-4 sm:py-5 border-b border-gray-100 flex justify-between items-center">
+            <h2 class="text-sm sm:text-[16px] font-bold text-gray-900">Transaksi Terbaru</h2>
+            <span class="px-2 sm:px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-[10px] font-bold">
+                {{ $recentTransactions->count() }} Terakhir
+            </span>
+        </div>
+
+        <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left text-[13px] min-w-[700px]">
                 <thead class="bg-[#DCFCE7] border-t border-b border-[#BBF7D0]">
-                    <tr class="text-left">
-                        <th class="px-4 py-3 font-semibold text-[#15803D]">Tanggal</th>
-                        <th class="px-4 py-3 font-semibold text-[#15803D]">Nama Mitra</th>
-                        <th class="px-4 py-3 font-semibold text-[#15803D]">Banyak Transaksi</th>
-                        <th class="px-4 py-3 font-semibold text-[#15803D]">Total Pendapatan</th>
+                    <tr>
+                        <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Tanggal</th>
+                        <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Nama Mitra</th>
+                        <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Banyak Transaksi</th>
+                        <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Total Pendapatan</th>
                     </tr>
                 </thead>
-                <tbody class="bg-[#F9FDF7]">
+                <tbody class="bg-white divide-y divide-gray-100">
                     @forelse($recentTransactions as $transaction)
-                    <tr class="border-b border-[#E5E7EB] hover:bg-white">
-                        <td class="px-4 py-3 text-[#111827]">
-                            {{ $transaction->created_at->format('d F Y') }}
+                    <tr class="hover:bg-[#F9FDF7] transition duration-150">
+                        <td class="px-5 py-4 text-gray-900 whitespace-nowrap">
+                            <span class="font-medium">{{ $transaction->created_at->format('d F Y') }}</span><br>
+                            <span class="text-[11px] text-gray-500">{{ $transaction->created_at->format('H:i') }}
+                                WIB</span>
                         </td>
-                        <td class="px-4 py-3 text-[#111827] font-medium">
-                            {{ $transaction->store->store_name }}
+                        <td class="px-5 py-4 whitespace-nowrap">
+                            <div class="flex items-center gap-2">
+                                <div
+                                    class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-[10px] sm:text-xs">
+                                    {{ strtoupper(substr($transaction->store->store_name, 0, 2)) }}
+                                </div>
+                                <span class="font-medium text-gray-900 text-sm truncate max-w-[150px]">{{
+                                    $transaction->store->store_name }}</span>
+                            </div>
                         </td>
-                        <td class="px-4 py-3">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#FBBF24] text-white text-[11px] font-semibold">
-                                {{ $transaction->items->count() }} Transaksi
+                        <td class="px-5 py-4 whitespace-nowrap">
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800 text-[11px] font-medium border border-yellow-200">
+                                {{ $transaction->items->count() }} Item
                             </span>
                         </td>
-                        <td class="px-4 py-3 font-bold text-[#111827]">
+                        <td class="px-5 py-4 font-bold text-[#15803D] whitespace-nowrap">
                             Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" class="px-4 py-8 text-center text-[#9CA3AF]">
-                            Belum ada transaksi
+                        <td colspan="4" class="px-5 py-10 text-center text-gray-500">
+                            <div class="flex flex-col items-center justify-center">
+                                <x-heroicon-o-inbox class="w-10 h-10 sm:w-12 sm:h-12 text-gray-300 mb-3" />
+                                <p class="text-sm">Belum ada transaksi</p>
+                            </div>
                         </td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="mt-4 text-center text-[11px] text-[#9CA3AF]">
-            Menampilkan <span class="font-semibold">1</span> sampai 
-            <span class="font-semibold">{{ $recentTransactions->count() }}</span> dari 
-            <span class="font-semibold">{{ $totalOrders }}</span> data
-        </div>
     </div>
+</div>
+
 @endsection
 
 @push('scripts')
 <script>
     const ctx = document.getElementById('salesChart').getContext('2d');
-    
-    // Data chart dari database (real data)
     const chartData = @json($chartData);
     
     new Chart(ctx, {
@@ -154,22 +163,23 @@
                     display: true,
                     position: 'bottom',
                     labels: {
-                        font: { size: 11 },
+                        font: { size: window.innerWidth < 640 ? 10 : 11 }, // Responsive font size
                         color: '#78716C',
                         padding: 15,
                         usePointStyle: true,
-                        pointStyle: 'rect'
+                        pointStyle: 'circle'
                     }
                 },
                 tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 10,
+                    bodyFont: { size: 12 },
                     callbacks: {
                         label: function(context) {
                             let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
-                            }
+                            if (label) label += ': ';
                             if (context.parsed.y !== null) {
-                                label += 'Rp ' + context.parsed.y.toFixed(2) + ' juta';
+                                label += 'Rp ' + context.parsed.y.toLocaleString('id-ID') + ' Jt';
                             }
                             return label;
                         }
@@ -178,31 +188,22 @@
             },
             scales: {
                 x: {
-                    grid: { 
-                        display: false 
-                    },
-                    ticks: { 
-                        font: { size: 11 }, 
-                        color: '#9CA3AF' 
-                    }
+                    grid: { display: false },
+                    ticks: { font: { size: 10 }, color: '#6B7280' }
                 },
                 y: {
                     beginAtZero: true,
-                    grid: { 
-                        color: '#F3F4F6',
-                        drawBorder: false
-                    },
+                    grid: { color: '#F3F4F6', borderDash: [5, 5] },
                     ticks: { 
-                        font: { size: 11 }, 
-                        color: '#9CA3AF',
-                        callback: function(value) {
-                            return 'Rp ' + value + ' jt';
-                        }
+                        font: { size: 10 }, 
+                        color: '#6B7280',
+                        callback: function(value) { return value + ' Jt'; }
                     }
                 }
             },
-            barPercentage: 0.8,
-            categoryPercentage: 0.9
+            elements: {
+                bar: { borderRadius: 4, borderSkipped: false }
+            }
         }
     });
 </script>

@@ -149,7 +149,7 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                             <template x-for="courier in couriers" :key="courier.id">
-                                <div @click="selectedCourier = courier"
+                                <div @click="selectedCourier = courier; document.getElementsByName('shipping_courier')[0].value = courier.name; document.getElementsByName('shipping_cost')[0].value = courier.price;"
                                     class="cursor-pointer border rounded-lg p-4 flex flex-col gap-1 transition relative overflow-hidden"
                                     :class="selectedCourier.id === courier.id ? 'border-[#0F4C20] bg-green-50 ring-1 ring-[#0F4C20]' : 'border-gray-200 hover:border-gray-300 bg-white'">
 
@@ -221,23 +221,30 @@
 
     <script>
         function checkoutData() {
-            return {
-                // DATA DIAMBIL DARI PHP
-                items: @json($jsItems),
-                couriers: @json($couriers),
-                
-                // Default pilih kurir pertama
-                selectedCourier: @json($couriers[0]), 
+        return {
+            items: @json($jsItems),
+            couriers: @json($couriers),
+            // Inisialisasi dengan objek kosong jika tidak ada kurir
+            selectedCourier: @json($couriers[0] ?? ['id' => null, 'name' => '', 'price' => 0]), 
 
-                get subTotal() {
-                    return this.items.reduce((total, item) => total + (item.price * item.qty), 0);
-                },
+            get subTotal() {
+                return this.items.reduce((total, item) => total + (item.price * item.qty), 0);
+            },
 
-                formatRupiah(number) {
-                    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+            formatRupiah(number) {
+                return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+            },
+            
+            // Tambahkan fungsi submit untuk memastikan data terisi
+            submitForm(e) {
+                if (!this.selectedCourier.id) {
+                    alert('Silakan pilih jasa pengiriman terlebih dahulu!');
+                    e.preventDefault();
+                    return;
                 }
             }
         }
+    }
     </script>
 
 </body>

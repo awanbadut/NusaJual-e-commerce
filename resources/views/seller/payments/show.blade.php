@@ -1,376 +1,288 @@
 @extends('layouts.seller')
 
 @section('title', 'Detail Pembayaran')
-@section('page-title', 'Detail Pembayaran #' . str_pad($payment->id, 4, '0', STR_PAD_LEFT))
-@section('page-subtitle', 'Informasi lengkap pembayaran dari customer')
+@section('page-title', '')
+@section('page-subtitle', '')
 
 @section('content')
-<div class="w-full px-4 sm:px-6 lg:px-8">
-    <div class="max-w-full mx-auto">
-
-        <!-- Back Button -->
-        <div class="mb-4">
-            <a href="{{ route('seller.payments.index') }}" 
-               class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div class="max-w-6xl mx-auto px-4 sm:px-0 pb-10">
+    <div class="mb-6">
+        <div class="flex items-center gap-3 mb-2">
+            <a href="{{ route('seller.payments.index') }}" class="p-2 hover:bg-gray-100 rounded-lg transition">
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
-                Kembali ke Daftar Pembayaran
             </a>
+            <div class="flex-1">
+                <nav class="flex text-sm text-gray-600 mb-1">
+                    <a href="{{ route('seller.payments.index') }}" class="hover:text-green-600">Pembayaran</a>
+                    <span class="mx-2">›</span>
+                    <span class="text-gray-900 font-medium">Detail Pembayaran</span>
+                </nav>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                    <h1 class="text-xl sm:text-2xl font-bold text-green-800">
+                        Detail Pembayaran <span class="text-gray-900 font-mono">#{{ str_pad($payment->id, 4, '0',
+                            STR_PAD_LEFT) }}</span>
+                    </h1>
+
+                    @if($payment->status == 'pending')
+                    <span
+                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 border border-gray-200 w-fit">
+                        Belum Bayar
+                    </span>
+                    @elseif($payment->status == 'paid')
+                    <span
+                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 border border-yellow-200 w-fit">
+                        Menunggu Konfirmasi
+                    </span>
+                    @elseif($payment->status == 'confirmed')
+                    <span
+                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200 w-fit">
+                        Terkonfirmasi
+                    </span>
+                    @else
+                    <span
+                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-200 w-fit">
+                        Ditolak
+                    </span>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <div class="lg:col-span-2 space-y-6">
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-500 mb-1 uppercase tracking-wide">Total Pembayaran</p>
+                        <p class="text-3xl font-bold text-gray-900">Rp {{ number_format($payment->amount, 0, ',', '.')
+                            }}</p>
+                    </div>
+                    <div class="text-left sm:text-right">
+                        <p class="text-sm font-semibold text-gray-500 mb-1 uppercase tracking-wide">ID Pembayaran</p>
+                        <p class="text-base font-mono font-bold text-gray-900">#PAY-{{ str_pad($payment->id, 6, '0',
+                            STR_PAD_LEFT) }}</p>
+                    </div>
+                </div>
+
+                <div class="relative border-l-2 border-gray-100 ml-3 space-y-6 pb-2">
+                    <div class="relative pl-6">
+                        <div
+                            class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-green-100 border-2 border-green-500">
+                        </div>
+                        <p class="text-sm font-bold text-gray-900">Pembayaran Dibuat</p>
+                        <p class="text-xs text-gray-500">{{ $payment->created_at->format('d M Y, H:i') }} WIB</p>
+                    </div>
+
+                    @if($payment->paid_at)
+                    <div class="relative pl-6">
+                        <div
+                            class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-100 border-2 border-blue-500">
+                        </div>
+                        <p class="text-sm font-bold text-gray-900">Bukti Pembayaran Diupload</p>
+                        <p class="text-xs text-gray-500">{{ $payment->paid_at->format('d M Y, H:i') }} WIB</p>
+                    </div>
+                    @endif
+
+                    @if($payment->confirmed_at)
+                    <div class="relative pl-6">
+                        <div
+                            class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-green-100 border-2 border-green-600">
+                        </div>
+                        <p class="text-sm font-bold text-gray-900">Dikonfirmasi Admin</p>
+                        <p class="text-xs text-gray-500">
+                            {{ $payment->confirmed_at->format('d M Y, H:i') }} WIB
+                            @if($payment->confirmedBy)
+                            <span class="text-gray-400">• oleh {{ $payment->confirmedBy->name }}</span>
+                            @endif
+                        </p>
+                    </div>
+                    @endif
+
+                    @if($payment->rejected_at)
+                    <div class="relative pl-6">
+                        <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-red-100 border-2 border-red-600">
+                        </div>
+                        <p class="text-sm font-bold text-red-700">Ditolak Admin</p>
+                        <p class="text-xs text-gray-500">
+                            {{ $payment->rejected_at->format('d M Y, H:i') }} WIB
+                            @if($payment->rejectedBy)
+                            <span class="text-gray-400">• oleh {{ $payment->rejectedBy->name }}</span>
+                            @endif
+                        </p>
+                        @if($payment->rejection_reason)
+                        <div class="mt-2 p-3 bg-red-50 rounded-lg text-xs text-red-700 italic border border-red-100">
+                            "{{ $payment->rejection_reason }}"
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center gap-2 mb-4 border-b border-gray-100 pb-4">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    <h3 class="text-lg font-bold text-green-800">Informasi Order Terkait</h3>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Nomor Order</p>
+                        <a href="{{ route('seller.orders.show', $payment->order_id) }}"
+                            class="text-lg font-bold text-green-600 hover:text-green-800 hover:underline transition flex items-center gap-1">
+                            #ORD-{{ str_pad($payment->order_id, 4, '0', STR_PAD_LEFT) }}
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14">
+                                </path>
+                            </svg>
+                        </a>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">Status Order Saat Ini</p>
+                        @php
+                        $orderStatusClasses = [
+                        'pending' => 'bg-gray-100 text-gray-800',
+                        'confirmed' => 'bg-blue-100 text-blue-800',
+                        'processing' => 'bg-yellow-100 text-yellow-800',
+                        'shipped' => 'bg-purple-100 text-purple-800',
+                        'completed' => 'bg-green-100 text-green-800',
+                        'cancelled' => 'bg-red-100 text-red-800',
+                        ];
+                        @endphp
+                        <span
+                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $orderStatusClasses[$payment->order->status] ?? 'bg-gray-100 text-gray-800' }}">
+                            {{ ucfirst($payment->order->status) }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-gray-100">
+                    <p class="text-sm font-semibold text-gray-900 mb-3">Rincian Tagihan</p>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Subtotal</span>
+                            <span class="font-medium text-gray-900">Rp {{ number_format($payment->order->sub_total ?? 0,
+                                0, ',', '.') }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Ongkir</span>
+                            <span class="font-medium text-gray-900">Rp {{ number_format($payment->order->shipping_cost,
+                                0, ',', '.') }}</span>
+                        </div>
+                        <div class="flex justify-between font-bold border-t border-gray-100 pt-2 mt-2">
+                            <span class="text-gray-900">Total Tagihan</span>
+                            <span class="text-green-600">Rp {{ number_format($payment->order->total_amount, 0, ',', '.')
+                                }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- Left Column: Payment Info -->
-            <div class="lg:col-span-2 space-y-6">
-                
-                <!-- Payment Status Card -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-bold text-gray-900">Status Pembayaran</h3>
+        <div class="space-y-6">
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-bold text-green-800 mb-4">Pelanggan</h3>
+
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0"
+                        style="background-color: {{ '#' . substr(md5($payment->order->user->name), 0, 6) }}">
+                        {{ strtoupper(substr($payment->order->user->name, 0, 2)) }}
                     </div>
-                    
-                    <div class="p-6">
-                        <div class="flex items-center justify-between mb-6">
-                            <div>
-                                <p class="text-sm text-gray-500 mb-1">Status Saat Ini</p>
-                                @if($payment->status == 'pending')
-                                <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gray-100 text-gray-800 border border-gray-300">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    Belum Bayar
-                                </span>
-                                @elseif($payment->status == 'paid')
-                                <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800 border border-yellow-300">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    Menunggu Konfirmasi Admin
-                                </span>
-                                @elseif($payment->status == 'confirmed')
-                                <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-green-100 text-green-800 border border-green-300">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    Terkonfirmasi
-                                </span>
-                                @else
-                                <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-red-100 text-red-800 border border-red-300">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    Ditolak
-                                </span>
-                                @endif
-                            </div>
-
-                            <div class="text-right">
-                                <p class="text-sm text-gray-500 mb-1">Jumlah Pembayaran</p>
-                                <p class="text-3xl font-bold text-gray-900">Rp {{ number_format($payment->amount, 0, ',', '.') }}</p>
-                            </div>
-                        </div>
-
-                        <!-- Timeline -->
-                        <div class="space-y-4">
-                            <div class="flex items-start gap-3">
-                                <div class="shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-sm font-semibold text-gray-900">Pembayaran Dibuat</p>
-                                    <p class="text-xs text-gray-500">{{ $payment->created_at->format('d M Y, H:i') }} WIB</p>
-                                </div>
-                            </div>
-
-                            @if($payment->paid_at)
-                            <div class="flex items-start gap-3">
-                                <div class="shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                                    </svg>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-sm font-semibold text-gray-900">Bukti Pembayaran Diupload</p>
-                                    <p class="text-xs text-gray-500">{{ $payment->paid_at->format('d M Y, H:i') }} WIB</p>
-                                </div>
-                            </div>
-                            @endif
-
-                            @if($payment->confirmed_at)
-                            <div class="flex items-start gap-3">
-                                <div class="shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-sm font-semibold text-gray-900">Dikonfirmasi oleh Admin</p>
-                                    <p class="text-xs text-gray-500">
-                                        {{ $payment->confirmed_at->format('d M Y, H:i') }} WIB
-                                        @if($payment->confirmedBy)
-                                        <span class="ml-1">oleh {{ $payment->confirmedBy->name }}</span>
-                                        @endif
-                                    </p>
-                                </div>
-                            </div>
-                            @endif
-
-                            @if($payment->rejected_at)
-                            <div class="flex items-start gap-3">
-                                <div class="shrink-0 w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-sm font-semibold text-gray-900">Ditolak oleh Admin</p>
-                                    <p class="text-xs text-gray-500">
-                                        {{ $payment->rejected_at->format('d M Y, H:i') }} WIB
-                                        @if($payment->rejectedBy)
-                                        <span class="ml-1">oleh {{ $payment->rejectedBy->name }}</span>
-                                        @endif
-                                    </p>
-                                    @if($payment->rejection_reason)
-                                    <p class="text-xs text-red-600 mt-1 italic">"{{ $payment->rejection_reason }}"</p>
-                                    @endif
-                                </div>
-                            </div>
-                            @endif
-                        </div>
+                    <div class="overflow-hidden">
+                        <p class="text-base font-semibold text-gray-900 truncate">{{ $payment->order->user->name }}</p>
+                        <p class="text-xs text-gray-500 truncate">{{ $payment->order->user->email }}</p>
                     </div>
                 </div>
 
-                <!-- Order Information -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-bold text-gray-900">Informasi Order</h3>
+                <div class="space-y-3 pt-3 border-t border-gray-100">
+                    <div>
+                        <p class="text-xs text-gray-500 mb-0.5">No. Telepon</p>
+                        <p class="text-sm font-medium text-gray-900">{{ $payment->order->user->phone ?? '-' }}</p>
                     </div>
-                    
-                    <div class="p-6">
-                        <div class="grid grid-cols-2 gap-6 mb-6">
-                            <div>
-                                <p class="text-sm text-gray-500 mb-1">Nomor Order</p>
-                                <a href="{{ route('seller.orders.show', $payment->order_id) }}" 
-                                   class="text-lg font-bold text-green-600 hover:underline">
-                                    #ORD-{{ str_pad($payment->order_id, 4, '0', STR_PAD_LEFT) }}
-                                </a>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500 mb-1">Status Order</p>
-                                @php
-                                    $orderStatusClasses = [
-                                        'pending' => 'bg-gray-100 text-gray-800',
-                                        'confirmed' => 'bg-blue-100 text-blue-800',
-                                        'processing' => 'bg-yellow-100 text-yellow-800',
-                                        'shipped' => 'bg-purple-100 text-purple-800',
-                                        'completed' => 'bg-green-100 text-green-800',
-                                        'cancelled' => 'bg-red-100 text-red-800',
-                                    ];
-                                @endphp
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $orderStatusClasses[$payment->order->status] ?? 'bg-gray-100 text-gray-800' }}">
-                                    {{ ucfirst($payment->order->status) }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-6">
-                            <div>
-                                <p class="text-sm text-gray-500 mb-1">Tanggal Order</p>
-                                <p class="text-sm font-medium text-gray-900">{{ $payment->order->created_at->format('d M Y, H:i') }} WIB</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500 mb-1">Metode Pembayaran</p>
-                                <p class="text-sm font-medium text-gray-900">{{ ucfirst($payment->order->payment_method ?? 'Transfer Bank') }}</p>
-                            </div>
-                        </div>
-
-                        <!-- Order Items -->
-                        <div class="mt-6 border-t border-gray-200 pt-6">
-                            <h4 class="text-sm font-bold text-gray-900 mb-4">Item Order</h4>
-                            <div class="space-y-3">
-                                @foreach($payment->order->items as $item)
-                                <div class="flex items-center gap-4 pb-3 border-b border-gray-100 last:border-0">
-                                    <div class="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 shrink-0">
-                                        @if($item->product && $item->product->primaryImage)
-                                        <img src="{{ asset('storage/' . $item->product->primaryImage->image_path) }}" 
-                                             alt="{{ $item->product_name }}"
-                                             class="w-full h-full object-cover">
-                                        @else
-                                        <div class="w-full h-full flex items-center justify-center text-gray-400">
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                            </svg>
-                                        </div>
-                                        @endif
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-semibold text-gray-900 truncate">{{ $item->product_name }}</p>
-                                        <p class="text-xs text-gray-500">{{ $item->quantity }} x Rp {{ number_format($item->price, 0, ',', '.') }}</p>
-                                    </div>
-                                    <p class="text-sm font-bold text-gray-900 shrink-0">
-                                        Rp {{ number_format($item->quantity * $item->price, 0, ',', '.') }}
-                                    </p>
-                                </div>
-                                @endforeach
-                            </div>
-
-                            <!-- Order Summary -->
-                            <div class="mt-6 space-y-2 border-t border-gray-200 pt-4">
-                                @php
-                                    // ✅ FIX: Gunakan sub_total (dengan underscore)
-                                    $calculatedSubtotal = $payment->order->items->sum(function($item) {
-                                        return $item->quantity * $item->price;
-                                    });
-                                    
-                                    // Cek kolom sub_total atau subtotal
-                                    $displaySubtotal = $payment->order->sub_total ?? $calculatedSubtotal;
-                                @endphp
-                                
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600">Subtotal</span>
-                                    <span class="font-medium text-gray-900">Rp {{ number_format($displaySubtotal, 0, ',', '.') }}</span>
-                                </div>
-                                
-                                @if($payment->order->shipping_cost > 0)
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600">Ongkir</span>
-                                    <span class="font-medium text-gray-900">Rp {{ number_format($payment->order->shipping_cost, 0, ',', '.') }}</span>
-                                </div>
-                                @endif
-                                
-                                @if($payment->order->tax ?? 0 > 0)
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600">Pajak</span>
-                                    <span class="font-medium text-gray-900">Rp {{ number_format($payment->order->tax, 0, ',', '.') }}</span>
-                                </div>
-                                @endif
-                                
-                                <div class="flex justify-between text-base font-bold border-t border-gray-200 pt-2">
-                                    <span class="text-gray-900">Total</span>
-                                    <span class="text-green-600">Rp {{ number_format($payment->order->total_amount, 0, ',', '.') }}</span>
-                                </div>
-                            </div>
-
-                        </div>
+                    <div>
+                        <p class="text-xs text-gray-500 mb-0.5">Alamat Pengiriman</p>
+                        <p class="text-sm font-medium text-gray-900 leading-relaxed">
+                            {{ $payment->order->shipping_address ?? '-' }}
+                        </p>
                     </div>
                 </div>
-
             </div>
 
-            <!-- Right Column: Customer & Proof -->
-            <div class="space-y-6">
-                
-                <!-- Customer Info -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-bold text-gray-900">Customer</h3>
-                    </div>
-                    
-                    <div class="p-6">
-                        <div class="flex items-center gap-4 mb-6">
-                            <div class="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0" 
-                                 style="background-color: {{ '#' . substr(md5($payment->order->user->name), 0, 6) }}">
-                                {{ strtoupper(substr($payment->order->user->name, 0, 2)) }}
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-lg font-bold text-gray-900 truncate">{{ $payment->order->user->name }}</p>
-                                <p class="text-sm text-gray-500 truncate">{{ $payment->order->user->email }}</p>
-                            </div>
-                        </div>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-bold text-green-800 mb-4">Bukti Pembayaran</h3>
 
-                        <div class="space-y-4">
-                            <div>
-                                <p class="text-sm text-gray-500 mb-1">No. Telepon</p>
-                                <p class="text-sm font-medium text-gray-900">{{ $payment->order->user->phone ?? '-' }}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500 mb-1">Alamat Pengiriman</p>
-                                <p class="text-sm font-medium text-gray-900 leading-relaxed">
-                                    {{ $payment->order->shipping_address ?? '-' }}
-                                </p>
-                            </div>
-                        </div>
+                @if($payment->payment_proof)
+                <div
+                    class="aspect-[4/3] rounded-lg overflow-hidden bg-gray-50 border border-gray-100 mb-4 relative group">
+                    <img src="{{ asset('storage/' . $payment->payment_proof) }}" alt="Bukti Pembayaran"
+                        class="w-full h-full object-contain cursor-pointer transition transform group-hover:scale-105"
+                        onclick="viewProof('{{ asset('storage/' . $payment->payment_proof) }}')">
+                    <div
+                        class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center pointer-events-none">
+                        <span class="text-white text-xs font-bold bg-black/50 px-3 py-1 rounded-full">Klik untuk
+                            memperbesar</span>
                     </div>
                 </div>
-
-                <!-- Payment Proof -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-bold text-gray-900">Bukti Pembayaran</h3>
-                    </div>
-                    
-                    <div class="p-6">
-                        @if($payment->payment_proof)
-                        <div class="aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 mb-4">
-                            <img src="{{ asset('storage/' . $payment->payment_proof) }}" 
-                                 alt="Bukti Pembayaran"
-                                 class="w-full h-full object-contain cursor-pointer hover:scale-105 transition"
-                                 onclick="viewProof('{{ asset('storage/' . $payment->payment_proof) }}')">
-                        </div>
-                        <button onclick="viewProof('{{ asset('storage/' . $payment->payment_proof) }}')"
-                                class="w-full py-2.5 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm transition flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                            Lihat Fullsize
-                        </button>
-                        @else
-                        <div class="text-center py-12">
-                            <svg class="w-16 h-16 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            <p class="text-sm font-medium text-gray-700 mb-1">Belum ada bukti pembayaran</p>
-                            <p class="text-xs text-gray-500">Customer belum upload bukti transfer</p>
-                        </div>
-                        @endif
-                    </div>
+                <button onclick="viewProof('{{ asset('storage/' . $payment->payment_proof) }}')"
+                    class="w-full py-2.5 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm transition flex items-center justify-center gap-2 shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    Lihat Fullsize
+                </button>
+                @else
+                <div class="text-center py-8 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                    <svg class="w-12 h-12 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    <p class="text-sm font-medium text-gray-500">Belum ada bukti</p>
                 </div>
+                @endif
 
-                <!-- Payment Details -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-bold text-gray-900">Detail Pembayaran</h3>
-                    </div>
-                    
-                    <div class="p-6 space-y-4">
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1">ID Pembayaran</p>
-                            <p class="text-sm font-mono font-bold text-gray-900">#PAY-{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1">Metode Pembayaran</p>
-                            <p class="text-sm font-medium text-gray-900">{{ ucfirst($payment->payment_method ?? 'Transfer Bank') }}</p>
-                        </div>
-                        @if($payment->notes)
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1">Catatan</p>
-                            <p class="text-sm font-medium text-gray-900 leading-relaxed">{{ $payment->notes }}</p>
-                        </div>
-                        @endif
-                    </div>
+                @if($payment->notes)
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <p class="text-xs text-gray-500 mb-1">Catatan Pembeli</p>
+                    <p class="text-sm text-gray-700 italic">"{{ $payment->notes }}"</p>
                 </div>
-
+                @endif
             </div>
+
         </div>
     </div>
 </div>
 
-<!-- Modal for Full Size Image -->
 <div id="proofModal"
-    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm transition-opacity duration-300"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity duration-300"
     onclick="closeProofModal()">
-    <div class="max-w-5xl max-h-[95vh] relative bg-white rounded-lg shadow-2xl overflow-hidden"
+    <div class="max-w-4xl w-full max-h-[90vh] relative bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col"
         onclick="event.stopPropagation()">
-        <button onclick="closeProofModal()"
-            class="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition z-10">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-        </button>
-        <img id="proofImage" src="" alt="Bukti Pembayaran" class="w-full h-full object-contain max-h-[90vh]">
+        <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+            <h3 class="font-bold text-gray-900">Bukti Pembayaran</h3>
+            <button onclick="closeProofModal()" class="text-gray-500 hover:text-red-500 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+        <div class="flex-1 overflow-auto p-2 bg-gray-900 flex items-center justify-center">
+            <img id="proofImage" src="" alt="Bukti Pembayaran" class="max-w-full max-h-full object-contain">
+        </div>
     </div>
 </div>
 
@@ -378,19 +290,18 @@
 
 @push('scripts')
 <script>
-function viewProof(url) {
+    function viewProof(url) {
     document.getElementById('proofImage').src = url;
     const modal = document.getElementById('proofModal');
     modal.classList.remove('hidden');
-    setTimeout(() => {
-        modal.classList.add('opacity-100');
-    }, 10);
+    // Animasi fade-in
+    setTimeout(() => { modal.classList.remove('opacity-0'); }, 10);
     document.body.style.overflow = 'hidden';
 }
 
 function closeProofModal() {
     const modal = document.getElementById('proofModal');
-    modal.classList.remove('opacity-100');
+    modal.classList.add('opacity-0');
     setTimeout(() => {
         modal.classList.add('hidden');
     }, 300);

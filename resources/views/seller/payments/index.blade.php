@@ -14,12 +14,15 @@
     </div>
     @endif
 
-    <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-        <form method="GET" class="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
-                <div class="relative w-full md:w-auto">
+    <div class="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
+        <form method="GET" action="{{ route('seller.payments.index') }}"
+            class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+
+            <div class="flex flex-col md:flex-row items-stretch md:items-center gap-3 w-full lg:w-auto">
+
+                <div class="relative w-full md:w-48">
                     <select name="status" onchange="this.form.submit()"
-                        class="w-full md:w-auto px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none pr-10 cursor-pointer">
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600 appearance-none pr-10 cursor-pointer bg-white transition">
                         <option value="">Semua Status</option>
                         <option value="pending" {{ request('status')=='pending' ? 'selected' : '' }}>Pending</option>
                         <option value="paid" {{ request('status')=='paid' ? 'selected' : '' }}>Menunggu Konfirmasi
@@ -28,46 +31,48 @@
                         </option>
                         <option value="rejected" {{ request('status')=='rejected' ? 'selected' : '' }}>Ditolak</option>
                     </select>
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <x-heroicon-m-chevron-down class="w-5 h-5 text-gray-400" />
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                        <x-heroicon-m-chevron-down class="w-4 h-4" />
                     </div>
                 </div>
 
                 <div class="flex items-center gap-2 w-full md:w-auto">
-                    <div class="relative flex-1">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-
+                    <div class="relative flex-1 md:w-40">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                         </div>
                         <input type="date" name="date_from" value="{{ request('date_from') }}"
-                            class="w-full pl-10 px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600">
+                            class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition shadow-sm">
                     </div>
-                    <span class="text-gray-500">-</span>
-                    <div class="relative flex-1">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
 
+                    <span class="text-gray-400 font-bold">-</span>
+
+                    <div class="relative flex-1 md:w-40">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                         </div>
                         <input type="date" name="date_to" value="{{ request('date_to') }}"
-                            class="w-full pl-10 px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600">
+                            class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition shadow-sm">
                     </div>
                 </div>
 
-                <button type="submit"
-                    class="w-full md:w-auto px-6 py-2.5 bg-[#15803D] text-white rounded-lg hover:bg-[#166534] transition text-sm font-semibold shadow-sm">
-                    Filter
-                </button>
+                <div class="flex gap-2 w-full md:w-auto">
+                    <button type="submit"
+                        class="flex-1 md:flex-none px-6 py-2.5 bg-[#15803D] text-white rounded-lg hover:bg-[#166534] transition text-sm font-semibold shadow-sm active:scale-95">
+                        Filter
+                    </button>
 
-                @if(request('status') || request('date_from') || request('date_to'))
-                <a href="{{ route('seller.payments.index') }}"
-                    class="w-full md:w-auto px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-semibold text-center">
-                    Reset
-                </a>
-                @endif
+                    @if(request('status') || request('date_from') || request('date_to'))
+                    <a href="{{ route('seller.payments.index') }}"
+                        class="flex-1 md:flex-none px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-semibold text-center shadow-sm">
+                        Reset
+                    </a>
+                    @endif
+                </div>
             </div>
 
             <a href="{{ route('seller.payments.export', request()->query()) }}"
-                class="w-full md:w-auto px-6 py-2.5 bg-green-800 text-white rounded-lg hover:bg-green-900 transition text-sm font-semibold flex items-center justify-center gap-2 shadow-sm">
+                class="w-full lg:w-auto px-6 py-2.5 bg-green-800 text-white rounded-lg hover:bg-green-900 transition text-sm font-semibold flex items-center justify-center gap-2 shadow-sm active:scale-95">
                 <x-heroicon-o-arrow-down-tray class="w-5 h-5" />
-                Download CSV
+                <span>Download CSV</span>
             </a>
         </form>
     </div>

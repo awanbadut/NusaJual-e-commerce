@@ -93,141 +93,157 @@
         <!-- Orders History -->
         <div class="lg:col-span-2">
             <!-- Statistics Cards -->
-            <div class="grid grid-cols-3 gap-4 mb-6">
-                <!-- Total Orders -->
-                <div class="bg-white rounded-lg shadow-sm p-4">
-                    <div class="flex items-center gap-2 mb-2">
-                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                        </svg>
-                        <span class="text-sm font-semibold text-gray-700">Total Pesanan</span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                <div
+                    class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 transition hover:shadow-md flex items-center gap-4">
+                    <div class="p-3 bg-blue-50 rounded-xl text-blue-600 shrink-0">
+                        <x-heroicon-o-shopping-bag class="w-6 h-6" />
                     </div>
-                    <p class="text-2xl font-bold text-gray-900">{{ $totalOrders }}</p>
+                    <div class="min-w-0">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Total Pesanan</p>
+                        <p class="text-xl font-bold text-gray-900 leading-none">{{ $totalOrders }}</p>
+                    </div>
                 </div>
 
-                <!-- Total Spent -->
-                <div class="bg-white rounded-lg shadow-sm p-4">
-                    <div class="flex items-center gap-2 mb-2">
-                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                            </path>
-                        </svg>
-                        <span class="text-sm font-semibold text-gray-700">Total Belanja</span>
+                <div
+                    class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 transition hover:shadow-md flex items-center gap-4">
+                    <div class="p-3 bg-green-50 rounded-xl text-green-700 shrink-0">
+                        <x-heroicon-o-banknotes class="w-6 h-6" />
                     </div>
-                    <p class="text-2xl font-bold text-gray-900">Rp {{ number_format($totalSpent, 0, ',', '.') }}</p>
+                    <div class="min-w-0">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Total Belanja</p>
+                        <p class="text-xl font-bold text-gray-900 leading-none">Rp {{ number_format($totalSpent, 0, ',',
+                            '.') }}</p>
+                    </div>
                 </div>
 
-                <!-- Average Order -->
-                <div class="bg-white rounded-lg shadow-sm p-4">
-                    <div class="flex items-center gap-2 mb-2">
-                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
-                            </path>
-                        </svg>
-                        <span class="text-sm font-semibold text-gray-700">Rata-Rata Order</span>
+                <div
+                    class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 transition hover:shadow-md flex items-center gap-4 sm:col-span-2 lg:col-span-1">
+                    <div class="p-3 bg-yellow-50 rounded-xl text-yellow-600 shrink-0">
+                        <x-heroicon-o-calculator class="w-6 h-6" />
                     </div>
-                    <p class="text-2xl font-bold text-gray-900">Rp {{ number_format($averageOrder, 0, ',', '.') }}</p>
+                    <div class="min-w-0">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Rata-Rata Order</p>
+                        <p class="text-xl font-bold text-gray-900 leading-none">Rp {{ number_format($averageOrder, 0,
+                            ',', '.') }}</p>
+                    </div>
                 </div>
             </div>
 
             <!-- Orders List Header -->
-            <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
-                <div class="flex items-center justify-between">
+            <div class="bg-white rounded-xl shadow-sm p-4 mb-4 border border-gray-100">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <h3 class="text-lg font-bold text-gray-900">Riwayat Pesanan</h3>
-                    <div class="flex items-center gap-3">
-                        <div class="flex-1 relative">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                        <div class="relative flex-1 sm:w-64">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                 <x-heroicon-o-magnifying-glass class="text-gray-400 w-5 h-5" />
                             </div>
-                            <input type="text" placeholder="Cari ID pesanan"
-                                class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm w-64">
+                            <input type="text" placeholder="Cari ID pesanan..."
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm transition">
                         </div>
                         <button
-                            class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 flex items-center justify-center gap-2 transition">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
                                 </path>
                             </svg>
-                            Filter
+                            <span class="font-medium text-gray-700">Filter</span>
                         </button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Orders Table -->
-            <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-                <table class="w-full">
-                    <thead class="bg-[#DCFCE7] border-t border-b border-[#BBF7D0]">
-                        <tr class="text-left">
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[#15803D]">ID Pesanan</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[#15803D]">Tanggal</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[#15803D]">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[#15803D]">Total Belanja</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-[#15803D]">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        @forelse($customer->orders as $order)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $order->order_number }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-700">{{ date('d/m/y', strtotime($order->created_at))
-                                }}</td>
-                            <td class="px-6 py-4">
-                                @if($order->status == 'completed')
-                                <span
-                                    class="px-3 py-1 rounded-full text-xs font-semibold bg-green-600 text-white">Selesai</span>
-                                @elseif($order->status == 'pending')
-                                <span
-                                    class="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-600 text-white">Menunggu
-                                    Pembayaran</span>
-                                @elseif($order->status == 'processing')
-                                <span
-                                    class="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-500 text-gray-900">Diproses</span>
-                                @else
-                                <span
-                                    class="px-3 py-1 rounded-full text-xs font-semibold bg-red-600 text-white">Dibatalkan</span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 text-sm font-semibold text-gray-900">Rp {{
-                                number_format($order->total_amount, 0, ',', '.') }}</td>
-                            <td class="px-6 py-4">
-                                <a href="{{ route('seller.orders.show', $order->id) }}"
-                                    class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-yellow-600 hover:bg-yellow-700 transition">
-                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                        </path>
-                                    </svg>
-                                </a>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="px-6 py-12 text-center text-sm text-gray-500">
-                                Belum ada riwayat pesanan
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                <div class="py-5">
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse min-w-[800px]">
+                            <thead class="bg-[#DCFCE7] border-b border-[#BBF7D0]">
+                                <tr class="text-left">
+                                    <th class="px-6 py-4 font-bold text-[#15803D] uppercase tracking-wider text-[11px]">
+                                        ID
+                                        Pesanan</th>
+                                    <th class="px-6 py-4 font-bold text-[#15803D] uppercase tracking-wider text-[11px]">
+                                        Tanggal</th>
+                                    <th class="px-6 py-4 font-bold text-[#15803D] uppercase tracking-wider text-[11px]">
+                                        Status</th>
+                                    <th class="px-6 py-4 font-bold text-[#15803D] uppercase tracking-wider text-[11px]">
+                                        Total Belanja</th>
+                                    <th
+                                        class="px-6 py-4 font-bold text-[#15803D] uppercase tracking-wider text-[11px] text-center">
+                                        Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 bg-white">
+                                @forelse($customer->orders as $order)
+                                <tr class="hover:bg-green-50/30 transition-colors duration-200">
+                                    <td
+                                        class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 font-mono tracking-tighter">
+                                        {{ $order->order_number }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-600 font-medium">
+                                        {{ date('d M Y', strtotime($order->created_at)) }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @php
+                                        $statusClasses = [
+                                        'completed' => 'bg-green-100 text-green-700 border-green-200',
+                                        'pending' => 'bg-yellow-100 text-yellow-700 border-yellow-200',
+                                        'processing' => 'bg-blue-100 text-blue-700 border-blue-200',
+                                        'cancelled' => 'bg-red-100 text-red-700 border-red-200',
+                                        ];
+                                        $labels = [
+                                        'completed' => 'Selesai',
+                                        'pending' => 'Menunggu Pembayaran',
+                                        'processing' => 'Diproses',
+                                        'cancelled' => 'Dibatalkan',
+                                        ];
+                                        $currentStatus = $order->status;
+                                        $class = $statusClasses[$currentStatus] ?? 'bg-gray-100 text-gray-700
+                                        border-gray-200';
+                                        $label = $labels[$currentStatus] ?? ucfirst($currentStatus);
+                                        @endphp
+                                        <span
+                                            class="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold border {{ $class }}">
+                                            {{ $label }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#0F4C20]">
+                                        Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <a href="{{ route('seller.orders.show', $order->id) }}"
+                                            class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 text-green-700 hover:bg-green-600 hover:text-white transition-all shadow-sm">
+                                            <x-heroicon-s-eye class="w-4 h-4" />
+                                        </a>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-12 text-center">
+                                        <div class="flex flex-col items-center justify-center text-gray-400">
+                                            <x-heroicon-o-document-magnifying-glass class="w-12 h-12 mb-3 opacity-20" />
+                                            <p class="text-sm italic">Belum ada riwayat pesanan</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
 
-                <!-- Pagination -->
-                @if($customer->orders->count() > 0)
-                <div class="px-6 py-4 border-t">
-                    <p class="text-sm text-gray-600">
-                        Menampilkan <span class="font-medium">1</span> sampai <span class="font-medium">{{
-                            $customer->orders->count() }}</span> dari <span class="font-medium">{{ $totalOrders
-                            }}</span> data
-                    </p>
+                    @if($customer->orders->count() > 0)
+                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <p class="text-[13px] text-gray-600">
+                                Menampilkan <span class="font-medium text-gray-900">1</span>
+                                sampai
+                                <span class="font-medium text-gray-900">{{ $customer->orders->count() }}</span> dari
+                                <span class="font-medium text-gray-900">{{ $totalOrders }}</span> pesanan
+                            </p>
+                        </div>
+                    </div>
+                    @endif
                 </div>
-                @endif
             </div>
         </div>
     </div>

@@ -7,11 +7,11 @@
 @endpush
 
 @section('content')
-<div class="bg-gradient-to-br from-[#D1FAE5] to-[#DCFCE7] p-6 rounded-3xl mb-6 shadow-sm">
-    <div class="flex justify-between items-start">
-        <div class="flex gap-5 items-start">
+<div class="bg-gradient-to-br from-[#D1FAE5] to-[#DCFCE7] p-4 sm:p-6 rounded-3xl mb-6 shadow-sm">
+    <div class="flex flex-col md:flex-row justify-between items-start gap-6">
+        <div class="flex flex-col sm:flex-row gap-5 items-start w-full">
             <div
-                class="w-32 h-32 bg-[#A78BFA] rounded-2xl flex items-center justify-center text-white font-bold text-4xl shadow-md overflow-hidden">
+                class="w-24 h-24 sm:w-32 sm:h-32 bg-[#A78BFA] rounded-2xl flex items-center justify-center text-white font-bold text-3xl sm:text-4xl shadow-md overflow-hidden flex-shrink-0 mx-auto sm:mx-0">
                 @if($store->logo)
                 <img src="{{ asset('storage/' . $store->logo) }}" alt="{{ $store->store_name }}"
                     class="w-full h-full object-cover">
@@ -19,45 +19,41 @@
                 {{ strtoupper(substr($store->store_name, 0, 2)) }}
                 @endif
             </div>
-            <div>
-                <h1 class="text-[28px] font-bold text-[#111827] mb-2">Mitra {{ $store->store_name }}</h1>
-                <p class="text-[13px] text-[#78716C] mb-3">Pantau Progress Mitra dan Rekening Bersama Disini</p>
 
-                <div class="space-y-1.5">
-                    <div class="flex items-center gap-2 text-[12px] text-[#111827]">
-                        <svg class="w-4 h-4 text-[#6B7280]" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        <span>{{ $store->address }}</span>
+            <div class="text-center sm:text-left w-full">
+                <h1 class="text-2xl sm:text-[28px] font-bold text-[#111827] mb-1 sm:mb-2">Mitra {{ $store->store_name }}
+                </h1>
+                <p class="text-xs sm:text-[13px] text-[#78716C] mb-3">Pantau Progress Mitra dan Rekening Bersama Disini
+                </p>
+
+                <div class="space-y-2 flex flex-col items-center sm:items-start">
+                    <div class="flex items-center gap-2 text-xs sm:text-[12px] text-[#111827]">
+                        <x-heroicon-s-map-pin class="w-4 h-4 text-[#6B7280]" />
+                        <span class="text-left">{{ $store->address }}</span>
                     </div>
-                    <div class="flex items-center gap-4 text-[12px]">
+
+                    <div
+                        class="flex flex-wrap justify-center sm:justify-start items-center gap-4 text-xs sm:text-[12px]">
                         <div class="flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-[#6B7280]" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3z" />
-                            </svg>
+                            <x-heroicon-s-cube class="w-4 h-4 text-[#6B7280]" />
                             <span class="text-[#111827]">{{ $store->products->count() }} Produk</span>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-[#6B7280]" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
-                                <path
-                                    d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
-                            </svg>
+                            <x-heroicon-s-shopping-bag class="w-4 h-4 text-[#6B7280]" />
                             <span class="text-[#111827]">{{ number_format($totalItemsSold) }}+ Terjual</span>
                         </div>
                     </div>
+
                     @if($store->bankAccounts->first())
-                    <div class="flex items-center gap-2 text-[12px] mt-2">
-                        <span class="text-[#78716C]">Nomor Rekening</span>
+                    <div
+                        class="flex flex-wrap justify-center sm:justify-start items-center gap-2 text-xs sm:text-[12px] mt-1 bg-white/50 px-2 py-1 rounded-lg w-fit">
+                        <span class="text-[#78716C]">Rekening:</span>
                         <span class="font-semibold text-[#111827]">{{ $store->bankAccounts->first()->bank_name }}</span>
-                        <span class="text-[#111827]">{{ $store->bankAccounts->first()->account_number }}</span>
+                        <span class="text-[#111827] font-mono">{{ $store->bankAccounts->first()->account_number
+                            }}</span>
                         @if($totalBankAccounts > 1)
-                        <span class="text-[#15803D] underline text-[11px] cursor-pointer">
-                            & {{ $totalBankAccounts - 1 }} others items
+                        <span class="text-[#15803D] underline cursor-pointer ml-1" title="Lihat lainnya">
+                            +{{ $totalBankAccounts - 1 }} lainnya
                         </span>
                         @endif
                     </div>
@@ -65,19 +61,17 @@
                 </div>
             </div>
         </div>
-        <div class="flex gap-2">
+
+        <div class="flex flex-wrap justify-center sm:justify-end gap-2 w-full md:w-auto mt-4 md:mt-0">
             <button
-                class="bg-[#15803D] text-white px-4 py-2 rounded-lg hover:bg-[#166534] transition text-[12px] font-medium flex items-center gap-2">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                        d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                        clip-rule="evenodd" />
-                </svg>
+                class="bg-[#15803D] text-white px-4 py-2 rounded-lg hover:bg-[#166534] transition text-xs sm:text-[12px] font-medium flex items-center gap-2 shadow-sm">
+                <x-heroicon-s-arrow-down-tray class="w-4 h-4" />
                 Download CSV
             </button>
+
             @if($store->user && $store->user->instagram)
             <a href="{{ $store->user->instagram }}" target="_blank"
-                class="bg-gradient-to-r from-[#E91E63] to-[#F06292] text-white px-4 py-2 rounded-lg text-[12px] font-medium flex items-center gap-2">
+                class="bg-gradient-to-r from-[#E91E63] to-[#F06292] text-white px-4 py-2 rounded-lg text-xs sm:text-[12px] font-medium flex items-center gap-2 shadow-sm hover:opacity-90 transition">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path
                         d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
@@ -85,9 +79,10 @@
                 Instagram
             </a>
             @endif
+
             @if($store->user && $store->user->phone)
             <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $store->user->phone) }}" target="_blank"
-                class="bg-[#25D366] text-white px-4 py-2 rounded-lg text-[12px] font-medium flex items-center gap-2">
+                class="bg-[#25D366] text-white px-4 py-2 rounded-lg text-xs sm:text-[12px] font-medium flex items-center gap-2 shadow-sm hover:opacity-90 transition">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path
                         d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
@@ -101,23 +96,19 @@
 
 @if(session('success'))
 <div
-    class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-xl mb-6 text-[13px] flex items-center gap-3">
-    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-        <path fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-            clip-rule="evenodd" />
-    </svg>
+    class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-xl mb-6 text-xs sm:text-[13px] flex items-center gap-3">
+    <x-heroicon-s-check-circle class="w-5 h-5" />
     {{ session('success') }}
 </div>
 @endif
 
-<div class="grid grid-cols-4 gap-5 mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-8">
     <div class="bg-white px-5 py-4 rounded-2xl shadow-sm border border-[#E5E7EB]">
         <p class="text-[11px] text-[#78716C] mb-1.5 flex items-center gap-1">
             <span class="w-1.5 h-1.5 rounded-full bg-[#EF4444]"></span>
             Total Penjualan
         </p>
-        <p class="text-[20px] font-bold text-[#111827] leading-tight mb-1">
+        <p class="text-xl sm:text-[20px] font-bold text-[#111827] leading-tight mb-1">
             Rp {{ number_format($store->total_sales ?? 0, 0, ',', '.') }}
         </p>
         <p class="text-[10px] {{ $salesGrowth >= 0 ? 'text-[#15803D]' : 'text-[#EF4444]' }}">
@@ -130,7 +121,7 @@
             <span class="w-1.5 h-1.5 rounded-full bg-[#F59E0B]"></span>
             Total Transaksi
         </p>
-        <p class="text-[20px] font-bold text-[#111827] leading-tight mb-1">
+        <p class="text-xl sm:text-[20px] font-bold text-[#111827] leading-tight mb-1">
             {{ number_format($store->orders_count ?? 0) }}
         </p>
         <p class="text-[10px] {{ $ordersGrowth >= 0 ? 'text-[#15803D]' : 'text-[#EF4444]' }}">
@@ -143,7 +134,7 @@
             <span class="w-1.5 h-1.5 rounded-full bg-[#3B82F6]"></span>
             Banyak Pencairan
         </p>
-        <p class="text-[20px] font-bold text-[#111827] leading-tight mb-1">
+        <p class="text-xl sm:text-[20px] font-bold text-[#111827] leading-tight mb-1">
             {{ $totalPencairan }}
         </p>
         <p class="text-[10px] text-[#78716C]">Total penarikan selesai</p>
@@ -158,49 +149,53 @@
             Rp {{ number_format($sisaDana, 0, ',', '.') }}
         </p>
         <hr class="my-1.5 border-[#E5E7EB]">
-        <p class="text-[10px] text-[#78716C] mb-0.5">Dana Teralokasi</p>
-        <p class="text-[14px] font-bold text-[#F97316] leading-tight">
-            Rp {{ number_format($danaTeralokasi, 0, ',', '.') }}
-        </p>
+        <div class="flex justify-between items-center">
+            <p class="text-[10px] text-[#78716C]">Teralokasi</p>
+            <p class="text-[12px] font-bold text-[#F97316]">Rp {{ number_format($danaTeralokasi, 0, ',', '.') }}</p>
+        </div>
     </div>
 </div>
 
-<div class="bg-white px-6 py-5 rounded-2xl shadow-sm mb-8 border border-[#E5E7EB]">
+<div class="bg-white px-4 sm:px-6 py-5 rounded-2xl shadow-sm mb-8 border border-[#E5E7EB]">
     <h2 class="font-bold text-[16px] text-[#111827] mb-4">Progress Penjualan</h2>
-    <div style="height: 280px;">
+    <div style="height: 280px; width: 100%;">
         <canvas id="performanceChart"></canvas>
     </div>
 </div>
 
-<div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 border border-[#E5E7EB]">
-    <div class="px-5 py-4 bg-white border-b border-[#E5E7EB]">
-        <h2 class="font-bold text-[16px] text-[#111827]">Verifikasi Pembayaran Penjualan</h2>
+<div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 border border-gray-100">
+    <div class="px-5 py-4 bg-white border-b border-gray-100">
+        <h2 class="font-bold text-[16px] text-[#111827]">Persetujuan Bukti Bayar Masuk</h2>
+        <p class="text-[12px] text-[#78716C] mt-1">Daftar transaksi dari pembeli yang menunggu validasi admin.</p>
     </div>
-    <div class="overflow-x-auto">
-        <table class="w-full text-[13px]">
-            <thead class="bg-[#DCFCE7] border-t border-b border-[#BBF7D0]">
-                <tr class="text-left">
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">ID Pesanan</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Nama Pembeli</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Jumlah Pembayaran</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Bukti Pembayaran</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Status</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Aksi</th>
+
+    <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left text-[13px] min-w-[900px]">
+            <thead class="bg-[#DCFCE7] border-b border-[#BBF7D0]">
+                <tr>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">ID Pesanan</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Nama Pembeli</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Jumlah Pembayaran</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Bukti Pembayaran</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Status</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] text-center whitespace-nowrap">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="bg-[#F9FDF7]">
+            <tbody class="bg-white divide-y divide-gray-100">
                 @forelse($pendingPayments as $payment)
-                <tr class="border-b border-[#E5E7EB] hover:bg-white transition">
-                    <td class="px-5 py-4 font-mono text-[#111827]">#NB-{{ str_pad($payment->order->id, 4, '0',
-                        STR_PAD_LEFT) }}-{{ str_pad($payment->id, 4, '0', STR_PAD_LEFT) }}</td>
-                    <td class="px-5 py-4 text-[#111827]">{{ $payment->order->user->name }}</td>
-                    <td class="px-5 py-4 font-semibold text-[#111827]">
+                <tr class="hover:bg-[#F9FDF7] transition duration-200">
+                    <td class="px-5 py-4 font-mono text-[#111827] whitespace-nowrap">
+                        #NB-{{ str_pad($payment->order->id, 4, '0', STR_PAD_LEFT) }}-{{ str_pad($payment->id, 4, '0',
+                        STR_PAD_LEFT) }}
+                    </td>
+                    <td class="px-5 py-4 text-[#111827] whitespace-nowrap">{{ $payment->order->user->name }}</td>
+                    <td class="px-5 py-4 font-semibold text-[#111827] whitespace-nowrap">
                         Rp {{ number_format($payment->amount, 0, ',', '.') }}
                     </td>
-                    <td class="px-5 py-4">
+                    <td class="px-5 py-4 whitespace-nowrap">
                         @if($payment->payment_proof)
                         <button onclick="viewProof('{{ asset('storage/' . $payment->payment_proof) }}')"
-                            class="text-[#2563EB] hover:underline inline-flex items-center gap-1">
+                            class="text-[#2563EB] hover:text-[#1E40AF] hover:underline inline-flex items-center gap-1 transition">
                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
                                 <path fill-rule="evenodd"
@@ -213,120 +208,264 @@
                         <span class="text-[#9CA3AF]">-</span>
                         @endif
                     </td>
-                    <td class="px-5 py-4">
+                    <td class="px-5 py-4 whitespace-nowrap">
                         <span
-                            class="inline-flex items-center px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-[11px] font-semibold">
+                            class="inline-flex items-center px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-[11px] font-semibold border border-yellow-200">
                             Menunggu Konfirmasi
                         </span>
                     </td>
-                    <td class="px-5 py-4">
+                    <td class="px-5 py-4 text-center whitespace-nowrap">
                         <button onclick="confirmPayment({{ $payment->id }})"
-                            class="bg-[#FBBF24] text-white px-4 py-1.5 rounded-lg hover:bg-[#F59E0B] text-[11px] font-semibold">
+                            class="bg-[#FBBF24] text-white px-4 py-1.5 rounded-lg hover:bg-[#F59E0B] text-[11px] font-semibold transition shadow-sm">
                             Proses
                         </button>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="px-5 py-10 text-center text-[#9CA3AF]">
-                        Tidak ada pembayaran yang perlu diverifikasi
+                    <td colspan="6" class="px-5 py-12 text-center text-[#9CA3AF]">
+                        <div class="flex flex-col items-center justify-center">
+                            <x-heroicon-o-check-circle class="w-10 h-10 mb-2 opacity-20" />
+                            <p>Tidak ada pembayaran yang perlu diverifikasi</p>
+                        </div>
                     </td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
+
     @if($pendingPayments->hasPages())
-    <div class="px-5 py-4 text-center text-[11px] text-[#78716C] border-t border-[#E5E7EB]">
-        Menampilkan <span class="font-semibold">{{ $pendingPayments->firstItem() }}</span> sampai
-        <span class="font-semibold">{{ $pendingPayments->lastItem() }}</span> dari
-        <span class="font-semibold">{{ $pendingPayments->total() }}</span> data
+    <div class="px-5 py-4 border-t border-[#E5E7EB] bg-white">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p class="text-xs text-[#78716C]">
+                Menampilkan <span class="font-semibold text-[#111827]">{{ $pendingPayments->firstItem() }}</span> -
+                <span class="font-semibold text-[#111827]">{{ $pendingPayments->lastItem() }}</span> dari
+                <span class="font-semibold text-[#111827]">{{ $pendingPayments->total() }}</span> data
+            </p>
+
+            <div class="flex gap-2">
+                {{-- Previous --}}
+                @if($pendingPayments->onFirstPage())
+                <button disabled
+                    class="px-3 py-1.5 border border-gray-200 rounded text-[11px] text-gray-400 cursor-not-allowed bg-white">
+                    ‹
+                </button>
+                @else
+                <a href="{{ $pendingPayments->previousPageUrl() }}"
+                    class="px-3 py-1.5 border border-gray-300 rounded text-[11px] text-[#111827] hover:bg-gray-50 bg-white transition font-medium">
+                    ‹
+                </a>
+                @endif
+
+                {{-- Next --}}
+                @if($pendingPayments->hasMorePages())
+                <a href="{{ $pendingPayments->nextPageUrl() }}"
+                    class="px-3 py-1.5 border border-gray-300 rounded text-[11px] text-[#111827] hover:bg-gray-50 bg-white transition font-medium">
+                    ›
+                </a>
+                @else
+                <button disabled
+                    class="px-3 py-1.5 border border-gray-200 rounded text-[11px] text-gray-400 cursor-not-allowed bg-white">
+                    ›
+                </button>
+                @endif
+            </div>
+        </div>
     </div>
     @endif
 </div>
 
-<div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 border border-[#E5E7EB]">
-    <div class="px-5 py-4 bg-white border-b border-[#E5E7EB] flex justify-between items-center">
-        <h2 class="font-bold text-[16px] text-[#111827]">Permintaan Pencairan Dana</h2>
+<div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 border border-gray-100">
+    <div
+        class="px-5 py-4 bg-white border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h2 class="font-bold text-[16px] text-[#111827]">Histori Verifikasi Pembayaran</h2>
+            <p class="text-[12px] text-[#78716C] mt-1">Catatan transaksi yang telah diproses.</p>
+        </div>
+        <button
+            class="px-4 py-1.5 rounded-lg border border-[#D1D5DB] text-[12px] text-[#111827] hover:bg-[#F3F4F6] transition font-medium">
+            Unduh Laporan
+        </button>
+    </div>
+
+    <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left text-[13px] min-w-[800px]">
+            <thead class="bg-[#DCFCE7] border-b border-[#BBF7D0]">
+                <tr>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Tanggal Transaksi</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">ID Pesanan</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Total Transaksi</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Status</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] text-center whitespace-nowrap">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-100">
+                @forelse($confirmedPayments as $payment)
+                <tr class="hover:bg-[#F9FDF7] transition duration-200">
+                    <td class="px-5 py-4 text-[#111827] whitespace-nowrap">
+                        {{ $payment->confirmed_at ? $payment->confirmed_at->format('d F Y') :
+                        $payment->created_at->format('d F Y') }}
+                    </td>
+                    <td class="px-5 py-4 font-mono text-[#111827] whitespace-nowrap">
+                        #NB-{{ str_pad($payment->order->id, 4, '0', STR_PAD_LEFT) }}
+                    </td>
+                    <td class="px-5 py-4 font-bold text-[#0F4C20] whitespace-nowrap">
+                        Rp {{ number_format($payment->amount, 0, ',', '.') }}
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap">
+                        <span
+                            class="inline-flex items-center px-3 py-1 rounded-full bg-[#15803D] text-white text-[11px] font-semibold shadow-sm">
+                            Terkonfirmasi
+                        </span>
+                    </td>
+                    <td class="px-5 py-4 text-center whitespace-nowrap">
+                        <a href=""
+                            class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 text-green-700 hover:bg-green-600 hover:text-white transition-all shadow-sm">
+                            <x-heroicon-s-eye class="w-4 h-4" />
+                        </a>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="px-5 py-12 text-center text-[#9CA3AF]">
+                        Belum ada histori pembayaran
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    @if($confirmedPayments->hasPages())
+    <div class="px-5 py-4 border-t border-[#E5E7EB] bg-white">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p class="text-xs text-[#78716C]">
+                Menampilkan <span class="font-semibold text-[#111827]">{{ $confirmedPayments->firstItem() }}</span> -
+                <span class="font-semibold text-[#111827]">{{ $confirmedPayments->lastItem() }}</span> dari
+                <span class="font-semibold text-[#111827]">{{ $confirmedPayments->total() }}</span> data
+            </p>
+
+            <div class="flex gap-2">
+                {{-- Previous --}}
+                @if($confirmedPayments->onFirstPage())
+                <button disabled
+                    class="px-3 py-1.5 border border-gray-200 rounded text-[11px] text-gray-400 cursor-not-allowed bg-white">
+                    ‹
+                </button>
+                @else
+                <a href="{{ $confirmedPayments->previousPageUrl() }}"
+                    class="px-3 py-1.5 border border-gray-300 rounded text-[11px] text-[#111827] hover:bg-gray-50 bg-white transition font-medium">
+                    ‹
+                </a>
+                @endif
+
+                {{-- Next --}}
+                @if($confirmedPayments->hasMorePages())
+                <a href="{{ $confirmedPayments->nextPageUrl() }}"
+                    class="px-3 py-1.5 border border-gray-300 rounded text-[11px] text-[#111827] hover:bg-gray-50 bg-white transition font-medium">
+                    ›
+                </a>
+                @else
+                <button disabled
+                    class="px-3 py-1.5 border border-gray-200 rounded text-[11px] text-gray-400 cursor-not-allowed bg-white">
+                    ›
+                </button>
+                @endif
+            </div>
+        </div>
+    </div>
+    @endif
+</div>
+
+<div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 border border-gray-100">
+    <div
+        class="px-5 py-4 bg-white border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h2 class="font-bold text-[16px] text-[#111827]">Antrean Penarikan Saldo</h2>
+            <p class="text-[12px] text-[#78716C] mt-1">Permintaan transfer dana ke rekening mitra.</p>
+        </div>
         <a href="{{ route('admin.withdrawals.index') }}"
-            class="px-4 py-1.5 rounded-lg border border-[#D1D5DB] text-[12px] text-[#111827] hover:bg-[#F3F4F6]">
+            class="px-4 py-1.5 rounded-lg border border-[#D1D5DB] text-[12px] text-[#111827] hover:bg-[#F3F4F6] transition font-medium">
             Lihat Semua
         </a>
     </div>
-    <div class="overflow-x-auto">
-        <table class="w-full text-[13px]">
-            <thead class="bg-[#DCFCE7] border-t border-b border-[#BBF7D0]">
-                <tr class="text-left">
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Tanggal Request</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">ID Pencairan</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Bank</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Jumlah</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Biaya Admin</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Dana Transfer</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Status</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Aksi</th>
+
+    <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left text-[13px] min-w-[900px]">
+            <thead class="bg-[#DCFCE7] border-b border-[#BBF7D0]">
+                <tr>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Tanggal Request</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">ID Pencairan</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Bank Tujuan</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Jumlah</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Biaya Admin</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Total Transfer</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] whitespace-nowrap">Status</th>
+                    <th class="px-5 py-4 font-semibold text-[#15803D] text-center whitespace-nowrap">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="bg-[#F9FDF7]">
+            <tbody class="bg-white divide-y divide-gray-100">
                 @forelse($withdrawals as $withdrawal)
-                <tr class="border-b border-[#E5E7EB] hover:bg-white transition">
-                    <td class="px-5 py-4 text-[#111827]">
+                <tr class="hover:bg-[#F9FDF7] transition duration-200">
+                    <td class="px-5 py-4 text-[#111827] whitespace-nowrap">
                         {{ $withdrawal->requested_at->format('d F Y') }}
                     </td>
-                    <td class="px-5 py-4 font-mono text-[#111827]">#WD-{{ str_pad($withdrawal->id, 4, '0', STR_PAD_LEFT)
-                        }}</td>
-                    <td class="px-5 py-4 text-[#111827]">
-                        <div class="text-[13px] font-semibold">{{ $withdrawal->bankAccount->bank_name }}</div>
-                        <div class="text-[11px] text-[#78716C]">{{ $withdrawal->bankAccount->account_number }}</div>
+                    <td class="px-5 py-4 font-mono text-[#111827] whitespace-nowrap">
+                        #WD-{{ str_pad($withdrawal->id, 4, '0', STR_PAD_LEFT) }}
                     </td>
-                    <td class="px-5 py-4 font-semibold text-[#111827]">
+                    <td class="px-5 py-4 text-[#111827] whitespace-nowrap">
+                        <div class="text-[13px] font-bold">{{ $withdrawal->bankAccount->bank_name }}</div>
+                        <div class="text-[11px] text-[#6B7280]">{{ $withdrawal->bankAccount->account_number }}</div>
+                    </td>
+                    <td class="px-5 py-4 font-medium text-[#111827] whitespace-nowrap">
                         Rp {{ number_format($withdrawal->amount, 0, ',', '.') }}
                     </td>
-                    <td class="px-5 py-4 text-red-600 font-semibold">
+                    <td class="px-5 py-4 text-red-600 font-medium whitespace-nowrap">
                         -Rp {{ number_format($withdrawal->admin_fee, 0, ',', '.') }}
                     </td>
-                    <td class="px-5 py-4 font-bold text-[#15803D]">
+                    <td class="px-5 py-4 font-bold text-[#15803D] whitespace-nowrap">
                         Rp {{ number_format($withdrawal->total_received, 0, ',', '.') }}
                     </td>
-                    <td class="px-5 py-4">
+                    <td class="px-5 py-4 whitespace-nowrap">
                         @if($withdrawal->status == 'pending')
                         <span
-                            class="inline-flex items-center px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-[11px] font-semibold">
+                            class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-[11px] font-semibold border border-yellow-200">
                             Pending
                         </span>
                         @elseif($withdrawal->status == 'approved')
                         <span
-                            class="inline-flex items-center px-3 py-1 rounded-full bg-[#DBEAFE] text-[#1E40AF] text-[11px] font-semibold">
+                            class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#DBEAFE] text-[#1E40AF] text-[11px] font-semibold border border-blue-200">
                             Disetujui
                         </span>
                         @elseif($withdrawal->status == 'completed')
                         <span
-                            class="inline-flex items-center px-3 py-1 rounded-full bg-[#15803D] text-white text-[11px] font-semibold">
+                            class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#15803D] text-white text-[11px] font-semibold shadow-sm">
                             Selesai
                         </span>
                         @else
                         <span
-                            class="inline-flex items-center px-3 py-1 rounded-full bg-[#FEE2E2] text-[#991B1B] text-[11px] font-semibold">
+                            class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#FEE2E2] text-[#991B1B] text-[11px] font-semibold border border-red-200">
                             Ditolak
                         </span>
                         @endif
                     </td>
-                    <td class="px-5 py-4">
+                    <td class="px-5 py-4 text-center whitespace-nowrap">
                         @if($withdrawal->status == 'pending')
                         <button onclick="openWithdrawalModal({{ $withdrawal->id }})"
-                            class="bg-[#FBBF24] text-white px-4 py-1.5 rounded-lg hover:bg-[#F59E0B] text-[11px] font-semibold">
+                            class="bg-[#FBBF24] text-white px-4 py-1.5 rounded-lg hover:bg-[#F59E0B] text-[11px] font-semibold transition shadow-sm">
                             Proses
                         </button>
                         @elseif($withdrawal->status == 'completed' && $withdrawal->withdrawal_proof)
                         <button onclick="viewProof('{{ asset('storage/' . $withdrawal->withdrawal_proof) }}')"
-                            class="text-[#2563EB] hover:underline text-[11px] inline-flex items-center gap-1">
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 text-green-700  hover:bg-green-600 hover:text-white transition-all shadow-sm border border-green-200 transition-all shadow-sm text-[11px] font-medium">
                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
                                 <path fill-rule="evenodd"
                                     d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
                                     clip-rule="evenodd" />
                             </svg>
-                            Lihat Bukti
+                            Bukti
                         </button>
                         @else
                         <span class="text-[#9CA3AF] text-[11px]">-</span>
@@ -335,7 +474,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" class="px-5 py-10 text-center text-[#9CA3AF]">
+                    <td colspan="8" class="px-5 py-12 text-center text-[#9CA3AF]">
                         Belum ada permintaan pencairan
                     </td>
                 </tr>
@@ -343,77 +482,57 @@
             </tbody>
         </table>
     </div>
+
     @if($withdrawals->hasPages())
-    <div class="px-5 py-4 text-center text-[11px] text-[#78716C] border-t border-[#E5E7EB]">
-        Menampilkan <span class="font-semibold">{{ $withdrawals->firstItem() }}</span> sampai
-        <span class="font-semibold">{{ $withdrawals->lastItem() }}</span> dari
-        <span class="font-semibold">{{ $withdrawals->total() }}</span> data
+    <div class="px-5 py-4 border-t border-[#E5E7EB] bg-white">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p class="text-xs text-[#78716C]">
+                Menampilkan <span class="font-semibold text-[#111827]">{{ $withdrawals->firstItem() }}</span> -
+                <span class="font-semibold text-[#111827]">{{ $withdrawals->lastItem() }}</span> dari
+                <span class="font-semibold text-[#111827]">{{ $withdrawals->total() }}</span> data
+            </p>
+
+            <div class="flex gap-2">
+                {{-- Previous --}}
+                @if($withdrawals->onFirstPage())
+                <button disabled
+                    class="px-3 py-1.5 border border-gray-200 rounded text-[11px] text-gray-400 cursor-not-allowed bg-white">
+                    ‹
+                </button>
+                @else
+                <a href="{{ $withdrawals->previousPageUrl() }}"
+                    class="px-3 py-1.5 border border-gray-300 rounded text-[11px] text-[#111827] hover:bg-gray-50 bg-white transition font-medium">
+                    ‹
+                </a>
+                @endif
+
+                {{-- Next --}}
+                @if($withdrawals->hasMorePages())
+                <a href="{{ $withdrawals->nextPageUrl() }}"
+                    class="px-3 py-1.5 border border-gray-300 rounded text-[11px] text-[#111827] hover:bg-gray-50 bg-white transition font-medium">
+                    ›
+                </a>
+                @else
+                <button disabled
+                    class="px-3 py-1.5 border border-gray-200 rounded text-[11px] text-gray-400 cursor-not-allowed bg-white">
+                    ›
+                </button>
+                @endif
+            </div>
+        </div>
     </div>
     @endif
 </div>
 
-<div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 border border-[#E5E7EB]">
-    <div class="px-5 py-4 bg-white border-b border-[#E5E7EB] flex justify-between items-center">
-        <h2 class="font-bold text-[16px] text-[#111827]">Laporan Pembayaran</h2>
-        <button class="px-4 py-1.5 rounded-lg border border-[#D1D5DB] text-[12px] text-[#111827] hover:bg-[#F3F4F6]">
-            Unduh Berdasarkan
-        </button>
-    </div>
-    <div class="overflow-x-auto">
-        <table class="w-full text-[13px]">
-            <thead class="bg-[#DCFCE7] border-t border-b border-[#BBF7D0]">
-                <tr class="text-left">
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Tanggal Transaksi</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">ID Pesanan</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Total Transaksi</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Status</th>
-                    <th class="px-5 py-4 font-semibold text-[#15803D]">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="bg-[#F9FDF7]">
-                @forelse($confirmedPayments as $payment)
-                <tr class="border-b border-[#E5E7EB] hover:bg-white transition">
-                    <td class="px-5 py-4 text-[#111827]">{{ $payment->confirmed_at ? $payment->confirmed_at->format('d F
-                        Y') : $payment->created_at->format('d F Y') }}</td>
-                    <td class="px-5 py-4 font-mono text-[#111827]">#NB-{{ str_pad($payment->order->id, 4, '0',
-                        STR_PAD_LEFT) }}</td>
-                    <td class="px-5 py-4 font-semibold text-[#111827]">
-                        Rp {{ number_format($payment->amount, 0, ',', '.') }}
-                    </td>
-                    <td class="px-5 py-4">
-                        <span
-                            class="inline-flex items-center px-3 py-1 rounded-full bg-[#15803D] text-white text-[11px] font-semibold">
-                            Terkonfirmasi
-                        </span>
-                    </td>
-                    <td class="px-5 py-4">
-                        <button class="text-[#2563EB] hover:underline text-[11px]">
-                            Detail
-                        </button>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="px-5 py-10 text-center text-[#9CA3AF]">
-                        Belum ada pembayaran terkonfirmasi
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-    @if($confirmedPayments->hasPages())
-    <div class="px-5 py-4 text-center text-[11px] text-[#78716C] border-t border-[#E5E7EB]">
-        Menampilkan <span class="font-semibold">{{ $confirmedPayments->firstItem() }}</span> sampai
-        <span class="font-semibold">{{ $confirmedPayments->lastItem() }}</span> dari
-        <span class="font-semibold">{{ $confirmedPayments->total() }}</span> data
-    </div>
-    @endif
-</div>
+
 
 <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 border border-[#E5E7EB]">
     <div class="px-5 py-4 bg-white border-b border-[#E5E7EB] flex justify-between items-center">
-        <h2 class="font-bold text-[16px] text-[#111827]">Laporan Penjualan</h2>
+        <div>
+            <h2 class="font-bold text-[16px] text-[#111827]">Rekapitulasi Pesanan Selesai</h2>
+            <p class="text-[12px] text-[#78716C] mt-1">Daftar pesanan yang telah diterima oleh pelanggan dan status
+                transaksinya selesai.</p>
+        </div>
         <button class="bg-[#15803D] text-white px-4 py-2 rounded-lg text-[12px] font-medium flex items-center gap-2">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd"
@@ -434,9 +553,9 @@
                     <th class="px-5 py-4 font-semibold text-[#15803D]">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="bg-[#F9FDF7]">
+            <tbody class="bg-white">
                 @forelse($completedOrders as $order)
-                <tr class="border-b border-[#E5E7EB] hover:bg-white transition">
+                <tr class=" hover:bg-[#F9FDF7] transition duration-200 border-b">
                     <td class="px-5 py-4 text-[#111827]">{{ $order->created_at->format('d F Y') }}</td>
                     <td class="px-5 py-4 font-mono text-[#111827]">#ORD-{{ str_pad($order->id, 4, '0', STR_PAD_LEFT) }}
                     </td>
@@ -450,15 +569,10 @@
                         </span>
                     </td>
                     <td class="px-5 py-4">
-                        <button class="inline-flex items-center gap-1 text-[#15803D] hover:underline text-[11px]">
-                            Detail
-                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                                <path
-                                    d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-                            </svg>
-                        </button>
+                        <a href=""
+                            class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 text-green-700 hover:bg-green-600 hover:text-white transition-all shadow-sm">
+                            <x-heroicon-s-eye class="w-4 h-4" />
+                        </a>
                     </td>
                 </tr>
                 @empty
@@ -472,10 +586,42 @@
         </table>
     </div>
     @if($completedOrders->hasPages())
-    <div class="px-5 py-4 text-center text-[11px] text-[#78716C] border-t border-[#E5E7EB]">
-        Menampilkan <span class="font-semibold">{{ $completedOrders->firstItem() }}</span> sampai
-        <span class="font-semibold">{{ $completedOrders->lastItem() }}</span> dari
-        <span class="font-semibold">{{ $completedOrders->total() }}</span> data
+    <div class="px-5 py-4 border-t border-[#E5E7EB] bg-white">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p class="text-xs text-[#78716C]">
+                Menampilkan <span class="font-semibold text-[#111827]">{{ $completedOrders->firstItem() }}</span> -
+                <span class="font-semibold text-[#111827]">{{ $completedOrders->lastItem() }}</span> dari
+                <span class="font-semibold text-[#111827]">{{ $completedOrders->total() }}</span> pesanan
+            </p>
+
+            <div class="flex gap-2">
+                {{-- Tombol Previous --}}
+                @if($completedOrders->onFirstPage())
+                <button disabled
+                    class="px-3 py-1.5 border border-gray-200 rounded text-[11px] text-gray-400 cursor-not-allowed bg-white">
+                    ‹
+                </button>
+                @else
+                <a href="{{ $completedOrders->previousPageUrl() }}"
+                    class="px-3 py-1.5 border border-gray-300 rounded text-[11px] text-[#111827] hover:bg-gray-50 bg-white transition font-medium">
+                    ‹
+                </a>
+                @endif
+
+                {{-- Tombol Next --}}
+                @if($completedOrders->hasMorePages())
+                <a href="{{ $completedOrders->nextPageUrl() }}"
+                    class="px-3 py-1.5 border border-gray-300 rounded text-[11px] text-[#111827] hover:bg-gray-50 bg-white transition font-medium">
+                    ›
+                </a>
+                @else
+                <button disabled
+                    class="px-3 py-1.5 border border-gray-200 rounded text-[11px] text-gray-400 cursor-not-allowed bg-white">
+                    ›
+                </button>
+                @endif
+            </div>
+        </div>
     </div>
     @endif
 </div>

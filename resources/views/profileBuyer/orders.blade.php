@@ -21,7 +21,8 @@
     @endif
 
     <!-- Status Filter Tabs -->
-    <div class="flex overflow-x-auto pb-4 mb-6 gap-3 no-scrollbar border-b border-gray-100">
+    <div
+        class="flex overflow-x-auto pb-2 md:pb-4 mb-4 md:mb-6 gap-2 md:gap-3 no-scrollbar border-b border-gray-100 w-full">
         @php
         $statuses = [
         'all' => 'Semua',
@@ -34,11 +35,11 @@
         @endphp
 
         @foreach($statuses as $key => $label)
-        <a href="{{ route('profile.orders', ['status' => $key]) }}" class="whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold border transition duration-200
-            {{ $currentStatus == $key 
-                ? 'bg-[#0F4C20] text-white border-[#0F4C20] shadow-md' 
-                : 'bg-white text-gray-500 border-gray-200 hover:border-[#0F4C20] hover:text-[#0F4C20]' 
-            }}">
+        <a href="{{ route('profile.orders', ['status' => $key]) }}" class="whitespace-nowrap px-4 py-2 md:px-5 md:py-2.5 rounded-full text-xs md:text-sm font-bold border transition duration-200 flex-shrink-0
+           {{ $currentStatus == $key 
+               ? 'bg-[#0F4C20] text-white border-[#0F4C20] shadow-md' 
+               : 'bg-white text-gray-500 border-gray-200 hover:border-[#0F4C20] hover:text-[#0F4C20]' 
+           }}">
             {{ $label }}
         </a>
         @endforeach
@@ -141,81 +142,138 @@
 
                 <!-- Progress Tracker -->
                 @if($order->status != 'cancelled')
-                <div class="mb-8 px-2">
+                <div class="mb-12 px-4 py-6 bg-white rounded-xl border border-gray-100 shadow-sm">
                     <div class="relative">
-                        <div class="absolute top-1/2 left-0 w-full h-1.5 bg-gray-200 -translate-y-1/2 rounded-full z-0">
-                        </div>
+                        <div class="absolute top-2 left-0 w-full h-1 bg-gray-100 rounded-full z-0"></div>
 
                         @php
-                        // ✅ FIXED: Width berdasarkan payment & order status
                         $progressWidth = '0%';
+                        $steps = [
+                        'pending' => false,
+                        'confirmed' => false,
+                        'packing' => false,
+                        'shipped' => false,
+                        'completed' => false
+                        ];
 
                         if ($order->status === 'completed') {
                         $progressWidth = '100%';
+                        $steps = array_fill_keys(array_keys($steps), true);
                         } elseif ($order->status === 'shipped') {
-                        $progressWidth = '66%';
+                        $progressWidth = '75%';
+                        $steps['pending'] = $steps['confirmed'] = $steps['packing'] = $steps['shipped'] = true;
+                        } elseif ($order->status === 'packing') {
+                        $progressWidth = '50%';
+                        $steps['pending'] = $steps['confirmed'] = $steps['packing'] = true;
                         } elseif ($order->payment && $order->payment->status === 'confirmed') {
-                        $progressWidth = '33%';
-                        } elseif ($order->payment && $order->payment->status === 'paid') {
-                        $progressWidth = '16%'; // Sudah bayar tapi belum confirmed
-                        } else {
-                        $progressWidth = '0%'; // Belum bayar
+                        $progressWidth = '25%';
+                        $steps['pending'] = $steps['confirmed'] = true;
+                        } elseif ($order->payment) {
+                        $progressWidth = '10%';
+                        $steps['pending'] = true;
                         }
+
+                        // Warna Utama
+                        $activeColor = "bg-[#0F4C20]";
+                        $textColor = "text-[#0F4C20]";
                         @endphp
 
-                        <div class="absolute top-1/2 left-0 h-1.5 bg-[#8B4513] -translate-y-1/2 rounded-full transition-all duration-1000 ease-out z-0"
+                        <div class="absolute top-2 left-0 h-1 {{ $activeColor }} rounded-full transition-all duration-1000 ease-in-out z-0 shadow-[0_0_8px_rgba(15,76,32,0.3)]"
                             style="width: {{ $progressWidth }}"></div>
 
                         <div class="relative z-10 flex justify-between w-full">
-                            <!-- Step 1: Belum Bayar -->
-                            <div class="flex flex-col items-center gap-2">
+
+                            <div class="flex flex-col items-center">
                                 <div
-                                    class="w-5 h-5 rounded-full border-4 border-white shadow-sm flex items-center justify-center 
-                                    {{ $order->payment && $order->payment->status !== 'pending' ? 'bg-[#8B4513]' : 'bg-gray-300' }}">
+                                    class="w-5 h-5 rounded-full border-4 border-white shadow-md transition-colors duration-500 {{ $steps['pending'] ? $activeColor : 'bg-gray-200' }}">
+                                    @if($steps['pending'] && !$steps['confirmed'])
+                                    <div class="w-full h-full rounded-full animate-ping {{ $activeColor }} opacity-20">
+                                    </div>
+                                    @endif
                                 </div>
-                                <span
-                                    class="text-[10px] sm:text-xs font-bold text-center w-20 
-                                    {{ $order->payment && $order->payment->status !== 'pending' ? 'text-[#8B4513]' : 'text-gray-400' }}">
-                                    Belum Bayar
-                                </span>
+                                <div class="text-center mt-3">
+                                    <p
+                                        class="text-[10px] sm:text-xs font-black uppercase tracking-tight {{ $steps['pending'] ? $textColor : 'text-gray-400' }}">
+                                        Dibuat</p>
+                                    <p
+                                        class="text-[9px] font-medium text-gray-400 mt-0.5 bg-gray-50 px-1.5 py-0.5 rounded-md inline-block">
+                                        {{ $order->created_at->format('d/m H:i') }}</p>
+                                </div>
                             </div>
 
-                            <!-- Step 2: Diproses -->
-                            <div class="flex flex-col items-center gap-2">
+                            <div class="flex flex-col items-center">
                                 <div
-                                    class="w-5 h-5 rounded-full border-4 border-white shadow-sm flex items-center justify-center
-                                    {{ $order->payment && $order->payment->status === 'confirmed' ? 'bg-[#8B4513]' : 'bg-gray-300' }}">
+                                    class="w-5 h-5 rounded-full border-4 border-white shadow-md transition-colors duration-500 {{ $steps['confirmed'] ? $activeColor : 'bg-gray-200' }}">
+                                    @if($steps['confirmed'] && !$steps['packing'])
+                                    <div class="w-full h-full rounded-full animate-ping {{ $activeColor }} opacity-20">
+                                    </div>
+                                    @endif
                                 </div>
-                                <span
-                                    class="text-[10px] sm:text-xs font-bold text-center w-20
-                                    {{ $order->payment && $order->payment->status === 'confirmed' ? 'text-gray-700' : 'text-gray-400' }}">
-                                    Diproses
-                                </span>
+                                <div class="text-center mt-3">
+                                    <p
+                                        class="text-[10px] sm:text-xs font-black uppercase tracking-tight {{ $steps['confirmed'] ? $textColor : 'text-gray-400' }}">
+                                        Dikonfirmasi</p>
+                                    @if($order->payment && $order->payment->confirmed_at)
+                                    <p
+                                        class="text-[9px] font-medium text-gray-400 mt-0.5 bg-gray-50 px-1.5 py-0.5 rounded-md inline-block">
+                                        {{ $order->payment->confirmed_at->format('d/m H:i') }}</p>
+                                    @endif
+                                </div>
                             </div>
 
-                            <!-- Step 3: Dikirim -->
-                            <div class="flex flex-col items-center gap-2">
+                            <div class="flex flex-col items-center">
                                 <div
-                                    class="w-5 h-5 rounded-full border-4 border-white shadow-sm flex items-center justify-center
-                                    {{ in_array($order->status, ['shipped', 'completed']) ? 'bg-[#8B4513]' : 'bg-gray-300' }}">
+                                    class="w-5 h-5 rounded-full border-4 border-white shadow-md transition-colors duration-500 {{ $steps['packing'] ? $activeColor : 'bg-gray-200' }}">
+                                    @if($steps['packing'] && !$steps['shipped'])
+                                    <div class="w-full h-full rounded-full animate-ping {{ $activeColor }} opacity-20">
+                                    </div>
+                                    @endif
                                 </div>
-                                <span
-                                    class="text-[10px] sm:text-xs font-bold text-center w-20
-                                    {{ in_array($order->status, ['shipped', 'completed']) ? 'text-gray-700' : 'text-gray-400' }}">
-                                    Dikirim
-                                </span>
+                                <div class="text-center mt-3">
+                                    <p
+                                        class="text-[10px] sm:text-xs font-black uppercase tracking-tight {{ $steps['packing'] ? $textColor : 'text-gray-400' }}">
+                                        Dikemas</p>
+                                    <p class="text-[9px] font-medium text-gray-300 mt-0.5 italic tracking-titer">Proses
+                                        Seller</p>
+                                </div>
                             </div>
 
-                            <!-- Step 4: Selesai -->
-                            <div class="flex flex-col items-center gap-2">
-                                <div class="w-5 h-5 rounded-full border-4 border-white shadow-sm flex items-center justify-center
-                                    {{ $order->status == 'completed' ? 'bg-[#8B4513]' : 'bg-gray-300' }}">
+                            <div class="flex flex-col items-center">
+                                <div
+                                    class="w-5 h-5 rounded-full border-4 border-white shadow-md transition-colors duration-500 {{ $steps['shipped'] ? $activeColor : 'bg-gray-200' }}">
+                                    @if($steps['shipped'] && !$steps['completed'])
+                                    <div class="w-full h-full rounded-full animate-ping {{ $activeColor }} opacity-20">
+                                    </div>
+                                    @endif
                                 </div>
-                                <span class="text-[10px] sm:text-xs font-bold text-center w-20
-                                    {{ $order->status == 'completed' ? 'text-gray-700' : 'text-gray-400' }}">
-                                    Selesai
-                                </span>
+                                <div class="text-center mt-3">
+                                    <p
+                                        class="text-[10px] sm:text-xs font-black uppercase tracking-tight {{ $steps['shipped'] ? $textColor : 'text-gray-400' }}">
+                                        Dikirim</p>
+                                    @if($order->shipped_at)
+                                    <p
+                                        class="text-[9px] font-medium text-gray-400 mt-0.5 bg-gray-50 px-1.5 py-0.5 rounded-md inline-block">
+                                        {{ $order->shipped_at->format('d/m H:i') }}</p>
+                                    @endif
+                                </div>
                             </div>
+
+                            <div class="flex flex-col items-center">
+                                <div
+                                    class="w-5 h-5 rounded-full border-4 border-white shadow-md transition-colors duration-500 {{ $steps['completed'] ? $activeColor : 'bg-gray-200' }}">
+                                </div>
+                                <div class="text-center mt-3">
+                                    <p
+                                        class="text-[10px] sm:text-xs font-black uppercase tracking-tight {{ $steps['completed'] ? $textColor : 'text-gray-400' }}">
+                                        Selesai</p>
+                                    @if($order->delivered_at)
+                                    <p
+                                        class="text-[9px] font-medium text-gray-400 mt-0.5 bg-gray-50 px-1.5 py-0.5 rounded-md inline-block">
+                                        {{ $order->delivered_at->format('d/m H:i') }}</p>
+                                    @endif
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -353,12 +411,7 @@
                         <div class="mt-4 pt-3 border-t border-gray-100 space-y-3">
                             @if($order->courier)
                             <div class="flex items-center gap-2">
-                                <svg class="w-4 h-4 text-[#8B4513] shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path
-                                        d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
-                                    <path
-                                        d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
-                                </svg>
+                                <x-heroicon-s-truck class="w-4 h-4 text-[#8B4513] shrink-0" />
                                 <div>
                                     <p class="text-[10px] text-gray-500 font-medium">Kurir Pengiriman</p>
                                     <p class="text-xs font-bold text-gray-800">{{ strtoupper($order->courier) }}</p>
@@ -368,11 +421,7 @@
 
                             @if($order->tracking_number)
                             <div class="flex items-center gap-2">
-                                <svg class="w-4 h-4 text-[#8B4513] shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
-                                        clip-rule="evenodd" />
-                                </svg>
+                                <x-heroicon-m-document-text class="w-4 h-4 text-[#8B4513] shrink-0" />
                                 <div class="flex-1">
                                     <p class="text-[10px] text-gray-500 font-medium">Nomor Resi</p>
                                     <p class="text-xs font-bold text-gray-800 font-mono">{{ $order->tracking_number }}
