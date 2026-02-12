@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class CustomerController extends Controller
 {
     /**
-     * Display list of customers
+     * Display list of customers with search & filter
      */
     public function index(Request $request)
     {
@@ -19,7 +19,6 @@ class CustomerController extends Controller
         $query = User::query();
 
         // 2. Filter: Hanya ambil User yang pernah order di Store ini
-        // 'whereHas' menggantikan 'join' + 'groupBy', jadi tidak akan error SQL strict
         $query->whereHas('orders', function ($q) use ($storeId) {
             $q->where('store_id', $storeId);
         });
@@ -30,23 +29,54 @@ class CustomerController extends Controller
         }]);
 
         $query->withSum(['orders as total_spent' => function ($q) use ($storeId) {
-            $q->where('store_id', $storeId)->where('status', 'completed');
+            $q->where('store_id', $storeId)
+                ->where('status', 'completed');
         }], 'total_amount');
 
-        // 4. Logika Pencarian (Search)
-        if ($request->has('search') && $request->search) {
+        // ✅ 4. SEARCH (Nama, Email, Phone)
+        if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('email', 'like', '%' . $search . '%')
-                    ->orWhere('phone', 'like', '%' . $search . '%');
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
 
-        // 5. Urutkan berdasarkan total belanja tertinggi
-        // Catatan: total_spent dihasilkan dari withSum di atas
-        $customers = $query->orderByDesc('total_spent')
-            ->paginate(10);
+        // ✅ 5. SORT / FILTER
+        $sort = $request->get('sort', 'total_spent_desc'); // Default: Total Belanja Tertinggi
+
+        switch ($sort) {
+            case 'total_spent_desc':
+                $query->orderByDesc('total_spent');
+                break;
+            case 'total_spent_asc':
+                $query->orderBy('total_spent');
+                break;
+            case 'total_orders_desc':
+                $query->orderByDesc('total_orders');
+                break;
+            case 'total_orders_asc':
+                $query->orderBy('total_orders');
+                break;
+            case 'name_asc':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'newest':
+                $query->orderBy('created_at', 'desc');
+                break;
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            default:
+                $query->orderByDesc('total_spent');
+        }
+
+        // 6. Pagination with Query String (preserve search & filter)
+        $customers = $query->paginate(10)->withQueryString();
 
         return view('seller.customers.index', compact('customers'));
     }
@@ -65,10 +95,8 @@ class CustomerController extends Controller
                 ->orderBy('created_at', 'desc');
         }])->findOrFail($id);
 
-        // Calculate statistics manual (karena hanya 1 user, hitung di collection tidak berat)
-        // Kita filter dulu order milik store ini saja
-        $storeOrders = $customer->orders->where('store_id', $storeId); // Pastikan filter store_id lagi
-
+        // Calculate statistics
+        $storeOrders = $customer->orders->where('store_id', $storeId);
         $totalOrders = $storeOrders->count();
         $totalSpent = $storeOrders->where('status', 'completed')->sum('total_amount');
         $averageOrder = $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
