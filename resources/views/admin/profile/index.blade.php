@@ -154,30 +154,21 @@
                     <div class="flex items-center gap-4">
                         <div
                             class="w-15 h-15 bg-white border border-gray-200 rounded-lg flex items-center justify-center shadow-sm py-3 px-2 shrink-0">
-
                             @if($bank->logo_url)
-                            {{-- Jika file SVG ditemukan di folder img/icon/ --}}
                             <img src="{{ $bank->logo_url }}" alt="{{ $bank->bank_name }}"
                                 class="h-full w-full object-contain">
                             @else
-                            {{-- Jika file TIDAK ditemukan, tampilkan Heroicon sebagai fallback --}}
                             <x-heroicon-s-building-library class="w-5 h-5 text-gray-400" />
                             @endif
-
-
                         </div>
                         <div>
-                            {{-- Bagian Nama Bank & Status --}}
                             <div class="flex items-center gap-2">
                                 <p class="text-sm font-bold text-gray-900">{{ $bank->bank_name }}</p>
-
-                                {{-- Badge Status --}}
                                 <span
                                     class="px-2 py-0.5 rounded text-[10px] font-bold {{ $bank->is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
                                     {{ $bank->is_active ? 'Aktif' : 'Non-Aktif' }}
                                 </span>
                             </div>
-
                             <p class="text-xs text-gray-600 font-mono">{{ $bank->account_number }}</p>
                             <p class="text-[10px] text-gray-400 mt-0.5 uppercase">{{ $bank->account_holder }}</p>
                         </div>
@@ -186,8 +177,9 @@
                     {{-- AREA TOMBOL AKSI --}}
                     <div class="flex items-center gap-2">
 
-                        {{-- 1. TOMBOL TOGGLE (Aktifkan/Nonaktifkan) --}}
-                        <form action="{{ route('admin.profile.bank.toggle', $bank->id) }}" method="POST">
+                        {{-- 1. TOMBOL TOGGLE (Aktifkan/Nonaktifkan) DENGAN ALERT --}}
+                        <form action="{{ route('admin.profile.bank.toggle', $bank->id) }}" method="POST"
+                            onsubmit="return confirm('Apakah Anda yakin ingin {{ $bank->is_active ? 'MENONAKTIFKAN' : 'MENGAKTIFKAN' }} rekening {{ $bank->bank_name }}? \n\nCatatan: Mengaktifkan rekening ini akan otomatis menonaktifkan rekening lainnya.');">
                             @csrf
                             @method('PATCH')
 
@@ -199,16 +191,16 @@
                                 title="{{ $bank->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
 
                                 @if($bank->is_active)
-                                <x-heroicon-o-power class="w-5 h-5" /> {{-- Icon Power Off --}}
+                                <x-heroicon-o-power class="w-5 h-5" />
                                 @else
-                                <x-heroicon-o-check-circle class="w-5 h-5" /> {{-- Icon Activate --}}
+                                <x-heroicon-o-check-circle class="w-5 h-5" />
                                 @endif
                             </button>
                         </form>
 
-                        {{-- 2. TOMBOL DELETE (Hapus Permanen) --}}
+                        {{-- 2. TOMBOL DELETE (Hapus Permanen) DENGAN ALERT --}}
                         <form action="{{ route('admin.profile.bank.destroy', $bank->id) }}" method="POST"
-                            onsubmit="return confirm('Yakin ingin menghapus rekening ini secara permanen?');">
+                            onsubmit="return confirm('PERINGATAN: Penghapusan bersifat permanen!\n\nApakah Anda yakin ingin menghapus rekening {{ $bank->bank_name }} - {{ $bank->account_number }}?');">
                             @csrf
                             @method('DELETE')
 
