@@ -55,16 +55,12 @@
                 </div>
 
                 <div class="flex gap-3 mt-4 md:mt-0">
-                    <button
-                        class="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-[#0F4C20] text-[#0F4C20] font-bold text-sm hover:bg-green-50 transition">
-                        <img src="https://img.icons8.com/ios-filled/50/0F4C20/instagram-new.png" class="w-5 h-5">
-                        Instagram
-                    </button>
-                    <button
-                        class="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#0F4C20] text-white font-bold text-sm hover:bg-[#0b3a18] transition">
+                    {{-- Menggunakan route dinamis dari Accessor $store->whatsapp_url --}}
+                    <a href="{{ $store->whatsapp_url }}" target="_blank"
+                        class="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#0F4C20] text-white font-bold text-sm hover:bg-[#0b3a18] transition shadow-sm">
                         <img src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png" class="w-5 h-5">
                         Whatsapp
-                    </button>
+                    </a>
                 </div>
 
             </div>

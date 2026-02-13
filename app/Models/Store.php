@@ -130,7 +130,7 @@ class Store extends Model
     {
         $minAmount = config('withdrawal.minimum_amount', 50000);
         $availableBalance = $this->getWithdrawableBalance();
-        
+
         return $amount >= $minAmount && $amount <= $availableBalance;
     }
 
@@ -175,8 +175,8 @@ class Store extends Model
      */
     public function isVerified()
     {
-        return !empty($this->store_name) 
-            && !empty($this->village_code) 
+        return !empty($this->store_name)
+            && !empty($this->village_code)
             && $this->hasBankAccount();
     }
 
@@ -274,7 +274,7 @@ class Store extends Model
         if ($this->logo) {
             return asset('storage/' . $this->logo);
         }
-        
+
         // Default logo (bisa pakai UI Avatars atau placeholder)
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->store_name) . '&size=200&background=0F4C20&color=fff';
     }
@@ -289,7 +289,7 @@ class Store extends Model
     public function scopeVerified($query)
     {
         return $query->whereNotNull('village_code')
-                    ->whereHas('bankAccounts');
+            ->whereHas('bankAccounts');
     }
 
     /**
@@ -297,8 +297,31 @@ class Store extends Model
      */
     public function scopeHasActiveProducts($query)
     {
-        return $query->whereHas('products', function($q) {
+        return $query->whereHas('products', function ($q) {
             $q->where('status', 'active')->where('stock', '>', 0);
         });
+    }
+
+    /**
+     * Accessor untuk memformat nomor HP ke standar WhatsApp
+     * Panggil di blade dengan: $store->whatsapp_url
+     */
+    public function getWhatsappUrlAttribute()
+    {
+        // 1. Ambil nomor phone dari database
+        $phone = $this->phone;
+
+        // 2. Hilangkan karakter selain angka (spasi, dash, plus)
+        $formattedPhone = preg_replace('/[^0-9]/', '', $phone);
+
+        // 3. Jika nomor dimulai dengan '0', ganti jadi '62'
+        if (str_starts_with($formattedPhone, '0')) {
+            $formattedPhone = '62' . substr($formattedPhone, 1);
+        }
+
+        // 4. Buat link WA dengan pesan template
+        $message = rawurlencode("Halo " . $this->store_name . ", saya ingin bertanya mengenai produk Anda.");
+
+        return "https://wa.me/{$formattedPhone}?text={$message}";
     }
 }

@@ -80,13 +80,25 @@
                             <div
                                 class="flex flex-col sm:flex-row items-center gap-4 p-4 bg-[#F8F9FA] rounded-lg border border-gray-200">
                                 <div
-                                    class="w-20 h-12 bg-white rounded flex items-center justify-center border border-gray-100 shrink-0">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/68/BANK_BRI_logo.svg"
-                                        alt="BRI" class="h-6">
+                                    class="w-20 h-12 bg-white rounded flex items-center justify-center border border-gray-100 shrink-0 p-2">
+                                    @if($activeBank->logo_url)
+                                    {{-- Jika file SVG ditemukan di folder img/icon/ --}}
+                                    <img src="{{ $activeBank->logo_url }}" alt="{{ $activeBank->bank_name }}"
+                                        class="h-full w-full object-contain">
+                                    @else
+                                    {{-- Jika file TIDAK ditemukan, tampilkan Heroicon sebagai fallback --}}
+                                    <x-heroicon-s-building-library class="w-5 h-5 text-gray-400" />
+                                    @endif
+
                                 </div>
 
                                 <div class="flex-1 text-center sm:text-left">
                                     <div class="flex items-center justify-center sm:justify-start gap-2">
+                                        <span
+                                            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block sm:hidden">
+                                            {{ $activeBank->bank_name }}
+                                        </span>
+
                                         <h2 class="text-xl md:text-2xl font-bold text-gray-800 tracking-wide">
                                             {{ $activeBank->account_number }}
                                         </h2>
@@ -97,8 +109,13 @@
                                             <span x-text="copied ? 'Tersalin!' : 'Salin'"></span>
                                         </button>
                                     </div>
-                                    <p class="text-sm text-gray-500 font-medium">a.n <span
-                                            class="font-bold text-gray-700">{{ $activeBank->account_holder }}</span></p>
+                                    <p class="text-sm text-gray-500 font-medium">
+                                        a.n <span class="font-bold text-gray-700">{{ $activeBank->account_holder
+                                            }}</span>
+                                        <span class="hidden sm:inline text-gray-300 mx-2">|</span>
+                                        <span class="hidden sm:inline font-bold text-gray-400">{{ $activeBank->bank_name
+                                            }}</span>
+                                    </p>
                                 </div>
                             </div>
                         </div>

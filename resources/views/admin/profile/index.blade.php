@@ -153,8 +153,18 @@
                     class="flex items-center justify-between p-4 border border-gray-200 rounded-xl bg-gray-50 hover:bg-white hover:border-green-200 transition group">
                     <div class="flex items-center gap-4">
                         <div
-                            class="w-10 h-10 bg-white border border-gray-200 rounded-lg flex items-center justify-center shadow-sm">
+                            class="w-15 h-15 bg-white border border-gray-200 rounded-lg flex items-center justify-center shadow-sm py-3 px-2 shrink-0">
+
+                            @if($bank->logo_url)
+                            {{-- Jika file SVG ditemukan di folder img/icon/ --}}
+                            <img src="{{ $bank->logo_url }}" alt="{{ $bank->bank_name }}"
+                                class="h-full w-full object-contain">
+                            @else
+                            {{-- Jika file TIDAK ditemukan, tampilkan Heroicon sebagai fallback --}}
                             <x-heroicon-s-building-library class="w-5 h-5 text-gray-400" />
+                            @endif
+
+
                         </div>
                         <div>
                             {{-- Bagian Nama Bank & Status --}}
