@@ -223,7 +223,7 @@
                         </td>
 
                         <td class="px-5 py-4 whitespace-nowrap text-center">
-                            <a href="{{ route('seller.orders.show', $order->id) }}"
+                            <a href="{{ route('seller.sales.show', $order->id) }}"
                                 class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#15803D] hover:bg-[#166534] transition text-white shadow-sm"
                                 title="Lihat Detail">
                                 <x-heroicon-s-eye class="w-4 h-4" />

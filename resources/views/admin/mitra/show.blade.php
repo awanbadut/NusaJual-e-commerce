@@ -7,24 +7,21 @@
 @endpush
 
 @section('content')
+{{-- HEADER WITH EXPORT BUTTON --}}
 <div class="bg-gradient-to-br from-[#D1FAE5] to-[#DCFCE7] p-4 sm:p-6 rounded-3xl mb-6 shadow-sm">
     <div class="flex flex-col md:flex-row justify-between items-start gap-6">
         <div class="flex flex-col sm:flex-row gap-5 items-start w-full">
-            <div
-                class="w-24 h-24 sm:w-32 sm:h-32 bg-[#A78BFA] rounded-2xl flex items-center justify-center text-white font-bold text-3xl sm:text-4xl shadow-md overflow-hidden flex-shrink-0 mx-auto sm:mx-0">
+            <div class="w-24 h-24 sm:w-32 sm:h-32 bg-[#A78BFA] rounded-2xl flex items-center justify-center text-white font-bold text-3xl sm:text-4xl shadow-md overflow-hidden flex-shrink-0 mx-auto sm:mx-0">
                 @if($store->logo)
-                <img src="{{ asset('storage/' . $store->logo) }}" alt="{{ $store->store_name }}"
-                    class="w-full h-full object-cover">
+                <img src="{{ asset('storage/' . $store->logo) }}" alt="{{ $store->store_name }}" class="w-full h-full object-cover">
                 @else
                 {{ strtoupper(substr($store->store_name, 0, 2)) }}
                 @endif
             </div>
 
             <div class="text-center sm:text-left w-full">
-                <h1 class="text-2xl sm:text-[28px] font-bold text-[#111827] mb-1 sm:mb-2">Mitra {{ $store->store_name }}
-                </h1>
-                <p class="text-xs sm:text-[13px] text-[#78716C] mb-3">Pantau Progress Mitra dan Rekening Bersama Disini
-                </p>
+                <h1 class="text-2xl sm:text-[28px] font-bold text-[#111827] mb-1 sm:mb-2">Mitra {{ $store->store_name }}</h1>
+                <p class="text-xs sm:text-[13px] text-[#78716C] mb-3">Pantau Progress Mitra dan Rekening Bersama Disini</p>
 
                 <div class="space-y-2 flex flex-col items-center sm:items-start">
                     <div class="flex items-center gap-2 text-xs sm:text-[12px] text-[#111827]">
@@ -32,8 +29,7 @@
                         <span class="text-left">{{ $store->address }}</span>
                     </div>
 
-                    <div
-                        class="flex flex-wrap justify-center sm:justify-start items-center gap-4 text-xs sm:text-[12px]">
+                    <div class="flex flex-wrap justify-center sm:justify-start items-center gap-4 text-xs sm:text-[12px]">
                         <div class="flex items-center gap-1.5">
                             <x-heroicon-s-cube class="w-4 h-4 text-[#6B7280]" />
                             <span class="text-[#111827]">{{ $store->products->count() }} Produk</span>
@@ -45,12 +41,10 @@
                     </div>
 
                     @if($store->bankAccounts->first())
-                    <div
-                        class="flex flex-wrap justify-center sm:justify-start items-center gap-2 text-xs sm:text-[12px] mt-1 bg-white/50 px-2 py-1 rounded-lg w-fit">
+                    <div class="flex flex-wrap justify-center sm:justify-start items-center gap-2 text-xs sm:text-[12px] mt-1 bg-white/50 px-2 py-1 rounded-lg w-fit">
                         <span class="text-[#78716C]">Rekening:</span>
                         <span class="font-semibold text-[#111827]">{{ $store->bankAccounts->first()->bank_name }}</span>
-                        <span class="text-[#111827] font-mono">{{ $store->bankAccounts->first()->account_number
-                            }}</span>
+                        <span class="text-[#111827] font-mono">{{ $store->bankAccounts->first()->account_number }}</span>
                         @if($totalBankAccounts > 1)
                         <span class="text-[#15803D] underline cursor-pointer ml-1" title="Lihat lainnya">
                             +{{ $totalBankAccounts - 1 }} lainnya
@@ -62,27 +56,25 @@
             </div>
         </div>
 
+        {{-- ✅ ACTION BUTTONS WITH EXPORT --}}
         <div class="flex flex-wrap justify-center sm:justify-end gap-2 w-full md:w-auto mt-4 md:mt-0">
-            <button
-                class="bg-[#15803D] text-white px-4 py-2 rounded-lg hover:bg-[#166534] transition text-xs sm:text-[12px] font-medium flex items-center gap-2 shadow-sm">
+            {{-- ✅ DOWNLOAD LAPORAN LENGKAP --}}
+            <a href="{{ route('admin.mitra.export', $store->id) }}" class="bg-[#15803D] text-white px-4 py-2 rounded-lg hover:bg-[#166534] transition text-xs sm:text-[12px] font-medium flex items-center gap-2 shadow-sm">
                 <x-heroicon-s-arrow-down-tray class="w-4 h-4" />
-                Download CSV
-            </button>
+                Download Laporan Lengkap
+            </a>
 
             @if($store->user && $store->user->instagram)
-            <a href="{{ $store->user->instagram }}" target="_blank"
-                class="bg-gradient-to-r from-[#E91E63] to-[#F06292] text-white px-4 py-2 rounded-lg text-xs sm:text-[12px] font-medium flex items-center gap-2 shadow-sm hover:opacity-90 transition">
+            <a href="{{ $store->user->instagram }}" target="_blank" class="bg-gradient-to-r from-[#E91E63] to-[#F06292] text-white px-4 py-2 rounded-lg text-xs sm:text-[12px] font-medium flex items-center gap-2 shadow-sm hover:opacity-90 transition">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                 </svg>
                 Instagram
             </a>
             @endif
 
             @if($store->user && $store->user->phone)
-            <a href="{{ $store->whatsapp_url }}" target="_blank"
-                class="flex items-center gap-2 text-white px-4 py-2 rounded-lg text-xs sm:text-[12px] font-medium flex items-center gap-2 shadow-sm hover:opacity-90 transition rounded-lg bg-[#0F4C20] hover:bg-[#0b3a18] shadow-sm">
+            <a href="{{ $store->whatsapp_url }}" target="_blank" class="flex items-center gap-2 text-white px-4 py-2 rounded-lg text-xs sm:text-[12px] font-medium shadow-sm hover:opacity-90 transition bg-[#0F4C20] hover:bg-[#0b3a18]">
                 <img src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png" class="w-5 h-5">
                 Whatsapp
             </a>
@@ -92,13 +84,13 @@
 </div>
 
 @if(session('success'))
-<div
-    class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-xl mb-6 text-xs sm:text-[13px] flex items-center gap-3">
+<div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-xl mb-6 text-xs sm:text-[13px] flex items-center gap-3">
     <x-heroicon-s-check-circle class="w-5 h-5" />
     {{ session('success') }}
 </div>
 @endif
 
+{{-- STATISTICS CARDS --}}
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-8">
     <div class="bg-white px-5 py-4 rounded-2xl shadow-sm border border-[#E5E7EB]">
         <p class="text-[11px] text-[#78716C] mb-1.5 flex items-center gap-1">
@@ -153,6 +145,7 @@
     </div>
 </div>
 
+{{-- PERFORMANCE CHART --}}
 <div class="bg-white px-4 sm:px-6 py-5 rounded-2xl shadow-sm mb-8 border border-[#E5E7EB]">
     <h2 class="font-bold text-[16px] text-[#111827] mb-4">Progress Penjualan</h2>
     <div style="height: 280px; width: 100%;">
@@ -160,6 +153,7 @@
     </div>
 </div>
 
+{{-- PENDING PAYMENTS --}}
 <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 border border-gray-100">
     <div class="px-5 py-4 bg-white border-b border-gray-100">
         <h2 class="font-bold text-[16px] text-[#111827]">Persetujuan Bukti Bayar Masuk</h2>
@@ -182,8 +176,7 @@
                 @forelse($pendingPayments as $payment)
                 <tr class="hover:bg-[#F9FDF7] transition duration-200">
                     <td class="px-5 py-4 font-mono text-[#111827] whitespace-nowrap">
-                        #NB-{{ str_pad($payment->order->id, 4, '0', STR_PAD_LEFT) }}-{{ str_pad($payment->id, 4, '0',
-                        STR_PAD_LEFT) }}
+                        #NB-{{ str_pad($payment->order->id, 4, '0', STR_PAD_LEFT) }}-{{ str_pad($payment->id, 4, '0', STR_PAD_LEFT) }}
                     </td>
                     <td class="px-5 py-4 text-[#111827] whitespace-nowrap">{{ $payment->order->user->name }}</td>
                     <td class="px-5 py-4 font-semibold text-[#111827] whitespace-nowrap">
@@ -191,13 +184,10 @@
                     </td>
                     <td class="px-5 py-4 whitespace-nowrap">
                         @if($payment->payment_proof)
-                        <button onclick="viewProof('{{ asset('storage/' . $payment->payment_proof) }}')"
-                            class="text-[#2563EB] hover:text-[#1E40AF] hover:underline inline-flex items-center gap-1 transition">
+                        <button onclick="viewProof('{{ asset('storage/' . $payment->payment_proof) }}')" class="text-[#2563EB] hover:text-[#1E40AF] hover:underline inline-flex items-center gap-1 transition">
                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                <path fill-rule="evenodd"
-                                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                                    clip-rule="evenodd" />
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
                             </svg>
                             Lihat
                         </button>
@@ -206,14 +196,12 @@
                         @endif
                     </td>
                     <td class="px-5 py-4 whitespace-nowrap">
-                        <span
-                            class="inline-flex items-center px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-[11px] font-semibold border border-yellow-200">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-[11px] font-semibold border border-yellow-200">
                             Menunggu Konfirmasi
                         </span>
                     </td>
                     <td class="px-5 py-4 text-center whitespace-nowrap">
-                        <button onclick="confirmPayment({{ $payment->id }})"
-                            class="bg-[#FBBF24] text-white px-4 py-1.5 rounded-lg hover:bg-[#F59E0B] text-[11px] font-semibold transition shadow-sm">
+                        <button onclick="confirmPayment({{ $payment->id }})" class="bg-[#FBBF24] text-white px-4 py-1.5 rounded-lg hover:bg-[#F59E0B] text-[11px] font-semibold transition shadow-sm">
                             Proses
                         </button>
                     </td>
@@ -234,56 +222,24 @@
 
     @if($pendingPayments->hasPages())
     <div class="px-5 py-4 border-t border-[#E5E7EB] bg-white">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p class="text-xs text-[#78716C]">
-                Menampilkan <span class="font-semibold text-[#111827]">{{ $pendingPayments->firstItem() }}</span> -
-                <span class="font-semibold text-[#111827]">{{ $pendingPayments->lastItem() }}</span> dari
-                <span class="font-semibold text-[#111827]">{{ $pendingPayments->total() }}</span> data
-            </p>
-
-            <div class="flex gap-2">
-                {{-- Previous --}}
-                @if($pendingPayments->onFirstPage())
-                <button disabled
-                    class="px-3 py-1.5 border border-gray-200 rounded text-[11px] text-gray-400 cursor-not-allowed bg-white">
-                    ‹
-                </button>
-                @else
-                <a href="{{ $pendingPayments->previousPageUrl() }}"
-                    class="px-3 py-1.5 border border-gray-300 rounded text-[11px] text-[#111827] hover:bg-gray-50 bg-white transition font-medium">
-                    ‹
-                </a>
-                @endif
-
-                {{-- Next --}}
-                @if($pendingPayments->hasMorePages())
-                <a href="{{ $pendingPayments->nextPageUrl() }}"
-                    class="px-3 py-1.5 border border-gray-300 rounded text-[11px] text-[#111827] hover:bg-gray-50 bg-white transition font-medium">
-                    ›
-                </a>
-                @else
-                <button disabled
-                    class="px-3 py-1.5 border border-gray-200 rounded text-[11px] text-gray-400 cursor-not-allowed bg-white">
-                    ›
-                </button>
-                @endif
-            </div>
-        </div>
+        {{ $pendingPayments->appends(['confirmed_page' => request('confirmed_page'), 'withdrawals_page' => request('withdrawals_page'), 'orders_page' => request('orders_page')])->links() }}
     </div>
     @endif
 </div>
 
+{{-- CONFIRMED PAYMENTS HISTORY --}}
 <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 border border-gray-100">
-    <div
-        class="px-5 py-4 bg-white border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div class="px-5 py-4 bg-white border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
             <h2 class="font-bold text-[16px] text-[#111827]">Histori Verifikasi Pembayaran</h2>
             <p class="text-[12px] text-[#78716C] mt-1">Catatan transaksi yang telah diproses.</p>
         </div>
-        <button
-            class="px-4 py-1.5 rounded-lg border border-[#D1D5DB] text-[12px] text-[#111827] hover:bg-[#F3F4F6] transition font-medium">
-            Unduh Laporan
-        </button>
+        {{-- ✅ DOWNLOAD HISTORY --}}
+       <a href="{{ route('admin.mitra.exportConfirmedPayments', $store->id) }}" class="px-4 py-1.5 rounded-lg border border-[#D1D5DB] text-[12px] text-[#111827] hover:bg-[#F3F4F6] transition font-medium inline-flex items-center gap-2">
+    <x-heroicon-o-arrow-down-tray class="w-4 h-4" />
+    Unduh Laporan
+</a>
+
     </div>
 
     <div class="overflow-x-auto custom-scrollbar">
@@ -301,8 +257,7 @@
                 @forelse($confirmedPayments as $payment)
                 <tr class="hover:bg-[#F9FDF7] transition duration-200">
                     <td class="px-5 py-4 text-[#111827] whitespace-nowrap">
-                        {{ $payment->confirmed_at ? $payment->confirmed_at->format('d F Y') :
-                        $payment->created_at->format('d F Y') }}
+                        {{ $payment->confirmed_at ? $payment->confirmed_at->format('d F Y') : $payment->created_at->format('d F Y') }}
                     </td>
                     <td class="px-5 py-4 font-mono text-[#111827] whitespace-nowrap">
                         #NB-{{ str_pad($payment->order->id, 4, '0', STR_PAD_LEFT) }}
@@ -311,14 +266,12 @@
                         Rp {{ number_format($payment->amount, 0, ',', '.') }}
                     </td>
                     <td class="px-5 py-4 whitespace-nowrap">
-                        <span
-                            class="inline-flex items-center px-3 py-1 rounded-full bg-[#15803D] text-white text-[11px] font-semibold shadow-sm">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#15803D] text-white text-[11px] font-semibold shadow-sm">
                             Terkonfirmasi
                         </span>
                     </td>
                     <td class="px-5 py-4 text-center whitespace-nowrap">
-                        <a href=""
-                            class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 text-green-700 hover:bg-green-600 hover:text-white transition-all shadow-sm">
+                        <a href="#" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 text-green-700 hover:bg-green-600 hover:text-white transition-all shadow-sm">
                             <x-heroicon-s-eye class="w-4 h-4" />
                         </a>
                     </td>
@@ -336,54 +289,19 @@
 
     @if($confirmedPayments->hasPages())
     <div class="px-5 py-4 border-t border-[#E5E7EB] bg-white">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p class="text-xs text-[#78716C]">
-                Menampilkan <span class="font-semibold text-[#111827]">{{ $confirmedPayments->firstItem() }}</span> -
-                <span class="font-semibold text-[#111827]">{{ $confirmedPayments->lastItem() }}</span> dari
-                <span class="font-semibold text-[#111827]">{{ $confirmedPayments->total() }}</span> data
-            </p>
-
-            <div class="flex gap-2">
-                {{-- Previous --}}
-                @if($confirmedPayments->onFirstPage())
-                <button disabled
-                    class="px-3 py-1.5 border border-gray-200 rounded text-[11px] text-gray-400 cursor-not-allowed bg-white">
-                    ‹
-                </button>
-                @else
-                <a href="{{ $confirmedPayments->previousPageUrl() }}"
-                    class="px-3 py-1.5 border border-gray-300 rounded text-[11px] text-[#111827] hover:bg-gray-50 bg-white transition font-medium">
-                    ‹
-                </a>
-                @endif
-
-                {{-- Next --}}
-                @if($confirmedPayments->hasMorePages())
-                <a href="{{ $confirmedPayments->nextPageUrl() }}"
-                    class="px-3 py-1.5 border border-gray-300 rounded text-[11px] text-[#111827] hover:bg-gray-50 bg-white transition font-medium">
-                    ›
-                </a>
-                @else
-                <button disabled
-                    class="px-3 py-1.5 border border-gray-200 rounded text-[11px] text-gray-400 cursor-not-allowed bg-white">
-                    ›
-                </button>
-                @endif
-            </div>
-        </div>
+        {{ $confirmedPayments->appends(['payments_page' => request('payments_page'), 'withdrawals_page' => request('withdrawals_page'), 'orders_page' => request('orders_page')])->links() }}
     </div>
     @endif
 </div>
 
+{{-- WITHDRAWALS QUEUE --}}
 <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 border border-gray-100">
-    <div
-        class="px-5 py-4 bg-white border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div class="px-5 py-4 bg-white border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
             <h2 class="font-bold text-[16px] text-[#111827]">Antrean Penarikan Saldo</h2>
             <p class="text-[12px] text-[#78716C] mt-1">Permintaan transfer dana ke rekening mitra.</p>
         </div>
-        <a href="{{ route('admin.withdrawals.index') }}"
-            class="px-4 py-1.5 rounded-lg border border-[#D1D5DB] text-[12px] text-[#111827] hover:bg-[#F3F4F6] transition font-medium">
+        <a href="{{ route('admin.withdrawals.index') }}" class="px-4 py-1.5 rounded-lg border border-[#D1D5DB] text-[12px] text-[#111827] hover:bg-[#F3F4F6] transition font-medium">
             Lihat Semua
         </a>
     </div>
@@ -426,41 +344,33 @@
                     </td>
                     <td class="px-5 py-4 whitespace-nowrap">
                         @if($withdrawal->status == 'pending')
-                        <span
-                            class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-[11px] font-semibold border border-yellow-200">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-[11px] font-semibold border border-yellow-200">
                             Pending
                         </span>
                         @elseif($withdrawal->status == 'approved')
-                        <span
-                            class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#DBEAFE] text-[#1E40AF] text-[11px] font-semibold border border-blue-200">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#DBEAFE] text-[#1E40AF] text-[11px] font-semibold border border-blue-200">
                             Disetujui
                         </span>
                         @elseif($withdrawal->status == 'completed')
-                        <span
-                            class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#15803D] text-white text-[11px] font-semibold shadow-sm">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#15803D] text-white text-[11px] font-semibold shadow-sm">
                             Selesai
                         </span>
                         @else
-                        <span
-                            class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#FEE2E2] text-[#991B1B] text-[11px] font-semibold border border-red-200">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-[#FEE2E2] text-[#991B1B] text-[11px] font-semibold border border-red-200">
                             Ditolak
                         </span>
                         @endif
                     </td>
                     <td class="px-5 py-4 text-center whitespace-nowrap">
                         @if($withdrawal->status == 'pending')
-                        <button onclick="openWithdrawalModal({{ $withdrawal->id }})"
-                            class="bg-[#FBBF24] text-white px-4 py-1.5 rounded-lg hover:bg-[#F59E0B] text-[11px] font-semibold transition shadow-sm">
+                        <button onclick="openWithdrawalModal({{ $withdrawal->id }})" class="bg-[#FBBF24] text-white px-4 py-1.5 rounded-lg hover:bg-[#F59E0B] text-[11px] font-semibold transition shadow-sm">
                             Proses
                         </button>
                         @elseif($withdrawal->status == 'completed' && $withdrawal->withdrawal_proof)
-                        <button onclick="viewProof('{{ asset('storage/' . $withdrawal->withdrawal_proof) }}')"
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 text-green-700  hover:bg-green-600 hover:text-white transition-all shadow-sm border border-green-200 transition-all shadow-sm text-[11px] font-medium">
+                        <button onclick="viewProof('{{ asset('storage/' . $withdrawal->withdrawal_proof) }}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 text-green-700 hover:bg-green-600 hover:text-white transition-all shadow-sm border border-green-200 text-[11px] font-medium">
                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                <path fill-rule="evenodd"
-                                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                                    clip-rule="evenodd" />
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
                             </svg>
                             Bukti
                         </button>
@@ -482,62 +392,27 @@
 
     @if($withdrawals->hasPages())
     <div class="px-5 py-4 border-t border-[#E5E7EB] bg-white">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p class="text-xs text-[#78716C]">
-                Menampilkan <span class="font-semibold text-[#111827]">{{ $withdrawals->firstItem() }}</span> -
-                <span class="font-semibold text-[#111827]">{{ $withdrawals->lastItem() }}</span> dari
-                <span class="font-semibold text-[#111827]">{{ $withdrawals->total() }}</span> data
-            </p>
-
-            <div class="flex gap-2">
-                {{-- Previous --}}
-                @if($withdrawals->onFirstPage())
-                <button disabled
-                    class="px-3 py-1.5 border border-gray-200 rounded text-[11px] text-gray-400 cursor-not-allowed bg-white">
-                    ‹
-                </button>
-                @else
-                <a href="{{ $withdrawals->previousPageUrl() }}"
-                    class="px-3 py-1.5 border border-gray-300 rounded text-[11px] text-[#111827] hover:bg-gray-50 bg-white transition font-medium">
-                    ‹
-                </a>
-                @endif
-
-                {{-- Next --}}
-                @if($withdrawals->hasMorePages())
-                <a href="{{ $withdrawals->nextPageUrl() }}"
-                    class="px-3 py-1.5 border border-gray-300 rounded text-[11px] text-[#111827] hover:bg-gray-50 bg-white transition font-medium">
-                    ›
-                </a>
-                @else
-                <button disabled
-                    class="px-3 py-1.5 border border-gray-200 rounded text-[11px] text-gray-400 cursor-not-allowed bg-white">
-                    ›
-                </button>
-                @endif
-            </div>
-        </div>
+        {{ $withdrawals->appends(['payments_page' => request('payments_page'), 'confirmed_page' => request('confirmed_page'), 'orders_page' => request('orders_page')])->links() }}
     </div>
     @endif
 </div>
 
-
-
+{{-- COMPLETED ORDERS --}}
 <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 border border-[#E5E7EB]">
     <div class="px-5 py-4 bg-white border-b border-[#E5E7EB] flex justify-between items-center">
         <div>
             <h2 class="font-bold text-[16px] text-[#111827]">Rekapitulasi Pesanan Selesai</h2>
-            <p class="text-[12px] text-[#78716C] mt-1">Daftar pesanan yang telah diterima oleh pelanggan dan status
-                transaksinya selesai.</p>
+            <p class="text-[12px] text-[#78716C] mt-1">Daftar pesanan yang telah diterima oleh pelanggan dan status transaksinya selesai.</p>
         </div>
-        <button class="bg-[#15803D] text-white px-4 py-2 rounded-lg text-[12px] font-medium flex items-center gap-2">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                    clip-rule="evenodd" />
-            </svg>
-            Download CSV
-        </button>
+        {{-- ✅ DOWNLOAD COMPLETED ORDERS --}}
+       <a href="{{ route('admin.mitra.exportCompletedOrders', $store->id) }}" class="bg-[#15803D] text-white px-4 py-2 rounded-lg text-[12px] font-medium flex items-center gap-2 hover:bg-[#166534] transition">
+    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+    </svg>
+    Download CSV
+</a>
+
+
     </div>
     <div class="overflow-x-auto">
         <table class="w-full text-[13px]">
@@ -552,25 +427,25 @@
             </thead>
             <tbody class="bg-white">
                 @forelse($completedOrders as $order)
-                <tr class=" hover:bg-[#F9FDF7] transition duration-200 border-b">
+                <tr class="hover:bg-[#F9FDF7] transition duration-200 border-b">
                     <td class="px-5 py-4 text-[#111827]">{{ $order->created_at->format('d F Y') }}</td>
-                    <td class="px-5 py-4 font-mono text-[#111827]">#ORD-{{ str_pad($order->id, 4, '0', STR_PAD_LEFT) }}
-                    </td>
+                    <td class="px-5 py-4 font-mono text-[#111827]">#ORD-{{ str_pad($order->id, 4, '0', STR_PAD_LEFT) }}</td>
                     <td class="px-5 py-4 font-semibold text-[#111827]">
                         Rp {{ number_format($order->total_amount, 0, ',', '.') }}
                     </td>
                     <td class="px-5 py-4">
-                        <span
-                            class="inline-flex items-center px-3 py-1 rounded-full bg-[#15803D] text-white text-[11px] font-semibold">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#15803D] text-white text-[11px] font-semibold">
                             Selesai
                         </span>
                     </td>
                     <td class="px-5 py-4">
-                        <a href=""
-                            class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 text-green-700 hover:bg-green-600 hover:text-white transition-all shadow-sm">
+                        <a href="{{ route('admin.mitra.orders.show', ['storeId' => $store->id, 'orderId' => $order->id]) }}" 
+                           class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 text-green-700 hover:bg-green-600 hover:text-white transition-all shadow-sm"
+                           title="Lihat Detail">
                             <x-heroicon-s-eye class="w-4 h-4" />
                         </a>
                     </td>
+
                 </tr>
                 @empty
                 <tr>
@@ -584,53 +459,17 @@
     </div>
     @if($completedOrders->hasPages())
     <div class="px-5 py-4 border-t border-[#E5E7EB] bg-white">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p class="text-xs text-[#78716C]">
-                Menampilkan <span class="font-semibold text-[#111827]">{{ $completedOrders->firstItem() }}</span> -
-                <span class="font-semibold text-[#111827]">{{ $completedOrders->lastItem() }}</span> dari
-                <span class="font-semibold text-[#111827]">{{ $completedOrders->total() }}</span> pesanan
-            </p>
-
-            <div class="flex gap-2">
-                {{-- Tombol Previous --}}
-                @if($completedOrders->onFirstPage())
-                <button disabled
-                    class="px-3 py-1.5 border border-gray-200 rounded text-[11px] text-gray-400 cursor-not-allowed bg-white">
-                    ‹
-                </button>
-                @else
-                <a href="{{ $completedOrders->previousPageUrl() }}"
-                    class="px-3 py-1.5 border border-gray-300 rounded text-[11px] text-[#111827] hover:bg-gray-50 bg-white transition font-medium">
-                    ‹
-                </a>
-                @endif
-
-                {{-- Tombol Next --}}
-                @if($completedOrders->hasMorePages())
-                <a href="{{ $completedOrders->nextPageUrl() }}"
-                    class="px-3 py-1.5 border border-gray-300 rounded text-[11px] text-[#111827] hover:bg-gray-50 bg-white transition font-medium">
-                    ›
-                </a>
-                @else
-                <button disabled
-                    class="px-3 py-1.5 border border-gray-200 rounded text-[11px] text-gray-400 cursor-not-allowed bg-white">
-                    ›
-                </button>
-                @endif
-            </div>
-        </div>
+        {{ $completedOrders->appends(['payments_page' => request('payments_page'), 'confirmed_page' => request('confirmed_page'), 'withdrawals_page' => request('withdrawals_page')])->links() }}
     </div>
     @endif
 </div>
 
+{{-- WITHDRAWAL MODAL --}}
 <div id="withdrawalModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
-        <button type="button" onclick="closeWithdrawalModal()"
-            class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10">
+        <button type="button" onclick="closeWithdrawalModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clip-rule="evenodd" />
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
             </svg>
         </button>
 
@@ -638,9 +477,7 @@
             <div class="w-12 h-12 bg-[#DCFCE7] rounded-full flex items-center justify-center mx-auto mb-3">
                 <svg class="w-6 h-6 text-[#15803D]" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-                    <path fill-rule="evenodd"
-                        d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
-                        clip-rule="evenodd" />
+                    <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd" />
                 </svg>
             </div>
             <h2 class="text-[18px] font-bold text-[#111827]">Konfirmasi Pencairan Dana</h2>
@@ -649,7 +486,6 @@
 
         <form id="withdrawalForm" action="" method="POST" enctype="multipart/form-data" class="p-6">
             @csrf
-
             <div class="space-y-3 mb-5">
                 <div class="bg-[#F9FAFB] px-4 py-3 rounded-xl">
                     <p class="text-[10px] text-[#78716C] mb-1">Mitra</p>
@@ -709,9 +545,7 @@
                     <label class="text-[11px] font-semibold text-[#111827] mb-2 block">
                         Upload Bukti Pencairan <span class="text-red-500">*</span>
                     </label>
-                    <input type="file" id="withdrawal_proof" name="withdrawal_proof"
-                        accept="image/jpeg,image/png,image/jpg" required
-                        class="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl text-[12px] focus:ring-2 focus:ring-[#15803D] focus:border-transparent">
+                    <input type="file" id="withdrawal_proof" name="withdrawal_proof" accept="image/jpeg,image/png,image/jpg" required class="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl text-[12px] focus:ring-2 focus:ring-[#15803D] focus:border-transparent">
                     <p class="text-[10px] text-[#78716C] mt-1">Format: JPG, PNG (Max 2MB)</p>
                 </div>
 
@@ -719,19 +553,15 @@
                     <label class="text-[11px] font-semibold text-[#111827] mb-2 block">
                         Catatan Admin (Opsional)
                     </label>
-                    <textarea name="admin_notes" rows="2"
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg text-[12px] focus:ring-2 focus:ring-[#15803D] focus:border-transparent"
-                        placeholder="Tambahkan catatan jika diperlukan..."></textarea>
+                    <textarea name="admin_notes" rows="2" class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg text-[12px] focus:ring-2 focus:ring-[#15803D] focus:border-transparent" placeholder="Tambahkan catatan jika diperlukan..."></textarea>
                 </div>
             </div>
 
             <div class="flex gap-3 sticky bottom-0 bg-white pt-4 pb-2">
-                <button type="button" onclick="closeWithdrawalModal()"
-                    class="flex-1 px-4 py-3 border border-[#D1D5DB] text-[#111827] rounded-xl text-[13px] font-semibold hover:bg-[#F3F4F6] transition">
+                <button type="button" onclick="closeWithdrawalModal()" class="flex-1 px-4 py-3 border border-[#D1D5DB] text-[#111827] rounded-xl text-[13px] font-semibold hover:bg-[#F3F4F6] transition">
                     Batal
                 </button>
-                <button type="submit"
-                    class="flex-1 px-4 py-3 bg-[#15803D] text-white rounded-xl text-[13px] font-semibold hover:bg-[#166534] transition">
+                <button type="submit" class="flex-1 px-4 py-3 bg-[#15803D] text-white rounded-xl text-[13px] font-semibold hover:bg-[#166534] transition">
                     Proses Pencairan
                 </button>
             </div>
@@ -836,7 +666,7 @@
         }
     }
 
-    // Open Withdrawal Modal (UPDATED WITH ADMIN FEE)
+    // Open Withdrawal Modal
     function openWithdrawalModal(id) {
         fetch(`/admin/withdrawals/${id}/details`)
             .then(response => response.json())
@@ -847,7 +677,6 @@
                 document.getElementById('modal_account_number').textContent = data.account_number || '-';
                 document.getElementById('modal_account_holder').textContent = data.account_holder || '-';
                 
-                // NEW: Tampilkan breakdown biaya
                 document.getElementById('modal_amount').textContent = 'Rp ' + data.amount.toLocaleString('id-ID');
                 document.getElementById('modal_admin_fee').textContent = 'Rp ' + data.admin_fee.toLocaleString('id-ID');
                 document.getElementById('modal_total_amount').textContent = 'Rp ' + data.total_received.toLocaleString('id-ID');

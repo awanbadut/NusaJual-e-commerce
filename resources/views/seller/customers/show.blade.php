@@ -130,122 +130,176 @@
                 </div>
             </div>
 
-            <!-- Orders List Header -->
-            <div class="bg-white rounded-xl shadow-sm p-4 mb-4 border border-gray-100">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <h3 class="text-lg font-bold text-gray-900">Riwayat Pesanan</h3>
-                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                        <div class="relative flex-1 sm:w-64">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                <x-heroicon-o-magnifying-glass class="text-gray-400 w-5 h-5" />
-                            </div>
-                            <input type="text" placeholder="Cari ID pesanan..."
-                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm transition">
-                        </div>
-                        <button
-                            class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 flex items-center justify-center gap-2 transition">
-                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
-                                </path>
-                            </svg>
-                            <span class="font-medium text-gray-700">Filter</span>
-                        </button>
-                    </div>
+           <!-- Orders List Header -->
+<div class="bg-white rounded-xl shadow-sm p-4 mb-4 border border-gray-100">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h3 class="text-lg font-bold text-gray-900">Riwayat Pesanan</h3>
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div class="relative flex-1 sm:w-64">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <x-heroicon-o-magnifying-glass class="text-gray-400 w-5 h-5" />
                 </div>
+                <input type="text" id="searchOrder" placeholder="Cari ID pesanan..." value="{{ request('search') }}"
+                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm transition">
+            </div>
+            
+            <div class="relative">
+                <select id="statusFilter"
+                    class="w-full sm:w-40 px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-sm appearance-none bg-white cursor-pointer">
+                    <option value="">Semua Status</option>
+                    <option value="pending" {{ request('status')=='pending' ? 'selected' : '' }}>Menunggu Pembayaran</option>
+                    <option value="processing" {{ request('status')=='processing' ? 'selected' : '' }}>Diproses</option>
+                    <option value="completed" {{ request('status')=='completed' ? 'selected' : '' }}>Selesai</option>
+                    <option value="cancelled" {{ request('status')=='cancelled' ? 'selected' : '' }}>Dibatalkan</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            </div>
 
-                <div class="py-5">
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full text-left border-collapse min-w-[800px]">
-                            <thead class="bg-[#DCFCE7] border-b border-[#BBF7D0]">
-                                <tr class="text-left">
-                                    <th class="px-6 py-4 font-bold text-[#15803D] uppercase tracking-wider text-[11px]">
-                                        ID
-                                        Pesanan</th>
-                                    <th class="px-6 py-4 font-bold text-[#15803D] uppercase tracking-wider text-[11px]">
-                                        Tanggal</th>
-                                    <th class="px-6 py-4 font-bold text-[#15803D] uppercase tracking-wider text-[11px]">
-                                        Status</th>
-                                    <th class="px-6 py-4 font-bold text-[#15803D] uppercase tracking-wider text-[11px]">
-                                        Total Belanja</th>
-                                    <th
-                                        class="px-6 py-4 font-bold text-[#15803D] uppercase tracking-wider text-[11px] text-center">
-                                        Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100 bg-white">
-                                @forelse($customer->orders as $order)
-                                <tr class="hover:bg-green-50/30 transition-colors duration-200">
-                                    <td
-                                        class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 font-mono tracking-tighter">
-                                        {{ $order->order_number }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-600 font-medium">
-                                        {{ date('d M Y', strtotime($order->created_at)) }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @php
-                                        $statusClasses = [
-                                        'completed' => 'bg-green-100 text-green-700 border-green-200',
-                                        'pending' => 'bg-yellow-100 text-yellow-700 border-yellow-200',
-                                        'processing' => 'bg-blue-100 text-blue-700 border-blue-200',
-                                        'cancelled' => 'bg-red-100 text-red-700 border-red-200',
-                                        ];
-                                        $labels = [
-                                        'completed' => 'Selesai',
-                                        'pending' => 'Menunggu Pembayaran',
-                                        'processing' => 'Diproses',
-                                        'cancelled' => 'Dibatalkan',
-                                        ];
-                                        $currentStatus = $order->status;
-                                        $class = $statusClasses[$currentStatus] ?? 'bg-gray-100 text-gray-700
-                                        border-gray-200';
-                                        $label = $labels[$currentStatus] ?? ucfirst($currentStatus);
-                                        @endphp
-                                        <span
-                                            class="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold border {{ $class }}">
-                                            {{ $label }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#0F4C20]">
-                                        Rp {{ number_format($order->total_amount, 0, ',', '.') }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <a href="{{ route('seller.orders.show', $order->id) }}"
-                                            class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 text-green-700 hover:bg-green-600 hover:text-white transition-all shadow-sm">
-                                            <x-heroicon-s-eye class="w-4 h-4" />
-                                        </a>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="5" class="px-6 py-12 text-center">
-                                        <div class="flex flex-col items-center justify-center text-gray-400">
-                                            <x-heroicon-o-document-magnifying-glass class="w-12 h-12 mb-3 opacity-20" />
-                                            <p class="text-sm italic">Belum ada riwayat pesanan</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+            {{-- ✅ TOMBOL RESET --}}
+            @if(request('search') || request('status'))
+            <button id="resetFilter" type="button"
+                class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 flex items-center justify-center gap-2 transition bg-white">
+                <x-heroicon-o-arrow-path class="w-4 h-4 text-gray-500" />
+                <span class="font-medium text-gray-700">Reset</span>
+            </button>
+            @endif
+        </div>
+    </div>
 
-                    @if($customer->orders->count() > 0)
-                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50">
-                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <p class="text-[13px] text-gray-600">
-                                Menampilkan <span class="font-medium text-gray-900">1</span>
-                                sampai
-                                <span class="font-medium text-gray-900">{{ $customer->orders->count() }}</span> dari
-                                <span class="font-medium text-gray-900">{{ $totalOrders }}</span> pesanan
-                            </p>
-                        </div>
-                    </div>
-                    @endif
+    <div class="py-5">
+        <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left border-collapse min-w-[800px]">
+                <thead class="bg-[#DCFCE7] border-b border-[#BBF7D0]">
+                    <tr class="text-left">
+                        <th class="px-6 py-4 font-bold text-[#15803D] uppercase tracking-wider text-[11px]">ID Pesanan</th>
+                        <th class="px-6 py-4 font-bold text-[#15803D] uppercase tracking-wider text-[11px]">Tanggal</th>
+                        <th class="px-6 py-4 font-bold text-[#15803D] uppercase tracking-wider text-[11px]">Status</th>
+                        <th class="px-6 py-4 font-bold text-[#15803D] uppercase tracking-wider text-[11px]">Total Belanja</th>
+                        <th class="px-6 py-4 font-bold text-[#15803D] uppercase tracking-wider text-[11px] text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 bg-white">
+                    @forelse($orders as $order)
+                    <tr class="hover:bg-green-50/30 transition-colors duration-200">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 font-mono tracking-tighter">
+                            {{ $order->order_number }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-600 font-medium">
+                            {{ date('d M Y', strtotime($order->created_at)) }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @php
+                            $statusClasses = [
+                                'completed' => 'bg-green-100 text-green-700 border-green-200',
+                                'pending' => 'bg-yellow-100 text-yellow-700 border-yellow-200',
+                                'processing' => 'bg-blue-100 text-blue-700 border-blue-200',
+                                'cancelled' => 'bg-red-100 text-red-700 border-red-200',
+                            ];
+                            $labels = [
+                                'completed' => 'Selesai',
+                                'pending' => 'Menunggu Pembayaran',
+                                'processing' => 'Diproses',
+                                'cancelled' => 'Dibatalkan',
+                            ];
+                            $currentStatus = $order->status;
+                            $class = $statusClasses[$currentStatus] ?? 'bg-gray-100 text-gray-700 border-gray-200';
+                            $label = $labels[$currentStatus] ?? ucfirst($currentStatus);
+                            @endphp
+                            <span class="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold border {{ $class }}">
+                                {{ $label }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#0F4C20]">
+                            Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <a href="{{ route('seller.orders.show', $order->id) }}"
+                                class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 text-green-700 hover:bg-green-600 hover:text-white transition-all shadow-sm">
+                                <x-heroicon-s-eye class="w-4 h-4" />
+                            </a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-12 text-center">
+                            <div class="flex flex-col items-center justify-center text-gray-400">
+                                <x-heroicon-o-document-magnifying-glass class="w-12 h-12 mb-3 opacity-20" />
+                                <p class="text-sm italic">
+                                    @if(request('search') || request('status'))
+                                        Tidak ada pesanan yang sesuai dengan filter
+                                    @else
+                                        Belum ada riwayat pesanan
+                                    @endif
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if($orders->count() > 0)
+        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-[13px] text-gray-600">
+                    Menampilkan <span class="font-medium text-gray-900">{{ $orders->firstItem() }}</span>
+                    sampai <span class="font-medium text-gray-900">{{ $orders->lastItem() }}</span>
+                    dari <span class="font-medium text-gray-900">{{ $orders->total() }}</span> pesanan
+                </p>
+                <div class="flex items-center gap-2">
+                    {{ $orders->links() }}
                 </div>
             </div>
         </div>
+        @endif
     </div>
 </div>
+
+@push('scripts')
+<script>
+    const searchOrder = document.getElementById('searchOrder');
+    const statusFilter = document.getElementById('statusFilter');
+    const resetButton = document.getElementById('resetFilter');
+
+    function applyFilter() {
+        const search = searchOrder.value;
+        const status = statusFilter.value;
+        
+        const params = new URLSearchParams(window.location.search);
+        
+        // Clear old params
+        params.delete('search');
+        params.delete('status');
+        params.delete('page'); // Reset pagination
+        
+        // Add new params
+        if (search) params.set('search', search);
+        if (status) params.set('status', status);
+        
+        window.location.href = window.location.pathname + '?' + params.toString();
+    }
+
+    function resetFilter() {
+        window.location.href = window.location.pathname;
+    }
+
+    // Debounce search
+    let searchTimeout;
+    searchOrder.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(applyFilter, 500);
+    });
+
+    statusFilter.addEventListener('change', applyFilter);
+    
+    if (resetButton) {
+        resetButton.addEventListener('click', resetFilter);
+    }
+</script>
+@endpush
 @endsection

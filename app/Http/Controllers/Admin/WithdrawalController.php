@@ -194,68 +194,69 @@ class WithdrawalController extends Controller
     /**
      * Export withdrawals to CSV
      */
-    public function export(Request $request)
-    {
-        $query = Withdrawal::with(['store', 'bankAccount']);
+   public function export(Request $request)
+{
+    $query = Withdrawal::with(['store', 'bankAccount']);
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('requested_at', [
-                $request->start_date . ' 00:00:00',
-                $request->end_date . ' 23:59:59'
-            ]);
-        }
-
-        $withdrawals = $query->get();
-
-        $filename = 'withdrawals_' . now()->format('Y-m-d_His') . '.csv';
-        
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-        ];
-
-        $callback = function() use ($withdrawals) {
-            $file = fopen('php://output', 'w');
-            
-            // Header CSV
-            fputcsv($file, [
-                'ID',
-                'Tanggal Request',
-                'Nama Toko',
-                'Bank',
-                'No Rekening',
-                'Nama Pemilik',
-                'Jumlah Pencairan',
-                'Biaya Admin',
-                'Dana Diterima',
-                'Status',
-                'Tanggal Diproses',
-            ]);
-
-            // Data
-            foreach ($withdrawals as $w) {
-                fputcsv($file, [
-                    'WD-' . str_pad($w->id, 4, '0', STR_PAD_LEFT),
-                    $w->requested_at->format('d/m/Y H:i'),
-                    $w->store->store_name,
-                    $w->bankAccount->bank_name,
-                    $w->bankAccount->account_number,
-                    $w->bankAccount->account_name,
-                    $w->amount,
-                    $w->admin_fee,
-                    $w->total_received,
-                    ucfirst($w->status),
-                    $w->processed_at ? $w->processed_at->format('d/m/Y H:i') : '-',
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
     }
+
+    if ($request->filled('start_date') && $request->filled('end_date')) {
+        $query->whereBetween('requested_at', [
+            $request->start_date . ' 00:00:00',
+            $request->end_date . ' 23:59:59'
+        ]);
+    }
+
+    $withdrawals = $query->get();
+
+    $filename = 'withdrawals_' . now()->format('Y-m-d_His') . '.csv';
+    
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+    ];
+
+    $callback = function() use ($withdrawals) {
+        $file = fopen('php://output', 'w');
+        
+        // Header CSV
+        fputcsv($file, [
+            'ID',
+            'Tanggal Request',
+            'Nama Toko',
+            'Bank',
+            'No Rekening',
+            'Nama Pemilik',
+            'Jumlah Pencairan',
+            'Biaya Admin',
+            'Dana Diterima',
+            'Status',
+            'Tanggal Diproses',
+        ]);
+
+        // Data
+        foreach ($withdrawals as $w) {
+            fputcsv($file, [
+                'WD-' . str_pad($w->id, 4, '0', STR_PAD_LEFT),
+                $w->requested_at->format('d/m/Y H:i'),
+                $w->store->store_name,
+                $w->bankAccount->bank_name,
+                $w->bankAccount->account_number,
+                $w->bankAccount->account_name,
+                $w->amount,
+                $w->admin_fee,
+                $w->total_received,
+                ucfirst($w->status),
+                $w->processed_at ? $w->processed_at->format('d/m/Y H:i') : '-',
+            ]);
+        }
+
+        fclose($file);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
+
 }

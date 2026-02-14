@@ -84,23 +84,44 @@ class CustomerController extends Controller
     /**
      * Display customer detail
      */
-    public function show($id)
-    {
-        $storeId = auth('web')->user()->store->id;
+    /**
+ * Display customer detail with search & filter
+ */
+public function show(Request $request, $id)
+{
+    $storeId = auth('web')->user()->store->id;
 
-        // Get customer with orders
-        $customer = User::with(['orders' => function ($query) use ($storeId) {
-            $query->where('store_id', $storeId)
-                ->with('items.product')
-                ->orderBy('created_at', 'desc');
-        }])->findOrFail($id);
+    // Get customer info
+    $customer = User::findOrFail($id);
 
-        // Calculate statistics
-        $storeOrders = $customer->orders->where('store_id', $storeId);
-        $totalOrders = $storeOrders->count();
-        $totalSpent = $storeOrders->where('status', 'completed')->sum('total_amount');
-        $averageOrder = $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
+    // Query orders dengan filter & search
+    $ordersQuery = $customer->orders()
+        ->where('store_id', $storeId)
+        ->with('items.product');
 
-        return view('seller.customers.show', compact('customer', 'totalOrders', 'totalSpent', 'averageOrder'));
+    // ✅ SEARCH (Order Number)
+    if ($request->filled('search')) {
+        $ordersQuery->where('order_number', 'like', '%' . $request->search . '%');
     }
+
+    // ✅ FILTER (Status)
+    if ($request->filled('status')) {
+        $ordersQuery->where('status', $request->status);
+    }
+
+    // Order by latest
+    $ordersQuery->orderBy('created_at', 'desc');
+
+    // ✅ PAGINATION with Query String
+    $orders = $ordersQuery->paginate(10)->withQueryString();
+
+    // Calculate statistics (ALL orders, not filtered)
+    $allOrders = $customer->orders()->where('store_id', $storeId)->get();
+    $totalOrders = $allOrders->count();
+    $totalSpent = $allOrders->where('status', 'completed')->sum('total_amount');
+    $averageOrder = $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
+
+    return view('seller.customers.show', compact('customer', 'orders', 'totalOrders', 'totalSpent', 'averageOrder'));
+}
+
 }

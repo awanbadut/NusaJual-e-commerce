@@ -29,6 +29,7 @@ use App\Http\Controllers\Seller\PaymentController;
 use App\Http\Controllers\Seller\ProfileController;
 
 
+
 /*
 |--------------------------------------------------------------------------
 | PUBLIC ROUTES (Guest)
@@ -165,6 +166,7 @@ Route::prefix('seller')->name('seller.')->group(function () {
         // 🔥 SALES (Riwayat Penjualan)
         Route::get('/sales', [App\Http\Controllers\Seller\SalesController::class, 'index'])->name('sales.index');
         Route::get('/sales/export', [App\Http\Controllers\Seller\SalesController::class, 'export'])->name('sales.export');
+        Route::get('/sales/{id}', [SalesController::class, 'show'])->name('sales.show'); 
 
         // 🔥 PAYMENTS (Laporan Pembayaran Customer)
         Route::get('/payments', [App\Http\Controllers\Seller\PaymentController::class, 'index'])->name('payments.index');
@@ -226,11 +228,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])
         ->name('dashboard');
 
-    // Mitra Management
-    Route::get('/mitra', [App\Http\Controllers\Admin\MitraController::class, 'index'])
-        ->name('mitra.index');
-    Route::get('/mitra/{id}', [App\Http\Controllers\Admin\MitraController::class, 'show'])
-        ->name('mitra.show');
+    // ✅ MITRA MANAGEMENT (Langsung di sini, TANPA nested group!)
+    Route::get('/mitra', [\App\Http\Controllers\Admin\MitraController::class, 'index'])->name('mitra.index');
+    Route::get('/mitra/export-all', [\App\Http\Controllers\Admin\MitraController::class, 'exportAll'])->name('mitra.exportAll');
+    Route::get('/mitra/{id}/export', [\App\Http\Controllers\Admin\MitraController::class, 'export'])->name('mitra.export');
+    Route::get('/mitra/{id}/export-confirmed-payments', [\App\Http\Controllers\Admin\MitraController::class, 'exportConfirmedPayments'])->name('mitra.exportConfirmedPayments');
+    Route::get('/mitra/{id}/export-completed-orders', [\App\Http\Controllers\Admin\MitraController::class, 'exportCompletedOrders'])->name('mitra.exportCompletedOrders');
+    Route::get('/mitra/{storeId}/orders/{orderId}', [\App\Http\Controllers\Admin\MitraController::class, 'showOrder'])->name('mitra.orders.show');
+    Route::get('/mitra/{id}', [\App\Http\Controllers\Admin\MitraController::class, 'show'])->name('mitra.show');
+
 
     // Payment Verification
     Route::post('/payments/{id}/confirm', [App\Http\Controllers\Admin\PaymentController::class, 'confirm'])
@@ -258,19 +264,24 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('/{id}/proof', [\App\Http\Controllers\Admin\RefundController::class, 'viewProof'])->name('viewProof');
     });
 
-    // Mitra Management
-    Route::get('/mitra', [App\Http\Controllers\Admin\MitraController::class, 'index'])->name('mitra.index');
-    Route::get('/mitra/{id}', [App\Http\Controllers\Admin\MitraController::class, 'show'])->name('mitra.show');
+    // // Mitra Management
+    // Route::get('/mitra', [App\Http\Controllers\Admin\MitraController::class, 'index'])->name('mitra.index');
+    // Route::get('/mitra/{id}', [App\Http\Controllers\Admin\MitraController::class, 'show'])->name('mitra.show');
 
-    // Withdrawals
-    Route::prefix('withdrawals')->name('withdrawals.')->group(function () {
-        Route::get('/', [App\Http\Controllers\Admin\WithdrawalController::class, 'index'])->name('index');
-        Route::get('/{id}', [App\Http\Controllers\Admin\WithdrawalController::class, 'show'])->name('show');
-        Route::get('/{id}/details', [App\Http\Controllers\Admin\WithdrawalController::class, 'getDetails'])->name('details');
-        Route::post('/{id}/process', [App\Http\Controllers\Admin\WithdrawalController::class, 'process'])->name('process');
-        Route::post('/{id}/reject', [App\Http\Controllers\Admin\WithdrawalController::class, 'reject'])->name('reject');
-        Route::get('/export', [App\Http\Controllers\Admin\WithdrawalController::class, 'export'])->name('export');
-    });
+   // Withdrawals
+Route::prefix('withdrawals')->name('withdrawals.')->group(function () {
+    Route::get('/', [App\Http\Controllers\Admin\WithdrawalController::class, 'index'])->name('index');
+    
+    // ✅ EXPORT HARUS SEBELUM {id} (literal routes duluan!)
+    Route::get('/export', [App\Http\Controllers\Admin\WithdrawalController::class, 'export'])->name('export');
+    
+    // Routes dengan parameter {id}
+    Route::get('/{id}', [App\Http\Controllers\Admin\WithdrawalController::class, 'show'])->name('show');
+    Route::get('/{id}/details', [App\Http\Controllers\Admin\WithdrawalController::class, 'getDetails'])->name('details');
+    Route::post('/{id}/process', [App\Http\Controllers\Admin\WithdrawalController::class, 'process'])->name('process');
+    Route::post('/{id}/reject', [App\Http\Controllers\Admin\WithdrawalController::class, 'reject'])->name('reject');
+});
+
 
     // Profile & Settings
     Route::prefix('profile')->name('profile.')->group(function () {

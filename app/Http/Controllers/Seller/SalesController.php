@@ -221,4 +221,26 @@ class SalesController extends Controller
         
         return response()->stream($callback, 200, $headers);
     }
+
+    /**
+ * Display sale detail (sama seperti order detail)
+ */
+public function show($id)
+{
+    $store = auth()->user()->store;
+    
+    // Get order dengan validasi: harus completed & milik store ini
+    $order = Order::with([
+        'user', 
+        'items.product.primaryImage', 
+        'store',
+        'payment'
+    ])
+    ->where('store_id', $store->id)
+    ->where('status', 'completed') // ✅ Hanya completed
+    ->findOrFail($id);
+    
+    return view('seller.sales.show', compact('order'));
+}
+
 }

@@ -4,6 +4,7 @@
 
 @section('content')
 <div class="container mx-auto px-6 py-8">
+    {{-- HEADER --}}
     <div class="flex justify-between items-center mb-8">
         <div>
             <h1 class="text-[28px] font-bold text-[#15803D] mb-1">Kelola Pencairan Dana</h1>
@@ -20,6 +21,7 @@
         </a>
     </div>
 
+    {{-- SUCCESS MESSAGE --}}
     @if(session('success'))
     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-xl mb-6 flex items-center gap-3">
         <svg class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -31,6 +33,7 @@
     </div>
     @endif
 
+    {{-- ERROR MESSAGE --}}
     @if(session('error'))
     <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-xl mb-6 flex items-center gap-3">
         <svg class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -42,6 +45,7 @@
     </div>
     @endif
 
+    {{-- STATISTICS CARDS --}}
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div class="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-xl">
             <p class="text-xs text-yellow-700 font-semibold mb-1">PENDING</p>
@@ -70,50 +74,122 @@
         </div>
     </div>
 
+    {{-- FILTER BOX --}}
     <div class="bg-white p-6 rounded-xl shadow-sm border mb-6">
-        <form method="GET" action="{{ route('admin.withdrawals.index') }}"
-            class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-
-            <div class="w-full">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
-                <select name="status"
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 h-[42px]">
-                    <option value="">Semua Status</option>
-                    <option value="pending" {{ request('status')=='pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="approved" {{ request('status')=='approved' ? 'selected' : '' }}>Disetujui</option>
-                    <option value="completed" {{ request('status')=='completed' ? 'selected' : '' }}>Selesai</option>
-                    <option value="rejected" {{ request('status')=='rejected' ? 'selected' : '' }}>Ditolak</option>
-                </select>
+        
+        {{-- INDIKATOR FILTER AKTIF --}}
+        @if(request()->hasAny(['status', 'start_date', 'end_date', 'search']))
+        <div class="mb-4 flex items-center gap-2 text-sm">
+            <span class="font-semibold text-gray-700">Filter Aktif:</span>
+            <div class="flex flex-wrap gap-2">
+                @if(request('status'))
+                <span class="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
+                    Status: {{ ucfirst(request('status')) }}
+                    <a href="{{ route('admin.withdrawals.index', array_filter(request()->except('status'))) }}" class="hover:text-blue-900">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                    </a>
+                </span>
+                @endif
+                
+                @if(request('start_date'))
+                <span class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
+                    Dari: {{ \Carbon\Carbon::parse(request('start_date'))->format('d M Y') }}
+                    <a href="{{ route('admin.withdrawals.index', array_filter(request()->except('start_date'))) }}" class="hover:text-green-900">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                    </a>
+                </span>
+                @endif
+                
+                @if(request('end_date'))
+                <span class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
+                    Sampai: {{ \Carbon\Carbon::parse(request('end_date'))->format('d M Y') }}
+                    <a href="{{ route('admin.withdrawals.index', array_filter(request()->except('end_date'))) }}" class="hover:text-green-900">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                    </a>
+                </span>
+                @endif
+                
+                @if(request('search'))
+                <span class="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">
+                    Cari: "{{ request('search') }}"
+                    <a href="{{ route('admin.withdrawals.index', array_filter(request()->except('search'))) }}" class="hover:text-purple-900">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                    </a>
+                </span>
+                @endif
             </div>
+        </div>
+        @endif
 
-            <div class="w-full">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Mulai</label>
-                <input type="date" name="start_date" value="{{ request('start_date') }}"
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 h-[42px]">
-            </div>
-
-            <div class="w-full">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Akhir</label>
-                <input type="date" name="end_date" value="{{ request('end_date') }}"
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 h-[42px]">
-            </div>
-
-            <div class="w-full">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Cari Toko/ID</label>
-                <div class="flex gap-2 w-full">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Nama / ID..."
-                        class="flex-1 min-w-0 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 h-[42px]">
-
-                    <button type="submit"
-                        class="bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 h-[42px] whitespace-nowrap transition-colors">
-                        Filter
-                    </button>
+        {{-- FORM FILTER --}}
+        <form method="GET" action="{{ route('admin.withdrawals.index') }}" class="space-y-4">
+            
+            {{-- BARIS 1: INPUT FILTER --}}
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                
+                {{-- STATUS --}}
+                <div class="w-full">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+                    <select name="status"
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 h-[42px]">
+                        <option value="">Semua Status</option>
+                        <option value="pending" {{ request('status')=='pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="approved" {{ request('status')=='approved' ? 'selected' : '' }}>Disetujui</option>
+                        <option value="completed" {{ request('status')=='completed' ? 'selected' : '' }}>Selesai</option>
+                        <option value="rejected" {{ request('status')=='rejected' ? 'selected' : '' }}>Ditolak</option>
+                    </select>
                 </div>
+
+                {{-- TANGGAL MULAI --}}
+                <div class="w-full">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Mulai</label>
+                    <input type="date" name="start_date" value="{{ request('start_date') }}"
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 h-[42px]">
+                </div>
+
+                {{-- TANGGAL AKHIR --}}
+                <div class="w-full">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Akhir</label>
+                    <input type="date" name="end_date" value="{{ request('end_date') }}"
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 h-[42px]">
+                </div>
+
+                {{-- CARI TOKO/ID --}}
+                <div class="w-full">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Cari Toko/ID</label>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Nama / ID..."
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 h-[42px]">
+                </div>
+                
+            </div>
+
+            {{-- BARIS 2: TOMBOL AKSI --}}
+            <div class="flex gap-3 justify-end">
+                
+                {{-- RESET BUTTON --}}
+                <a href="{{ route('admin.withdrawals.index') }}"
+                    class="px-6 py-2 border border-gray-300 bg-white text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors h-[42px] flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Reset Filter
+                </a>
+
+                {{-- FILTER BUTTON --}}
+                <button type="submit"
+                    class="px-6 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors h-[42px] flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                    Terapkan Filter
+                </button>
+                
             </div>
 
         </form>
     </div>
 
+    {{-- DATA TABLE --}}
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-[13px]">
@@ -132,44 +208,36 @@
                 </thead>
                 <tbody>
                     @forelse($withdrawals as $withdrawal)
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="px-4 py-3 font-mono text-xs">#WD-{{ str_pad($withdrawal->id, 4, '0', STR_PAD_LEFT) }}
-                        </td>
-                        <td class="px-4 py-3">
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="px-5 py-4 font-mono text-xs">#WD-{{ str_pad($withdrawal->id, 4, '0', STR_PAD_LEFT) }}</td>
+                        <td class="px-5 py-4">
                             <div class="text-sm font-semibold">{{ $withdrawal->requested_at->format('d M Y') }}</div>
                             <div class="text-xs text-gray-500">{{ $withdrawal->requested_at->format('H:i') }}</div>
                         </td>
-                        <td class="px-4 py-3">
+                        <td class="px-5 py-4">
                             <div class="font-semibold">{{ $withdrawal->store->store_name }}</div>
                             <div class="text-xs text-gray-500">{{ $withdrawal->store->user->name }}</div>
                         </td>
-                        <td class="px-4 py-3">
+                        <td class="px-5 py-4">
                             <div class="text-sm font-semibold">{{ $withdrawal->bankAccount->bank_name }}</div>
                             <div class="text-xs text-gray-500">{{ $withdrawal->bankAccount->account_number }}</div>
                             <div class="text-xs text-gray-400">{{ $withdrawal->bankAccount->account_name }}</div>
                         </td>
-                        <td class="px-4 py-3 font-semibold">Rp {{ number_format($withdrawal->amount, 0, ',', '.') }}
-                        </td>
-                        <td class="px-4 py-3 text-red-600 font-semibold">Rp {{ number_format($withdrawal->admin_fee, 0,
-                            ',', '.') }}</td>
-                        <td class="px-4 py-3 font-bold text-green-600">Rp {{ number_format($withdrawal->total_received,
-                            0, ',', '.') }}</td>
-                        <td class="px-4 py-3">
+                        <td class="px-5 py-4 font-semibold">Rp {{ number_format($withdrawal->amount, 0, ',', '.') }}</td>
+                        <td class="px-5 py-4 text-red-600 font-semibold">Rp {{ number_format($withdrawal->admin_fee, 0, ',', '.') }}</td>
+                        <td class="px-5 py-4 font-bold text-green-600">Rp {{ number_format($withdrawal->total_received, 0, ',', '.') }}</td>
+                        <td class="px-5 py-4">
                             @if($withdrawal->status == 'pending')
-                            <span
-                                class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold">Pending</span>
+                            <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold">Pending</span>
                             @elseif($withdrawal->status == 'approved')
-                            <span
-                                class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">Disetujui</span>
+                            <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">Disetujui</span>
                             @elseif($withdrawal->status == 'completed')
-                            <span
-                                class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">Selesai</span>
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">Selesai</span>
                             @else
-                            <span
-                                class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-bold">Ditolak</span>
+                            <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-bold">Ditolak</span>
                             @endif
                         </td>
-                        <td class="px-4 py-3">
+                        <td class="px-5 py-4">
                             <div class="flex gap-2">
                                 <a href="{{ route('admin.withdrawals.show', $withdrawal->id) }}"
                                     class="text-blue-600 hover:underline text-xs font-semibold">Detail</a>
@@ -199,6 +267,7 @@
             </table>
         </div>
 
+        {{-- PAGINATION --}}
         @if($withdrawals->hasPages())
         <div class="px-6 py-4 border-t">
             {{ $withdrawals->appends(request()->query())->links() }}
@@ -207,6 +276,7 @@
     </div>
 </div>
 
+{{-- MODAL PROSES PENCAIRAN --}}
 <div id="processModal"
     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
     <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
@@ -232,11 +302,11 @@
 
             <div class="flex gap-3">
                 <button type="button" onclick="closeProcessModal()"
-                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50">
+                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition">
                     Batal
                 </button>
                 <button type="submit"
-                    class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700">
+                    class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition">
                     Proses & Transfer
                 </button>
             </div>
@@ -244,6 +314,7 @@
     </div>
 </div>
 
+{{-- MODAL TOLAK PENCAIRAN --}}
 <div id="rejectModal"
     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
     <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
@@ -262,11 +333,11 @@
 
             <div class="flex gap-3">
                 <button type="button" onclick="closeRejectModal()"
-                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50">
+                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition">
                     Batal
                 </button>
                 <button type="submit"
-                    class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700">
+                    class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition">
                     Tolak Pencairan
                 </button>
             </div>

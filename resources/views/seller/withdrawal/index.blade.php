@@ -145,13 +145,16 @@
                             <span class="text-gray-500 text-sm font-semibold">Rp</span>
                         </div>
 
-                        <input type="number" name="amount" id="withdrawalAmount"
+                        <input type="text" id="withdrawalAmount"
                             class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
-                            placeholder="Minimal {{ number_format($minAmount, 0, ',', '.') }}" min="{{ $minAmount }}"
-                            max="{{ $withdrawableBalance }}" required>
+                            placeholder="0" 
+                            required
+                            autocomplete="off">
                     </div>
-                    <p class="text-xs text-gray-500 mt-1">Maksimal: Rp {{ number_format($withdrawableBalance, 0, ',',
-                        '.') }}</p>
+                    <p class="text-xs text-gray-500 mt-1">
+                        Minimal: <span class="font-semibold">Rp {{ number_format($minAmount, 0, ',', '.') }}</span> | 
+                        Maksimal: <span class="font-semibold">Rp {{ number_format($withdrawableBalance, 0, ',', '.') }}</span>
+                    </p>
                 </div>
 
                 <div class="md:col-span-2">
@@ -291,31 +294,156 @@
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     const amountInput = document.getElementById('withdrawalAmount');
     const feePreview = document.getElementById('feePreview');
+    const withdrawalForm = document.getElementById('withdrawalForm');
     
     const adminFeeFlat = {{ $adminFeeFlat }};
     const minAmount = {{ $minAmount }};
+    const maxAmount = {{ $withdrawableBalance }};
     
-    if (amountInput) {
-        amountInput.addEventListener('input', function() {
-            const amount = parseFloat(this.value) || 0;
-            
-            if (amount >= minAmount) {
-                const totalAdminFee = adminFeeFlat;
-                const totalReceived = amount - totalAdminFee;
-                
-                // Update preview
-                document.getElementById('previewAmount').textContent = 'Rp ' + amount.toLocaleString('id-ID');
-                document.getElementById('previewReceived').textContent = 'Rp ' + Math.max(0, totalReceived).toLocaleString('id-ID');
-                
-                feePreview.classList.remove('hidden');
-            } else {
-                feePreview.classList.add('hidden');
-            }
-        });
+    if (!amountInput) return;
+    
+    // ✅ FORMAT RUPIAH FUNCTION
+    function formatRupiah(angka) {
+        let number_string = angka.toString().replace(/[^0-9]/g, '');
+        let split = number_string.split(',');
+        let sisa = split[0].length % 3;
+        let rupiah = split[0].substr(0, sisa);
+        let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+        
+        if (ribuan) {
+            let separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+        
+        return rupiah;
     }
+    
+    // ✅ PARSE RUPIAH TO NUMBER
+    function parseRupiah(rupiah) {
+        return parseInt(rupiah.replace(/\./g, '')) || 0;
+    }
+    
+    // ✅ UPDATE PREVIEW
+    function updatePreview(amount) {
+        if (amount >= minAmount) {
+            const totalAdminFee = adminFeeFlat;
+            const totalReceived = Math.max(0, amount - totalAdminFee);
+            
+            document.getElementById('previewAmount').textContent = 'Rp ' + formatRupiah(amount);
+            document.getElementById('previewAdminFee').textContent = '- Rp ' + formatRupiah(adminFeeFlat);
+            document.getElementById('previewReceived').textContent = 'Rp ' + formatRupiah(totalReceived);
+            
+            feePreview.classList.remove('hidden');
+        } else {
+            feePreview.classList.add('hidden');
+        }
+    }
+    
+    // ✅ BUAT HIDDEN INPUT (untuk submit value asli)
+    let hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'amount';
+    hiddenInput.id = 'hiddenAmount';
+    amountInput.form.appendChild(hiddenInput);
+    
+    // ✅ UBAH INPUT JADI TEXT & HAPUS NAME
+    amountInput.removeAttribute('name');
+    amountInput.removeAttribute('min');
+    amountInput.removeAttribute('max');
+    amountInput.setAttribute('type', 'text');
+    amountInput.setAttribute('inputmode', 'numeric');
+    
+    // ✅ EVENT: INPUT (REAL-TIME)
+    amountInput.addEventListener('input', function(e) {
+        let cursorPosition = this.selectionStart;
+        let oldLength = this.value.length;
+        
+        // Ambil angka saja
+        let numericValue = this.value.replace(/[^0-9]/g, '');
+        
+        // Format ke Rupiah
+        let formatted = formatRupiah(numericValue);
+        this.value = formatted;
+        
+        // Set hidden input
+        hiddenInput.value = numericValue;
+        
+        // Restore cursor position (agar tidak lompat ke akhir)
+        let newLength = formatted.length;
+        let newCursorPosition = cursorPosition + (newLength - oldLength);
+        this.setSelectionRange(newCursorPosition, newCursorPosition);
+        
+        // Update preview
+        const amount = parseInt(numericValue) || 0;
+        updatePreview(amount);
+    });
+    
+    // ✅ EVENT: KEYDOWN (BLOCK INVALID KEYS)
+    amountInput.addEventListener('keydown', function(e) {
+        // Allow: backspace, delete, tab, escape, enter
+        if ([46, 8, 9, 27, 13].indexOf(e.keyCode) !== -1 ||
+            // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+            (e.keyCode === 65 && e.ctrlKey === true) ||
+            (e.keyCode === 67 && e.ctrlKey === true) ||
+            (e.keyCode === 86 && e.ctrlKey === true) ||
+            (e.keyCode === 88 && e.ctrlKey === true) ||
+            // Allow: home, end, left, right
+            (e.keyCode >= 35 && e.keyCode <= 39)) {
+            return;
+        }
+        
+        // Block jika bukan angka
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && 
+            (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+    
+    // ✅ EVENT: PASTE (CLEAN & FORMAT)
+    amountInput.addEventListener('paste', function(e) {
+        e.preventDefault();
+        let paste = (e.clipboardData || window.clipboardData).getData('text');
+        let numericValue = paste.replace(/[^0-9]/g, '');
+        
+        this.value = formatRupiah(numericValue);
+        hiddenInput.value = numericValue;
+        
+        updatePreview(parseInt(numericValue) || 0);
+    });
+    
+    // ✅ VALIDATION SEBELUM SUBMIT
+    withdrawalForm.addEventListener('submit', function(e) {
+        const amount = parseInt(hiddenInput.value) || 0;
+        
+        if (amount < minAmount) {
+            e.preventDefault();
+            alert('❌ Jumlah minimal pencairan adalah Rp ' + formatRupiah(minAmount));
+            amountInput.focus();
+            return false;
+        }
+        
+        if (amount > maxAmount) {
+            e.preventDefault();
+            alert('❌ Jumlah maksimal pencairan adalah Rp ' + formatRupiah(maxAmount));
+            amountInput.focus();
+            return false;
+        }
+        
+        if (amount <= 0) {
+            e.preventDefault();
+            alert('❌ Jumlah pencairan harus lebih dari Rp 0');
+            amountInput.focus();
+            return false;
+        }
+        
+        return true;
+    });
+    
+    // ✅ SET PLACEHOLDER
+    amountInput.placeholder = 'Contoh: 1.000.000';
 });
 </script>
 @endpush

@@ -35,6 +35,11 @@ class Order extends Model
         'refund_amount',      // NEW
     ];
 
+     public function shippingAddress()
+    {
+        return $this->belongsTo(Address::class, 'address_id');
+    }
+
     protected function casts(): array
     {
         return [

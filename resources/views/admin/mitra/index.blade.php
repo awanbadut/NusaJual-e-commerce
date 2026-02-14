@@ -8,8 +8,9 @@
     <p class="text-xs sm:text-[13px] text-[#78716C]">Pantau performa semua mitra kamu di sini</p>
 </div>
 
+{{-- ✅ FILTER & EXPORT --}}
 <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm mb-6">
-    <form method="GET" action="{{ route('admin.mitra.index') }}" class="flex flex-col sm:flex-row gap-4">
+    <form method="GET" action="{{ route('admin.mitra.index') }}" class="flex flex-col lg:flex-row gap-4">
         <div class="flex-1 relative">
             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" fill="none"
                 stroke="currentColor" viewBox="0 0 24 24">
@@ -24,10 +25,8 @@
             <select name="sort" onchange="this.form.submit()"
                 class="w-full appearance-none px-4 py-2.5 border border-[#D1D5DB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#15803D] text-sm sm:text-[13px] text-[#15803D] font-medium bg-white cursor-pointer pr-10">
                 <option value="">Urutkan Berdasarkan</option>
-                <option value="sales_desc" {{ request('sort')=='sales_desc' ? 'selected' : '' }}>Penjualan Tertinggi
-                </option>
-                <option value="orders_desc" {{ request('sort')=='orders_desc' ? 'selected' : '' }}>Pesanan Terbanyak
-                </option>
+                <option value="sales_desc" {{ request('sort')=='sales_desc' ? 'selected' : '' }}>Penjualan Tertinggi</option>
+                <option value="orders_desc" {{ request('sort')=='orders_desc' ? 'selected' : '' }}>Pesanan Terbanyak</option>
                 <option value="newest" {{ request('sort')=='newest' ? 'selected' : '' }}>Terbaru</option>
                 <option value="oldest" {{ request('sort')=='oldest' ? 'selected' : '' }}>Terlama</option>
             </select>
@@ -36,15 +35,24 @@
                 <x-heroicon-m-chevron-down class="w-5 h-5" />
             </div>
         </div>
+
+        {{-- ✅ TOMBOL EXPORT --}}
+        <a href="{{ route('admin.mitra.exportAll', request()->query()) }}"
+            class="w-full sm:w-auto bg-green-700 text-white px-6 py-2.5 rounded-lg hover:bg-green-800 transition text-sm font-semibold flex items-center justify-center gap-2 shadow-sm whitespace-nowrap">
+            <x-heroicon-o-arrow-down-tray class="w-5 h-5" />
+            <span>Export Semua Mitra</span>
+        </a>
     </form>
 </div>
 
 @if(session('success'))
-<div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-xl mb-6 text-xs sm:text-[13px]">
+<div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-xl mb-6 text-xs sm:text-[13px] flex items-center gap-3">
+    <x-heroicon-s-check-circle class="w-5 h-5" />
     {{ session('success') }}
 </div>
 @endif
 
+{{-- TABLE --}}
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="overflow-x-auto custom-scrollbar">
         <table class="w-full text-left text-[13px] min-w-[800px]">
@@ -62,12 +70,12 @@
                 @forelse($stores as $index => $store)
                 @php
                 $colors = [
-                'bg-[#FEF3C7] text-[#92400E]',
-                'bg-[#DBEAFE] text-[#1E40AF]',
-                'bg-[#FCE7F3] text-[#9F1239]',
-                'bg-[#E0E7FF] text-[#3730A3]',
-                'bg-[#FEF3C7] text-[#92400E]',
-                'bg-[#D1FAE5] text-[#065F46]',
+                    'bg-[#FEF3C7] text-[#92400E]',
+                    'bg-[#DBEAFE] text-[#1E40AF]',
+                    'bg-[#FCE7F3] text-[#9F1239]',
+                    'bg-[#E0E7FF] text-[#3730A3]',
+                    'bg-[#FEF3C7] text-[#92400E]',
+                    'bg-[#D1FAE5] text-[#065F46]',
                 ];
                 $colorIndex = (($stores->currentPage() - 1) * $stores->perPage() + $loop->index) % count($colors);
                 $colorClass = $colors[$colorIndex];
@@ -75,14 +83,12 @@
                 <tr class="hover:bg-green-50/30 transition duration-200">
                     <td class="px-5 py-4 whitespace-nowrap">
                         <div class="flex items-center gap-3">
-                            <div
-                                class="w-10 h-10 sm:w-11 sm:h-11 {{ $colorClass }} rounded-full flex items-center justify-center font-bold text-sm sm:text-[15px] flex-shrink-0">
+                            <div class="w-10 h-10 sm:w-11 sm:h-11 {{ $colorClass }} rounded-full flex items-center justify-center font-bold text-sm sm:text-[15px] flex-shrink-0">
                                 {{ strtoupper(substr($store->store_name, 0, 2)) }}
                             </div>
                             <div>
                                 <p class="font-bold text-[#111827] text-sm">{{ $store->store_name }}</p>
-                                <p class="text-xs text-[#9CA3AF] font-mono mt-0.5">ID: MT-{{ str_pad($store->id, 5, '0',
-                                    STR_PAD_LEFT) }}</p>
+                                <p class="text-xs text-[#9CA3AF] font-mono mt-0.5">ID: MT-{{ str_pad($store->id, 5, '0', STR_PAD_LEFT) }}</p>
                             </div>
                         </div>
                     </td>
@@ -93,8 +99,7 @@
                         {{ $store->address }}
                     </td>
                     <td class="px-5 py-4 whitespace-nowrap">
-                        <span
-                            class="inline-flex items-center px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200 text-xs font-bold shadow-sm">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200 text-xs font-bold shadow-sm">
                             {{ number_format($store->orders_count) }} Transaksi
                         </span>
                     </td>
@@ -103,7 +108,8 @@
                     </td>
                     <td class="px-5 py-4 text-center whitespace-nowrap">
                         <a href="{{ route('admin.mitra.show', $store->id) }}"
-                            class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 text-green-700 hover:bg-green-600 hover:text-white transition-all shadow-sm">
+                            class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 text-green-700 hover:bg-green-600 hover:text-white transition-all shadow-sm"
+                            title="Lihat Detail">
                             <x-heroicon-s-eye class="w-4 h-4" />
                         </a>
                     </td>
@@ -129,6 +135,7 @@
     </div>
 </div>
 
+{{-- PAGINATION --}}
 <div class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500">
     <div>
         @if($stores->total() > 0)
@@ -148,7 +155,7 @@
             class="px-3 py-1.5 rounded-md border border-gray-300 hover:bg-gray-50 text-gray-700 bg-white transition">‹</a>
         @endif
 
-        {{-- Simple Page Numbers (Hide on mobile if too many) --}}
+        {{-- Page Numbers (Hidden on mobile) --}}
         <div class="hidden sm:flex gap-1">
             @foreach ($stores->getUrlRange(1, $stores->lastPage()) as $page => $url)
             <a href="{{ $url }}"
@@ -158,7 +165,7 @@
             @endforeach
         </div>
 
-        {{-- Mobile Current Page Indicator --}}
+        {{-- Mobile Page Indicator --}}
         <span class="sm:hidden px-3 py-1.5 font-bold text-gray-900">
             Halaman {{ $stores->currentPage() }}
         </span>
