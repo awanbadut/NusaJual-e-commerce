@@ -39,14 +39,13 @@
 
                 <div class="flex gap-2">
                     <button type="submit"
-                        class="flex-1 sm:flex-none px-6 py-2.5 bg-[#15803D] text-white rounded-lg hover:bg-[#166534] transition text-sm font-semibold shadow-sm active:scale-95">
+                        class="flex-1 md:flex-none px-6 py-2.5 bg-green-800 text-white rounded-lg hover:bg-green-900 transition text-sm font-semibold shadow-sm active:scale-95">
                         Filter
                     </button>
 
                     @if(request('start_date') || request('end_date'))
                     <a href="{{ route('seller.sales.index') }}"
-                        class="flex-1 sm:flex-none px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-semibold text-center shadow-sm">
-                        Reset
+                        class="px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold text-sm transition flex items-center justify-center gap-1">Reset
                     </a>
                     @endif
                 </div>
@@ -157,7 +156,7 @@
             </div>
 
             <button type="submit"
-                class="w-full md:w-auto px-6 py-2.5 bg-[#15803D] text-white rounded-lg hover:bg-[#166534] transition text-sm font-semibold shadow-sm">
+                class="w-full md:w-auto px-6 py-2.5 bg-green-800 text-white rounded-lg hover:bg-green-900 transition text-sm font-semibold shadow-sm">
                 Cari
             </button>
         </form>
@@ -247,17 +246,7 @@
         </div>
 
         @if($sales->hasPages())
-        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p class="text-[13px] text-gray-600">
-                    Menampilkan <span class="font-medium text-gray-900">{{ $sales->firstItem() }}</span> sampai
-                    <span class="font-medium text-gray-900">{{ $sales->lastItem() }}</span> dari
-                    <span class="font-medium text-gray-900">{{ $sales->total() }}</span> data
-                </p>
-
-                {{ $sales->appends(request()->query())->links() }}
-            </div>
-        </div>
+        {{ $sales->appends(request()->query())->links() }}
         @endif
     </div>
 </div>

@@ -137,17 +137,19 @@
                 </div>
             </div>
 
-            <button type="submit"
-                class="px-6 py-2.5 bg-[#15803D] text-white rounded-lg hover:bg-[#166534] font-semibold text-sm transition">
-                Cari
-            </button>
+            <div class="flex gap-2 w-full md:w-auto">
+                <button type="submit"
+                    class="flex-1 md:flex-none px-6 py-2.5 bg-green-800 text-white rounded-lg hover:bg-green-900 transition text-sm font-semibold shadow-sm active:scale-95">
+                    Cari
+                </button>
 
-            @if(request()->hasAny(['search', 'payment_status', 'status']))
-            <a href="{{ route('seller.orders.index') }}"
-                class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-semibold text-sm text-center transition">
-                Reset
-            </a>
-            @endif
+                @if(request()->hasAny(['search', 'payment_status', 'status']))
+                <a href="{{ route('seller.orders.index') }}"
+                    class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold text-sm transition flex items-center gap-1">
+                    Reset
+                </a>
+                @endif
+            </div>
         </form>
     </div>
 
@@ -265,35 +267,9 @@
                     @endforelse
                 </tbody>
             </table>
-        </div> 
-        @if($orders->hasPages())
-        <div class="px-6 py-4 border-t border-gray-200">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p class="text-[13px] text-gray-600">
-                    Menampilkan <span class="font-medium text-gray-900">{{ $orders->firstItem() }}</span> sampai
-                    <span class="font-medium text-gray-900">{{ $orders->lastItem() }}</span> dari
-                    <span class="font-medium text-gray-900">{{ $orders->total() }}</span> pesanan
-                </p>
-
-                <div class="flex gap-2">
-                    @if($orders->onFirstPage())
-                    <button disabled
-                        class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-400 cursor-not-allowed bg-gray-50">‹</button>
-                    @else
-                    <a href="{{ $orders->previousPageUrl() }}"
-                        class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50 shadow-sm bg-white">‹</a>
-                    @endif
-
-                    @if($orders->hasMorePages())
-                    <a href="{{ $orders->nextPageUrl() }}"
-                        class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50 shadow-sm bg-white">›</a>
-                    @else
-                    <button disabled
-                        class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-400 cursor-not-allowed bg-gray-50">›</button>
-                    @endif
-                </div>
-            </div>
         </div>
+        @if($orders->hasPages())
+        {{ $orders->appends(request()->query())->links() }}
         @endif
     </div>
 </div>

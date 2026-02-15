@@ -127,7 +127,10 @@
 
         @if($pendingRefunds->hasPages())
         <div class="px-5 py-4 border-t border-[#E5E7EB]">
-            {{ $pendingRefunds->links() }}
+            {{ $pendingRefunds->appends([
+            'page_processed' => request('page_processed'), // Agar tabel bawah tidak reset
+            'search' => request('search')
+            ])->links() }}
         </div>
         @endif
     </div>
@@ -204,7 +207,10 @@
 
         @if($processedRefunds->hasPages())
         <div class="px-5 py-4 border-t border-[#E5E7EB]">
-            {{ $processedRefunds->links() }}
+            {{ $processedRefunds->appends([
+            'page_pending' => request('page_pending'), // Agar tabel atas tidak reset
+            'search' => request('search')
+            ])->links() }}
         </div>
         @endif
     </div>

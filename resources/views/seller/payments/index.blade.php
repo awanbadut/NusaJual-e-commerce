@@ -56,13 +56,13 @@
 
                 <div class="flex gap-2 w-full md:w-auto">
                     <button type="submit"
-                        class="flex-1 md:flex-none px-6 py-2.5 bg-[#15803D] text-white rounded-lg hover:bg-[#166534] transition text-sm font-semibold shadow-sm active:scale-95">
+                        class="flex-1 md:flex-none px-6 py-2.5 bg-green-800 text-white rounded-lg hover:bg-green-900 transition text-sm font-semibold shadow-sm active:scale-95">
                         Filter
                     </button>
 
                     @if(request('status') || request('date_from') || request('date_to'))
                     <a href="{{ route('seller.payments.index') }}"
-                        class="flex-1 md:flex-none px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-semibold text-center shadow-sm">
+                        class="px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold text-sm transition flex items-center justify-center gap-1">
                         Reset
                     </a>
                     @endif
@@ -244,17 +244,7 @@
         </div>
 
         @if($payments->hasPages())
-        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p class="text-[13px] text-gray-600">
-                    Menampilkan <span class="font-medium text-gray-900">{{ $payments->firstItem() }}</span> sampai
-                    <span class="font-medium text-gray-900">{{ $payments->lastItem() }}</span> dari
-                    <span class="font-medium text-gray-900">{{ $payments->total() }}</span> data
-                </p>
-
-                {{ $payments->links() }}
-            </div>
-        </div>
+        {{ $payments->appends(request()->query())->links() }}
         @endif
     </div>
 </div>

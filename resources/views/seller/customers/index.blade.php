@@ -80,12 +80,12 @@
 
             <div class="flex w-full lg:w-auto gap-2">
                 <button type="submit"
-                    class="flex-1 lg:flex-none bg-green-800 text-white px-8 py-2.5 rounded-lg hover:bg-green-900 transition font-semibold shadow-sm">
-                    Cari
+                    class="flex-1 md:flex-none px-6 py-2.5 bg-green-800 text-white rounded-lg hover:bg-green-900 transition text-sm font-semibold shadow-sm active:scale-95">
+                    cari
                 </button>
                 @if(request('search') || request('sort'))
                 <a href="{{ route('seller.customers.index') }}"
-                    class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold text-sm transition">
+                    class="px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold text-sm transition flex items-center justify-center gap-1">
                     Reset
                 </a>
                 @endif
@@ -158,34 +158,10 @@
                     @endforelse
                 </tbody>
             </table>
-        </div> @if($customers->hasPages())
-        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50/30">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p class="text-[13px] text-gray-600">
-                    Menampilkan <span class="font-medium text-gray-900">{{ $customers->firstItem() }}</span> sampai
-                    <span class="font-medium text-gray-900">{{ $customers->lastItem() }}</span> dari
-                    <span class="font-medium text-gray-900">{{ $customers->total() }}</span> pelanggan
-                </p>
-
-                <div class="flex gap-2">
-                    @if($customers->onFirstPage())
-                    <button disabled
-                        class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-400 cursor-not-allowed bg-white">‹</button>
-                    @else
-                    <a href="{{ $customers->previousPageUrl() }}"
-                        class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50 bg-white transition shadow-sm">‹</a>
-                    @endif
-
-                    @if($customers->hasMorePages())
-                    <a href="{{ $customers->nextPageUrl() }}"
-                        class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50 bg-white transition shadow-sm">›</a>
-                    @else
-                    <button disabled
-                        class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-400 cursor-not-allowed bg-white">›</button>
-                    @endif
-                </div>
-            </div>
         </div>
+        @if($customers->hasPages())
+
+        {{ $customers->appends(request()->query())->links() }}
         @endif
     </div>
 </div>

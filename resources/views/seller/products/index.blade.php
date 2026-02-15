@@ -7,63 +7,66 @@
 @section('content')
 <div class="space-y-6 px-2 sm:px-0">
     <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
-    <div class="flex flex-col lg:flex-row gap-4 items-center">
-        <div class="w-full lg:flex-1 relative">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <x-heroicon-o-magnifying-glass class="text-gray-400 w-5 h-5" />
+        <div class="flex flex-col lg:flex-row gap-4 items-center">
+            <div class="w-full lg:flex-1 relative">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <x-heroicon-o-magnifying-glass class="text-gray-400 w-5 h-5" />
+                </div>
+                <input type="text" id="searchInput" placeholder="Cari nama produk..." value="{{ request('search') }}"
+                    class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent transition">
             </div>
-            <input type="text" id="searchInput" placeholder="Cari nama produk..." value="{{ request('search') }}"
-                class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent transition">
-        </div>
 
-        <div class="w-full lg:w-auto flex flex-col sm:flex-row gap-3">
-            <div class="w-full sm:w-40">
-                <div class="relative">
-                    <select id="statusFilter"
-                        class="w-full px-3 py-2.5 pl-10 pr-4 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 bg-white cursor-pointer appearance-none">
-                        <option value="">Semua Status</option>
-                        <option value="active" {{ request('status')=='active' ? 'selected' : '' }}>Active</option>
-                        <option value="draft" {{ request('status')=='draft' ? 'selected' : '' }}>Draft</option>
-                    </select>
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <x-heroicon-m-chevron-down class="w-5 h-5 text-gray-400" />
+            <div class="w-full lg:w-auto flex flex-col sm:flex-row gap-3">
+                <div class="w-full sm:w-40">
+                    <div class="relative">
+                        <select id="statusFilter"
+                            class="w-full px-3 py-2.5 pl-10 pr-4 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 bg-white cursor-pointer appearance-none">
+                            <option value="">Semua Status</option>
+                            <option value="active" {{ request('status')=='active' ? 'selected' : '' }}>Active</option>
+                            <option value="draft" {{ request('status')=='draft' ? 'selected' : '' }}>Draft</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <x-heroicon-m-chevron-down class="w-5 h-5 text-gray-400" />
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="w-full sm:w-48">
-                <div class="relative">
-                    <select id="categoryFilter"
-                        class="w-full px-3 py-2.5 pl-10 pr-4 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 bg-white cursor-pointer appearance-none">
-                        <option value="">Semua Kategori</option>
-                        @foreach($categories as $category)
-                        <option value="{{ $category->id }}" {{ request('category')==$category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
-                        </option>
-                        @endforeach
-                    </select>
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <x-heroicon-m-chevron-down class="w-5 h-5 text-gray-400" />
+                <div class="w-full sm:w-48">
+                    <div class="relative">
+                        <select id="categoryFilter"
+                            class="w-full px-3 py-2.5 pl-10 pr-4 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 bg-white cursor-pointer appearance-none">
+                            <option value="">Semua Kategori</option>
+                            @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ request('category')==$category->id ? 'selected' : ''
+                                }}>
+                                {{ $category->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <x-heroicon-m-chevron-down class="w-5 h-5 text-gray-400" />
+                        </div>
                     </div>
                 </div>
+
+
             </div>
 
-            {{-- ✅ TOMBOL RESET --}}
+            {{-- TOMBOL TAMBAH PRODUK --}}
+            <a href="{{ route('seller.products.create') }}"
+                class="w-full lg:w-auto h-11 bg-green-800 text-white px-6 rounded-lg hover:bg-green-900 transition flex items-center justify-center whitespace-nowrap font-semibold shadow-sm">
+                <span>Tambah Produk</span> <span class="ml-2 text-lg">+</span>
+            </a>
+
+            {{-- TOMBOL RESET --}}
             @if(request('search') || request('category') || request('status'))
             <button id="resetFilter" type="button"
-                class="w-full sm:w-auto bg-gray-100 text-gray-700 px-4 py-2.5 rounded-lg hover:bg-gray-200 transition flex items-center justify-center whitespace-nowrap font-medium shadow-sm">
-                <x-heroicon-o-arrow-path class="w-4 h-4 mr-2" />
-                Reset
+                class="h-11 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold text-sm transition flex items-center justify-center gap-1">
+                <span class="font-medium text-gray-700">Reset</span>
             </button>
             @endif
         </div>
-
-        <a href="{{ route('seller.products.create') }}"
-            class="w-full lg:w-auto bg-green-800 text-white px-6 py-2.5 rounded-lg hover:bg-green-900 transition flex items-center justify-center whitespace-nowrap font-semibold shadow-sm">
-            <span>Tambah Produk</span> <span class="ml-2 text-lg">+</span>
-        </a>
     </div>
-</div>
 
 
     {{-- TABEL --}}
@@ -183,18 +186,7 @@
 
     <!-- Pagination -->
     @if($products->hasPages())
-    <div class="bg-white rounded-lg shadow-sm px-6 py-4">
-        <div class="flex items-center justify-between">
-            <p class="text-sm text-gray-600">
-                Menampilkan <span class="font-medium">{{ $products->firstItem() }}</span>
-                sampai <span class="font-medium">{{ $products->lastItem() }}</span>
-                dari <span class="font-medium">{{ $products->total() }}</span> data
-            </p>
-            <div class="flex items-center gap-2">
-                {{ $products->links() }}
-            </div>
-        </div>
-    </div>
+    {{ $products->appends(request()->query())->links() }}
     @endif
 </div>
 

@@ -147,13 +147,12 @@
 
                         <input type="text" id="withdrawalAmount"
                             class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
-                            placeholder="0" 
-                            required
-                            autocomplete="off">
+                            placeholder="0" required autocomplete="off">
                     </div>
                     <p class="text-xs text-gray-500 mt-1">
-                        Minimal: <span class="font-semibold">Rp {{ number_format($minAmount, 0, ',', '.') }}</span> | 
-                        Maksimal: <span class="font-semibold">Rp {{ number_format($withdrawableBalance, 0, ',', '.') }}</span>
+                        Minimal: <span class="font-semibold">Rp {{ number_format($minAmount, 0, ',', '.') }}</span> |
+                        Maksimal: <span class="font-semibold">Rp {{ number_format($withdrawableBalance, 0, ',', '.')
+                            }}</span>
                     </p>
                 </div>
 
@@ -263,9 +262,9 @@
                     </td>
                     <td class="px-5 py-4 whitespace-nowrap">
                         <a href="{{ route('seller.withdrawals.show', $withdrawal->id) }}"
-                            class="text-[#15803D] hover:underline text-[12px] font-medium flex items-center gap-1">
-                            Detail
-                            <x-heroicon-m-arrow-right class="w-3 h-3" />
+                            class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#15803D] hover:bg-[#166534] transition text-white shadow-sm"
+                            title="Lihat Detail">
+                            <x-heroicon-s-eye class="w-4 h-4" />
                         </a>
                     </td>
                 </tr>
@@ -284,9 +283,11 @@
     </div>
 
     @if($withdrawals->hasPages())
-    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
-        {{ $withdrawals->links() }}
-    </div>
+    {{ $withdrawals->appends([
+    'payments_page' => request('payments_page'),
+    'confirmed_page' => request('confirmed_page'),
+    'orders_page' => request('orders_page')
+    ])->links() }}
     @endif
 </div>
 </div>
@@ -294,7 +295,7 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
     const amountInput = document.getElementById('withdrawalAmount');
     const feePreview = document.getElementById('feePreview');
     const withdrawalForm = document.getElementById('withdrawalForm');
