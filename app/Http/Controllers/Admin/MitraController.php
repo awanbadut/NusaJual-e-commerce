@@ -618,5 +618,70 @@ public function exportCompletedOrders($id)
     return view('admin.mitra.order-detail', compact('store', 'order'));
 }
 
+public function showPayment($storeId, $paymentId)
+{
+    $store = Store::findOrFail($storeId);
+    
+    $payment = Payment::where('id', $paymentId)
+        ->whereHas('order', function($q) use ($storeId) {
+            $q->where('store_id', $storeId);
+        })
+        ->with([
+            'order.user',
+            'order.items.product.images',
+            'order.shippingAddress',
+            'order.store'
+        ])
+        ->firstOrFail();
+
+    // Order items with details
+    $orderItems = $payment->order->items->map(function($item) {
+        return [
+            'product_name' => $item->product->name,
+            'quantity' => $item->quantity,
+            'price' => $item->price,
+            'subtotal' => $item->quantity * $item->price,
+            'image' => $item->product->images->first()->image_path ?? null,
+        ];
+    });
+
+    // Timeline
+    $timeline = [
+        [
+            'title' => 'Pesanan Dibuat',
+            'date' => $payment->order->created_at,
+            'status' => 'completed',
+            'icon' => 'shopping-cart',
+        ],
+        [
+            'title' => 'Pembayaran Diunggah',
+            'date' => $payment->created_at,
+            'status' => 'completed',
+            'icon' => 'credit-card',
+        ],
+    ];
+
+    if ($payment->confirmed_at) {
+        $timeline[] = [
+            'title' => 'Pembayaran Dikonfirmasi',
+            'date' => $payment->confirmed_at,
+            'status' => 'completed',
+            'icon' => 'check-circle',
+            'admin' => 'Admin Nusa Belanja',
+        ];
+    }
+
+    if ($payment->order->status === 'completed') {
+        $timeline[] = [
+            'title' => 'Pesanan Selesai',
+            'date' => $payment->order->completed_at ?? $payment->order->updated_at,
+            'status' => 'completed',
+            'icon' => 'check-badge',
+        ];
+    }
+
+    return view('admin.mitra.payment-detail', compact('store', 'payment', 'orderItems', 'timeline'));
+}
+
 
 }

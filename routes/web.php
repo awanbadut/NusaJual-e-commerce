@@ -235,6 +235,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/mitra/{id}/export-confirmed-payments', [\App\Http\Controllers\Admin\MitraController::class, 'exportConfirmedPayments'])->name('mitra.exportConfirmedPayments');
     Route::get('/mitra/{id}/export-completed-orders', [\App\Http\Controllers\Admin\MitraController::class, 'exportCompletedOrders'])->name('mitra.exportCompletedOrders');
     Route::get('/mitra/{storeId}/orders/{orderId}', [\App\Http\Controllers\Admin\MitraController::class, 'showOrder'])->name('mitra.orders.show');
+    Route::get('/mitra/{storeId}/payments/{paymentId}', [App\Http\Controllers\Admin\MitraController::class, 'showPayment'])->name('mitra.payments.show');
     Route::get('/mitra/{id}', [\App\Http\Controllers\Admin\MitraController::class, 'show'])->name('mitra.show');
 
 

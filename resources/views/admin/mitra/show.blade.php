@@ -271,10 +271,13 @@
                         </span>
                     </td>
                     <td class="px-5 py-4 text-center whitespace-nowrap">
-                        <a href="#" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 text-green-700 hover:bg-green-600 hover:text-white transition-all shadow-sm">
-                            <x-heroicon-s-eye class="w-4 h-4" />
-                        </a>
-                    </td>
+    <a href="{{ route('admin.mitra.payments.show', ['storeId' => $store->id, 'paymentId' => $payment->id]) }}" 
+       class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 text-green-700 hover:bg-green-600 hover:text-white transition-all shadow-sm"
+       title="Lihat Detail Pembayaran">
+        <x-heroicon-s-eye class="w-4 h-4" />
+    </a>
+</td>
+
                 </tr>
                 @empty
                 <tr>
