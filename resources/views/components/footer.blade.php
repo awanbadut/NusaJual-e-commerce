@@ -5,6 +5,7 @@
             <h2 class="text-2xl md:text-3xl font-bold">Nusa Belanja</h2>
             <p class="text-base md:text-lg font-medium">Ngehubungin hasil bumi ke pasar yang lebih luas.</p>
         </div>
+        
 
         <div class="flex flex-col items-start gap-3 md:w-1/4">
             <h3 class="text-xl font-bold">Follow Us</h3>

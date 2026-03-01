@@ -87,8 +87,12 @@ class CheckoutController extends Controller
                             $apiData = $response->json();
                             $results = $apiData['data']['couriers'] ?? [];
 
+                            // 1. Definisikan kurir yang diperbolehkan di sini
+                            $allowedCouriers = ['JNE Express', 'J&T Express', 'AnterAja', 'Ninja Express', 'JNE Cargo'];
+
                             foreach ($results as $courier) {
-                                if (isset($courier['price']) && $courier['price'] > 0) {
+                                // 2. Tambahkan pengecekan in_array() pada kondisi IF
+                                if (isset($courier['price']) && $courier['price'] > 0 && in_array($courier['courier_name'], $allowedCouriers)) {
                                     $couriers[] = [
                                         'id'    => $courier['courier_code'],
                                         'name'  => $courier['courier_name'],

@@ -25,10 +25,14 @@
                         style="background-image: url('/img/pattern-kopi1.png'); background-size: 100%;"></div>
                     <div
                         class="flex-1 flex flex-col justify-center items-start gap-4 md:gap-6 z-10 w-full md:pl-10 text-center md:text-left">
-                        <h1 class="text-4xl md:text-[64px] font-bold text-[#045405] leading-tight">Nusa Belanja</h1>
+                        <h1 class="text-2xl md:text-[48px] font-bold text-[#045405] leading-snug">
+                            Dari Lokal untuk Nasional
+                        </h1>
                         <p class="text-lg md:text-[20px] font-medium text-[#045405] leading-relaxed max-w-xl">
-                            Deskripsi Nusa Belanja Lorem ipsum dolor sit amet consectetur. Auctor mattis senectus sit ut
-                            ipsum mattis pellentesque sem.
+                            nusaBelanja adalah platform e-commerce yang hadir sebagai jembatan antara pelaku UMKM lokal
+                            dengan pasar nasional. Mengusung semangat “Dari Lokal untuk Nasional”, nusaBelanja
+                            berkomitmen mengangkat produk-produk lokal agar mampu bersaing dan dikenal di seluruh
+                            Indonesia.
                         </p>
                         <a href="{{ route('katalog') }}"
                             class="bg-[#D7AF00] text-[#384A23] font-bold px-6 py-3 rounded-lg flex items-center justify-center md:justify-start gap-2 hover:bg-[#b89600] transition shadow-sm w-full md:w-auto">
@@ -47,10 +51,14 @@
                     <div class="absolute inset-0"
                         style="background-image: url('/img/pattern-kopi1.png'); background-size: 100%;"></div>
                     <div class="relative z-10 max-w-3xl flex flex-col items-center gap-6">
-                        <h1 class="text-4xl md:text-[64px] font-bold text-white leading-tight">Nusa Belanja</h1>
+                        <h1 class="text-2xl md:text-[48px] font-bold text-white leading-snug">
+                            Dari Lokal untuk Nasional
+                        </h1>
                         <p class="text-white text-lg md:text-[20px] font-medium leading-relaxed max-w-2xl">
-                            Deskripsi Nusa Belanja Lorem ipsum dolor sit amet consectetur. Auctor mattis senectus sit ut
-                            ipsum mattis pellentesque sem.
+                            nusaBelanja adalah platform e-commerce yang hadir sebagai jembatan antara pelaku UMKM lokal
+                            dengan pasar nasional. Mengusung semangat “Dari Lokal untuk Nasional”, nusaBelanja
+                            berkomitmen mengangkat produk-produk lokal agar mampu bersaing dan dikenal di seluruh
+                            Indonesia.
                         </p>
                         <a href="{{ route('katalog') }}"
                             class="bg-[#FCFCF9] text-[#030712] font-bold px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-gray-100 transition shadow-sm">
@@ -65,10 +73,14 @@
                     class="snap-center shrink-0 w-full relative rounded-xl overflow-hidden shadow-md bg-[#F5F5F1] border border-[#496030] flex flex-col-reverse md:flex-row items-center min-h-[500px] md:h-[472px] h-auto px-4 md:px-10 py-8 md:py-0">
                     <div
                         class="flex-1 flex flex-col justify-center items-start gap-6 z-10 w-full md:pl-16 md:pr-4 text-center md:text-left">
-                        <h1 class="text-4xl md:text-[64px] font-bold text-[#045405] leading-tight">Nusa Belanja</h1>
+                        <h1 class="text-2xl md:text-[48px] font-bold text-[#045405] leading-snug">
+                            Dari Lokal untuk Nasional
+                        </h1>
                         <p class="text-lg md:text-h6 font-medium text-[#045405] leading-relaxed max-w-xl">
-                            Deskripsi Nusa Belanja Lorem ipsum dolor sit amet consectetur. Auctor mattis senectus sit ut
-                            ipsum mattis pellentesque sem.
+                            nusaBelanja adalah platform e-commerce yang hadir sebagai jembatan antara pelaku UMKM lokal
+                            dengan pasar nasional. Mengusung semangat “Dari Lokal untuk Nasional”, nusaBelanja
+                            berkomitmen mengangkat produk-produk lokal agar mampu bersaing dan dikenal di seluruh
+                            Indonesia.
                         </p>
                         <a href="{{ route('katalog') }}"
                             class="bg-[#1D4300] text-white font-bold px-6 py-3 rounded-lg flex items-center justify-center md:justify-start gap-2 hover:bg-[#143000] transition shadow-sm w-full md:w-auto">
@@ -97,7 +109,7 @@
     </section>
 
     <!-- Keunggulan Section (SAMA - tidak perlu diubah) -->
-    <section class="py-16 px-4">
+    {{-- <section class="py-16 px-4">
         <div class="max-w-7xl mx-auto text-center mb-12">
             <h2 class="text-3xl md:text-4xl font-extrabold text-[#0F4C20] mb-2">Kenalan Sama Nusa Belanja</h2>
             <p class="text-lg md:text-h5 text-[#8B4513] font-medium">Marketplace yang ngerangkul mitra lokal biar
@@ -123,7 +135,7 @@
             </div>
             @endforeach
         </div>
-    </section>
+    </section> --}}
 
     <!-- Mitra Section (SAMA - tidak perlu diubah) -->
     <section class="py-16 px-4 bg-[#F8FCF8]">
@@ -245,12 +257,12 @@
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 justify-items-center">
             @foreach($products as $product)
             @php
-                // Hitung total terjual dari database
-                $totalSold = $product->orderItems()
-                    ->whereHas('order', function($q) {
-                        $q->where('status', 'completed');
-                    })
-                    ->sum('quantity');
+            // Hitung total terjual dari database
+            $totalSold = $product->orderItems()
+            ->whereHas('order', function($q) {
+            $q->where('status', 'completed');
+            })
+            ->sum('quantity');
             @endphp
             <div
                 class="flex flex-col sm:flex-row bg-[#fefefb] border border-[#e3fb9a] rounded-lg p-3 shadow-sm hover:shadow-md transition duration-300 w-full max-w-xl">

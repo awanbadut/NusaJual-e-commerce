@@ -20,9 +20,8 @@
         class="bg-white w-full max-w-4xl rounded-[10px] shadow-lg border border-gray-100 p-8 md:p-12 flex flex-col items-center gap-8 relative">
 
         <div class="text-center">
-            <div class="flex items-center justify-center gap-3 mb-4">
-                <div class="bg-[#0F4C20] rounded px-3 py-2 text-white font-bold tracking-tight text-sm">Logo</div>
-                <span class="text-xl font-bold text-gray-700">Nusa Belanja</span>
+            <div class="flex items-center justify-center mb-4">
+                <img src="{{ asset('img/logo/3.png') }}" alt="Icon Nusa Belanja" class="h-10 w-auto object-contain">
             </div>
             <h1 class="text-2xl font-bold text-black mb-2 tracking-tight">Daftar Sebagai Penjual</h1>
             <p class="text-gray-500 font-medium">Bergabung dan mulai kembangkan bisnis Anda</p>

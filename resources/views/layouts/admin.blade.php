@@ -39,11 +39,9 @@
                         </svg>
                     </button>
 
-                    <div class="flex items-center gap-2 sm:gap-3">
-                        <div
-                            class="bg-green-800 text-white px-2 py-1.5 sm:px-3 sm:py-2 font-bold text-xs sm:text-sm rounded">
-                            Logo</div>
-                        <span class="text-sm sm:text-base font-bold text-gray-900 truncate">Nusa Belanja</span>
+                    <div class="flex items-center justify-center">
+                        <img src="{{ asset('img/logo/3.png') }}" alt="Icon Nusa Belanja"
+                            class="h-10 w-auto object-contain">
                     </div>
                 </div>
 

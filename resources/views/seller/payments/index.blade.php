@@ -36,21 +36,23 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 w-full md:w-auto">
-                    <div class="relative flex-1 md:w-40">
+                <div class="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
+                    <div class="relative w-full md:w-44">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <x-heroicon-o-calendar class="w-5 h-5" />
                         </div>
                         <input type="date" name="date_from" value="{{ request('date_from') }}"
-                            class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition shadow-sm">
+                            class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition shadow-sm bg-white">
                     </div>
 
-                    <span class="text-gray-400 font-bold">-</span>
+                    <span class="hidden md:block text-gray-400 font-bold">s/d</span>
 
-                    <div class="relative flex-1 md:w-40">
+                    <div class="relative w-full md:w-44">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <x-heroicon-o-calendar class="w-5 h-5" />
                         </div>
                         <input type="date" name="date_to" value="{{ request('date_to') }}"
-                            class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition shadow-sm">
+                            class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition shadow-sm bg-white">
                     </div>
                 </div>
 

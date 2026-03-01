@@ -18,11 +18,8 @@
     <div
         class="bg-white w-full max-w-[572px] rounded-[10px] shadow-lg border border-gray-100 p-8 md:p-12 flex flex-col items-center gap-8">
 
-        <div class="flex items-center gap-3">
-            <div class="bg-[#0F4C20] rounded px-3 py-2 text-white font-bold tracking-tight text-label-2">
-                Logo
-            </div>
-            <span class="text-h6 font-bold text-gray-700">Nusa Belanja</span>
+        <div class="flex items-center justify-center">
+            <img src="{{ asset('img/logo/3.png') }}" alt="Icon Nusa Belanja" class="h-10 w-auto object-contain">
         </div>
 
         <div class="text-center">

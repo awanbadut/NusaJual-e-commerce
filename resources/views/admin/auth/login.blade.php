@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Admin - Nusa Belanja</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-br from-green-50 via-green-100 to-emerald-50 min-h-screen flex items-center justify-center p-4">
-    
+
+<body
+    class="bg-gradient-to-br from-green-50 via-green-100 to-emerald-50 min-h-screen flex items-center justify-center p-4">
+
     <div class="w-full max-w-md">
         <!-- Header -->
         <div class="text-center mb-8">
-            <div class="bg-gradient-to-br from-green-600 to-green-700 w-20 h-20 rounded-2xl shadow-xl mx-auto mb-4 flex items-center justify-center transform hover:scale-105 transition">
-                <span class="text-white font-bold text-3xl">NB</span>
+            <div class="flex items-center justify-center mb-4">
+                <img src="{{ asset('img/logo/3.png') }}" alt="Icon Nusa Belanja" class="h-10 w-auto object-contain">
             </div>
             <h1 class="text-3xl font-bold text-gray-800 mb-2">Admin Dashboard</h1>
             <p class="text-gray-600">Nusa Belanja Management System</p>
@@ -45,26 +48,27 @@
                 <div class="mb-4">
                     <label class="block text-gray-700 font-semibold mb-2">Email</label>
                     <input type="email" name="email" value="{{ old('email') }}" required autofocus
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
-                           placeholder="admin@nusabelanja.com">
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                        placeholder="admin@nusabelanja.com">
                 </div>
 
                 <div class="mb-6">
                     <label class="block text-gray-700 font-semibold mb-2">Password</label>
                     <input type="password" name="password" required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
-                           placeholder="••••••••">
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                        placeholder="••••••••">
                 </div>
 
                 <div class="flex items-center justify-between mb-6">
                     <label class="flex items-center cursor-pointer">
-                        <input type="checkbox" name="remember" class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                        <input type="checkbox" name="remember"
+                            class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
                         <span class="ml-2 text-sm text-gray-600">Ingat saya</span>
                     </label>
                 </div>
 
-                <button type="submit" 
-                        class="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-3 px-4 rounded-lg hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition transform hover:scale-[1.02] active:scale-[0.98] shadow-lg">
+                <button type="submit"
+                    class="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-3 px-4 rounded-lg hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition transform hover:scale-[1.02] active:scale-[0.98] shadow-lg">
                     Masuk ke Dashboard
                 </button>
             </form>
@@ -92,4 +96,5 @@
     </div>
 
 </body>
+
 </html>

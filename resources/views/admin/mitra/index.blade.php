@@ -25,8 +25,10 @@
             <select name="sort" onchange="this.form.submit()"
                 class="w-full appearance-none px-4 py-2.5 border border-[#D1D5DB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#15803D] text-sm sm:text-[13px] text-[#15803D] font-medium bg-white cursor-pointer pr-10">
                 <option value="">Urutkan Berdasarkan</option>
-                <option value="sales_desc" {{ request('sort')=='sales_desc' ? 'selected' : '' }}>Penjualan Tertinggi</option>
-                <option value="orders_desc" {{ request('sort')=='orders_desc' ? 'selected' : '' }}>Pesanan Terbanyak</option>
+                <option value="sales_desc" {{ request('sort')=='sales_desc' ? 'selected' : '' }}>Penjualan Tertinggi
+                </option>
+                <option value="orders_desc" {{ request('sort')=='orders_desc' ? 'selected' : '' }}>Pesanan Terbanyak
+                </option>
                 <option value="newest" {{ request('sort')=='newest' ? 'selected' : '' }}>Terbaru</option>
                 <option value="oldest" {{ request('sort')=='oldest' ? 'selected' : '' }}>Terlama</option>
             </select>
@@ -46,7 +48,8 @@
 </div>
 
 @if(session('success'))
-<div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-xl mb-6 text-xs sm:text-[13px] flex items-center gap-3">
+<div
+    class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-xl mb-6 text-xs sm:text-[13px] flex items-center gap-3">
     <x-heroicon-s-check-circle class="w-5 h-5" />
     {{ session('success') }}
 </div>
@@ -70,12 +73,12 @@
                 @forelse($stores as $index => $store)
                 @php
                 $colors = [
-                    'bg-[#FEF3C7] text-[#92400E]',
-                    'bg-[#DBEAFE] text-[#1E40AF]',
-                    'bg-[#FCE7F3] text-[#9F1239]',
-                    'bg-[#E0E7FF] text-[#3730A3]',
-                    'bg-[#FEF3C7] text-[#92400E]',
-                    'bg-[#D1FAE5] text-[#065F46]',
+                'bg-[#FEF3C7] text-[#92400E]',
+                'bg-[#DBEAFE] text-[#1E40AF]',
+                'bg-[#FCE7F3] text-[#9F1239]',
+                'bg-[#E0E7FF] text-[#3730A3]',
+                'bg-[#FEF3C7] text-[#92400E]',
+                'bg-[#D1FAE5] text-[#065F46]',
                 ];
                 $colorIndex = (($stores->currentPage() - 1) * $stores->perPage() + $loop->index) % count($colors);
                 $colorClass = $colors[$colorIndex];
@@ -83,12 +86,14 @@
                 <tr class="hover:bg-green-50/30 transition duration-200">
                     <td class="px-5 py-4 whitespace-nowrap">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 sm:w-11 sm:h-11 {{ $colorClass }} rounded-full flex items-center justify-center font-bold text-sm sm:text-[15px] flex-shrink-0">
+                            <div
+                                class="w-10 h-10 sm:w-11 sm:h-11 {{ $colorClass }} rounded-full flex items-center justify-center font-bold text-sm sm:text-[15px] flex-shrink-0">
                                 {{ strtoupper(substr($store->store_name, 0, 2)) }}
                             </div>
                             <div>
                                 <p class="font-bold text-[#111827] text-sm">{{ $store->store_name }}</p>
-                                <p class="text-xs text-[#9CA3AF] font-mono mt-0.5">ID: MT-{{ str_pad($store->id, 5, '0', STR_PAD_LEFT) }}</p>
+                                <p class="text-xs text-[#9CA3AF] font-mono mt-0.5">ID: MT-{{ str_pad($store->id, 5, '0',
+                                    STR_PAD_LEFT) }}</p>
                             </div>
                         </div>
                     </td>
@@ -99,7 +104,8 @@
                         {{ $store->address }}
                     </td>
                     <td class="px-5 py-4 whitespace-nowrap">
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200 text-xs font-bold shadow-sm">
+                        <span
+                            class="inline-flex items-center px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200 text-xs font-bold shadow-sm">
                             {{ number_format($store->orders_count) }} Transaksi
                         </span>
                     </td>
@@ -108,7 +114,7 @@
                     </td>
                     <td class="px-5 py-4 text-center whitespace-nowrap">
                         <a href="{{ route('admin.mitra.show', $store->id) }}"
-                            class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 text-green-700 hover:bg-green-600 hover:text-white transition-all shadow-sm"
+                            class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#15803D] hover:bg-[#166534] transition text-white shadow-sm"
                             title="Lihat Detail">
                             <x-heroicon-s-eye class="w-4 h-4" />
                         </a>
