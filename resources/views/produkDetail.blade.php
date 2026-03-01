@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $product->name }} - Nusa Belanja</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('img/favicon.ico') }}">
     <script src="//unpkg.com/alpinejs" defer></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -34,7 +35,7 @@
             <div
                 class="relative w-full h-[180px] bg-[#F0EFE6] rounded-xl border border-[#496030] overflow-hidden flex flex-col items-center justify-center text-center p-6 shadow-sm">
                 <div class="absolute inset-0 opacity-10"
-                    style="background-image: url('{{ asset('img/pattern-kopi1.png') }}'); background-size: 100%;">
+                    style="background-image: url('{{ asset('img/pattern-kopi1.webp') }}'); background-size: 100%;">
                 </div>
                 <div class="relative z-10 flex flex-col gap-1">
                     <h1 class="text-3xl md:text-4xl font-bold text-[#0F4C20]">Info Lengkap Produk</h1>

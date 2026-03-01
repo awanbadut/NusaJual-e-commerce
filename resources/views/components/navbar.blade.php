@@ -3,9 +3,11 @@
         <div class="flex justify-between h-20 items-center">
 
             <div class="flex items-center">
-                <img src="{{ asset('img/logo/1.png') }}" alt="Icon Nusa Belanja" class="h-15 w-auto object-contain">
-
-                <img src="{{ asset('img/logo/2.png') }}" alt="Nusa Belanja" class="h-45 w-auto object-contain">
+                <div class="flex items-center">
+    <img src="{{ asset('img/logo/3.jpeg') }}" alt="Nusa Belanja" 
+         class="h-12 w-auto object-contain" 
+         loading="eager">
+</div>
             </div>
 
             <div class="hidden md:flex items-center space-x-8">

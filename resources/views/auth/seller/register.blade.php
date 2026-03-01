@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Sebagai Penjual - Nusa Belanja</title>
-
+    <link rel="icon" type="image/x-icon" href="{{ asset('img/favicon.ico') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
@@ -21,7 +21,7 @@
 
         <div class="text-center">
             <div class="flex items-center justify-center mb-4">
-                <img src="{{ asset('img/logo/3.png') }}" alt="Icon Nusa Belanja" class="h-10 w-auto object-contain">
+                <img src="{{ asset('img/logo/3.jpeg') }}" alt="Icon Nusa Belanja" class="h-10 w-auto object-contain">
             </div>
             <h1 class="text-2xl font-bold text-black mb-2 tracking-tight">Daftar Sebagai Penjual</h1>
             <p class="text-gray-500 font-medium">Bergabung dan mulai kembangkan bisnis Anda</p>

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nusa Belanja - Marketplace Hasil Bumi</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('img/favicon.ico') }}">
     <script src="//unpkg.com/alpinejs" defer></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -22,7 +23,7 @@
                 <div
                     class="snap-center shrink-0 w-full relative rounded-xl overflow-hidden shadow-md bg-[#F0EFE6] border border-[#496030] flex flex-col-reverse md:flex-row items-center min-h-[500px] md:h-[472px] h-auto px-4 md:px-10 py-8 md:py-0">
                     <div class="absolute inset-0 opacity-10"
-                        style="background-image: url('/img/pattern-kopi1.png'); background-size: 100%;"></div>
+                        style="background-image: url('/img/pattern-kopi1.webp'); background-size: 100%;"></div>
                     <div
                         class="flex-1 flex flex-col justify-center items-start gap-4 md:gap-6 z-10 w-full md:pl-10 text-center md:text-left">
                         <h1 class="text-2xl md:text-[48px] font-bold text-[#045405] leading-snug">
@@ -41,7 +42,7 @@
                         </a>
                     </div>
                     <div class="w-full md:w-[45%] h-48 md:h-full relative flex items-end justify-center md:justify-end">
-                        <img src="img/kurir.png" class="h-full object-contain object-bottom">
+                        <img src="img/kurir.webp" class="h-full object-contain object-bottom">
                     </div>
                 </div>
 
@@ -49,7 +50,7 @@
                 <div
                     class="snap-center shrink-0 w-full relative rounded-xl overflow-hidden shadow-md bg-[#7E4715] flex flex-col justify-center items-center min-h-[500px] md:h-[472px] h-auto text-center px-4 py-8 md:py-0">
                     <div class="absolute inset-0"
-                        style="background-image: url('/img/pattern-kopi1.png'); background-size: 100%;"></div>
+                        style="background-image: url('/img/pattern-kopi1.webp'); background-size: 100%;"></div>
                     <div class="relative z-10 max-w-3xl flex flex-col items-center gap-6">
                         <h1 class="text-2xl md:text-[48px] font-bold text-white leading-snug">
                             Dari Lokal untuk Nasional
@@ -89,7 +90,7 @@
                         </a>
                     </div>
                     <div class="w-full md:w-[50%] h-48 md:h-full relative flex items-center justify-end p-4 md:p-6">
-                        <img src="/img/petaniTeh.png"
+                        <img src="/img/petaniTeh.webp"
                             class="w-full h-full md:h-[90%] object-cover rounded-[24px] shadow-sm">
                     </div>
                 </div>

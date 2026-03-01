@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard') - NusaBelanja</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('img/favicon.ico') }}">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -44,7 +45,7 @@
 
 
                     <div class="flex items-center justify-center">
-                        <img src="{{ asset('img/logo/3.png') }}" alt="Icon Nusa Belanja"
+                        <img src="{{ asset('img/logo/3.jpeg') }}" alt="Icon Nusa Belanja"
                             class="h-10 w-auto object-contain">
                     </div>
                 </div>

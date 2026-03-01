@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk Sebagai Penjual - Nusa Belanja</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('img/favicon.ico') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
@@ -18,7 +19,7 @@
         class="bg-white w-full max-w-[572px] rounded-[10px] shadow-lg border border-gray-100 p-8 md:p-12 flex flex-col items-center gap-8">
 
         <div class="flex items-center justify-center">
-            <img src="{{ asset('img/logo/3.png') }}" alt="Icon Nusa Belanja" class="h-10 w-auto object-contain">
+            <img src="{{ asset('img/logo/3.jpeg') }}" alt="Icon Nusa Belanja" class="h-10 w-auto object-contain">
         </div>
 
         <div class="text-center">
