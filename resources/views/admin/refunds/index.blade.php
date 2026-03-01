@@ -5,41 +5,48 @@
 @section('content')
 <div class="container mx-auto px-4 py-6">
 
+    {{-- Header --}}
     <div class="flex justify-between items-center mb-6">
         <div>
             <h1 class="text-[28px] font-bold text-[#15803D] mb-1">Manajemen Refund</h1>
             <p class="text-[13px] text-[#78716C]">Kelola permintaan pengembalian dana dari pembeli</p>
         </div>
-        <div class="bg-white px-5 py-3 rounded-2xl shadow-sm border border-[#E5E7EB]">
-            <p class="text-[11px] text-[#78716C] mb-1">Total Pending</p>
-            <p class="text-[24px] font-bold text-[#DC2626]">{{ $pendingRefunds->total() }}</p>
+        <div class="flex gap-3">
+            {{-- ✅ Badge Menunggu Rekening --}}
+            @if($needsBankInfoRefunds->total() > 0)
+            <div class="bg-yellow-50 px-5 py-3 rounded-2xl shadow-sm border border-yellow-300">
+                <p class="text-[11px] text-yellow-600 mb-1">Menunggu Rekening</p>
+                <p class="text-[24px] font-bold text-yellow-700">{{ $needsBankInfoRefunds->total() }}</p>
+            </div>
+            @endif
+            <div class="bg-white px-5 py-3 rounded-2xl shadow-sm border border-[#E5E7EB]">
+                <p class="text-[11px] text-[#78716C] mb-1">Total Pending</p>
+                <p class="text-[24px] font-bold text-[#DC2626]">{{ $pendingRefunds->total() }}</p>
+            </div>
         </div>
     </div>
 
+    {{-- Alert Success --}}
     @if(session('success'))
-    <div
-        class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-xl mb-6 text-[13px] flex items-center gap-3">
+    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-xl mb-6 text-[13px] flex items-center gap-3">
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clip-rule="evenodd" />
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
         </svg>
         {{ session('success') }}
     </div>
     @endif
 
+    {{-- Alert Error --}}
     @if(session('error'))
-    <div
-        class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-xl mb-6 text-[13px] flex items-center gap-3">
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-xl mb-6 text-[13px] flex items-center gap-3">
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                clip-rule="evenodd" />
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
         </svg>
         {{ session('error') }}
     </div>
     @endif
 
+    {{-- Validation Errors --}}
     @if($errors->any())
     <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-xl mb-6 text-[13px]">
         <ul class="list-disc list-inside">
@@ -50,11 +57,88 @@
     </div>
     @endif
 
+    {{-- ✅ SECTION 1: Menunggu Info Rekening Buyer (Seller Cancel) --}}
+    @if($needsBankInfoRefunds->total() > 0)
+    <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 border border-yellow-300">
+        <div class="px-5 py-4 bg-yellow-50 border-b border-yellow-200 flex justify-between items-center">
+            <div>
+                <h2 class="font-bold text-[16px] text-yellow-800">⚠️ Menunggu Info Rekening Pembeli</h2>
+                <p class="text-xs text-yellow-600 mt-0.5">Pesanan dibatalkan seller — pembeli belum mengisi rekening bank untuk refund</p>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-[11px] font-bold border border-yellow-300">
+                {{ $needsBankInfoRefunds->total() }} Menunggu
+            </span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-[13px]">
+                <thead class="bg-yellow-50 border-t border-b border-yellow-200">
+                    <tr class="text-left">
+                        <th class="px-5 py-4 font-semibold text-yellow-800">No. Refund</th>
+                        <th class="px-5 py-4 font-semibold text-yellow-800">No. Order</th>
+                        <th class="px-5 py-4 font-semibold text-yellow-800">Pembeli</th>
+                        <th class="px-5 py-4 font-semibold text-yellow-800">Jumlah Refund</th>
+                        <th class="px-5 py-4 font-semibold text-yellow-800">Alasan Pembatalan</th>
+                        <th class="px-5 py-4 font-semibold text-yellow-800">Tanggal</th>
+                        <th class="px-5 py-4 font-semibold text-yellow-800">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-yellow-50/30">
+                    @forelse($needsBankInfoRefunds as $refund)
+                    <tr class="border-b border-yellow-100 hover:bg-yellow-50 transition">
+                        <td class="px-5 py-4 font-mono text-yellow-700 font-bold">{{ $refund->refund_number }}</td>
+                        <td class="px-5 py-4 font-mono text-[#111827]">{{ $refund->order->order_number }}</td>
+                        <td class="px-5 py-4">
+                            <div class="text-[#111827] font-semibold">{{ $refund->user->name }}</div>
+                            <div class="text-[#6B7280] text-[11px]">{{ $refund->user->email }}</div>
+                        </td>
+                        <td class="px-5 py-4">
+                            <div class="text-[#DC2626] font-bold">Rp {{ number_format($refund->refund_amount, 0, ',', '.') }}</div>
+                            <div class="text-[#6B7280] text-[10px]">Order: Rp {{ number_format($refund->order_amount, 0, ',', '.') }}</div>
+                            <div class="text-[#B91C1C] text-[10px]">Admin 5%: Rp {{ number_format($refund->admin_fee, 0, ',', '.') }}</div>
+                        </td>
+                        <td class="px-5 py-4 text-[#6B7280] text-[11px] max-w-[160px]">
+                            <span class="line-clamp-2">{{ $refund->cancellation_reason ?? '-' }}</span>
+                        </td>
+                        <td class="px-5 py-4 text-[#111827]">
+                            {{ $refund->requested_at->format('d M Y') }}<br>
+                            <span class="text-[10px] text-[#6B7280]">{{ $refund->requested_at->format('H:i') }}</span>
+                        </td>
+                        <td class="px-5 py-4 space-y-1">
+                            <div class="flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg bg-yellow-100 text-yellow-800 text-[11px] font-semibold border border-yellow-300 w-full">
+                                ⏳ Menunggu Rekening
+                            </div>
+                            <button onclick="openRejectModal({{ $refund->id }}, '{{ $refund->refund_number }}')"
+                                class="bg-[#DC2626] text-white px-3 py-1.5 rounded-lg hover:bg-[#B91C1C] text-[11px] font-semibold w-full transition">
+                                Tolak
+                            </button>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="px-5 py-8 text-center text-[#9CA3AF]">Tidak ada data</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if($needsBankInfoRefunds->hasPages())
+        <div class="px-5 py-4 border-t border-yellow-200">
+            {{ $needsBankInfoRefunds->appends([
+                'pending_page'    => request('pending_page'),
+                'processed_page'  => request('processed_page'),
+            ])->links() }}
+        </div>
+        @endif
+    </div>
+    @endif
+
+    {{-- SECTION 2: Refund Pending (Siap Diproses) --}}
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 border border-[#E5E7EB]">
         <div class="px-5 py-4 bg-white border-b border-[#E5E7EB] flex justify-between items-center">
             <h2 class="font-bold text-[16px] text-[#111827]">Permintaan Refund Pending</h2>
-            <span
-                class="px-3 py-1 rounded-full bg-[#FEF2F2] text-[#DC2626] text-[11px] font-bold border border-[#FCA5A5]">
+            <span class="px-3 py-1 rounded-full bg-[#FEF2F2] text-[#DC2626] text-[11px] font-bold border border-[#FCA5A5]">
                 {{ $pendingRefunds->total() }} Pending
             </span>
         </div>
@@ -82,17 +166,14 @@
                             <div class="text-[#6B7280] text-[11px]">{{ $refund->user->email }}</div>
                         </td>
                         <td class="px-5 py-4">
-                            <div class="text-[#111827] font-semibold">{{ $refund->bank_name }}</div>
-                            <div class="text-[#6B7280] text-[11px] font-mono">{{ $refund->account_number }}</div>
-                            <div class="text-[#6B7280] text-[11px]">a.n. {{ $refund->account_holder }}</div>
+                            <div class="text-[#111827] font-semibold">{{ $refund->bank_name ?? '-' }}</div>
+                            <div class="text-[#6B7280] text-[11px] font-mono">{{ $refund->account_number ?? '-' }}</div>
+                            <div class="text-[#6B7280] text-[11px]">a.n. {{ $refund->account_holder ?? '-' }}</div>
                         </td>
                         <td class="px-5 py-4">
-                            <div class="text-[#DC2626] font-bold">Rp {{ number_format($refund->refund_amount, 0, ',',
-                                '.') }}</div>
-                            <div class="text-[#6B7280] text-[10px]">Order: Rp {{ number_format($refund->order_amount, 0,
-                                ',', '.') }}</div>
-                            <div class="text-[#B91C1C] text-[10px]">Admin 5%: Rp {{ number_format($refund->admin_fee, 0,
-                                ',', '.') }}</div>
+                            <div class="text-[#DC2626] font-bold">Rp {{ number_format($refund->refund_amount, 0, ',', '.') }}</div>
+                            <div class="text-[#6B7280] text-[10px]">Order: Rp {{ number_format($refund->order_amount, 0, ',', '.') }}</div>
+                            <div class="text-[#B91C1C] text-[10px]">Admin 5%: Rp {{ number_format($refund->admin_fee, 0, ',', '.') }}</div>
                         </td>
                         <td class="px-5 py-4 text-[#111827]">
                             {{ $refund->requested_at->format('d M Y') }}<br>
@@ -113,9 +194,7 @@
                     <tr>
                         <td colspan="7" class="px-5 py-10 text-center text-[#9CA3AF]">
                             <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clip-rule="evenodd" />
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                             </svg>
                             <p class="font-semibold text-[13px]">Tidak ada permintaan refund pending</p>
                         </td>
@@ -128,18 +207,18 @@
         @if($pendingRefunds->hasPages())
         <div class="px-5 py-4 border-t border-[#E5E7EB]">
             {{ $pendingRefunds->appends([
-            'page_processed' => request('page_processed'), // Agar tabel bawah tidak reset
-            'search' => request('search')
+                'needs_bank_page' => request('needs_bank_page'),
+                'processed_page'  => request('processed_page'),
             ])->links() }}
         </div>
         @endif
     </div>
 
+    {{-- SECTION 3: Riwayat Refund --}}
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-[#E5E7EB]">
         <div class="px-5 py-4 bg-white border-b border-[#E5E7EB] flex justify-between items-center">
             <h2 class="font-bold text-[16px] text-[#111827]">Riwayat Refund</h2>
-            <span
-                class="px-3 py-1 rounded-full bg-[#F3F4F6] text-[#374151] text-[11px] font-bold border border-[#E5E7EB]">
+            <span class="px-3 py-1 rounded-full bg-[#F3F4F6] text-[#374151] text-[11px] font-bold border border-[#E5E7EB]">
                 {{ $processedRefunds->total() }} Riwayat
             </span>
         </div>
@@ -163,23 +242,20 @@
                         <td class="px-5 py-4 font-mono text-[#6B7280]">{{ $refund->refund_number }}</td>
                         <td class="px-5 py-4 font-mono text-[#111827]">{{ $refund->order->order_number }}</td>
                         <td class="px-5 py-4 text-[#111827]">{{ $refund->user->name }}</td>
-                        <td class="px-5 py-4 font-bold text-[#111827]">Rp {{ number_format($refund->refund_amount, 0,
-                            ',', '.') }}</td>
+                        <td class="px-5 py-4 font-bold text-[#111827]">Rp {{ number_format($refund->refund_amount, 0, ',', '.') }}</td>
                         <td class="px-5 py-4">
                             @if($refund->status === 'processed')
-                            <span
-                                class="inline-flex items-center px-3 py-1 rounded-full bg-[#DCFCE7] text-[#166534] text-[11px] font-semibold border border-[#BBF7D0]">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#DCFCE7] text-[#166534] text-[11px] font-semibold border border-[#BBF7D0]">
                                 ✓ Processed
                             </span>
                             @else
-                            <span
-                                class="inline-flex items-center px-3 py-1 rounded-full bg-[#FEF2F2] text-[#991B1B] text-[11px] font-semibold border border-[#FECaca]">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-[#FEF2F2] text-[#991B1B] text-[11px] font-semibold border border-[#FECaca]">
                                 ✗ Rejected
                             </span>
                             @endif
                         </td>
                         <td class="px-5 py-4 text-[#6B7280] text-[11px]">
-                            {{ $refund->processed_at ? $refund->processed_at->format('d M Y H:i') : '-' }}<br>
+                            {{ $refund->processed_at ? $refund->processed_at->format('d M Y H:i') : ($refund->rejected_at ? $refund->rejected_at->format('d M Y H:i') : '-') }}<br>
                             <span class="text-[#9CA3AF]">oleh {{ $refund->processedBy->name ?? 'Admin' }}</span>
                         </td>
                         <td class="px-5 py-4">
@@ -208,8 +284,8 @@
         @if($processedRefunds->hasPages())
         <div class="px-5 py-4 border-t border-[#E5E7EB]">
             {{ $processedRefunds->appends([
-            'page_pending' => request('page_pending'), // Agar tabel atas tidak reset
-            'search' => request('search')
+                'needs_bank_page' => request('needs_bank_page'),
+                'pending_page'    => request('pending_page'),
             ])->links() }}
         </div>
         @endif
@@ -217,15 +293,14 @@
 
 </div>
 
+{{-- ✅ Modal Proses Refund --}}
 <div id="processModal"
     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
     <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
         <button type="button" onclick="closeProcessModal()"
             class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clip-rule="evenodd" />
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
             </svg>
         </button>
 
@@ -233,9 +308,7 @@
             <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                 <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-                    <path fill-rule="evenodd"
-                        d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
-                        clip-rule="evenodd" />
+                    <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd" />
                 </svg>
             </div>
             <h2 class="text-[18px] font-bold text-[#111827]">Proses Refund</h2>
@@ -263,14 +336,13 @@
                     </div>
                     <p class="text-[11px] text-[#111827] font-medium mb-1">Klik untuk upload</p>
                     <p class="text-[10px] text-[#6B7280]">JPG, PNG (Max 2MB)</p>
-                    <input type="file" id="refund_proof" name="refund_proof" accept="image/jpeg,image/png,image/jpg"
+                    <input type="file" id="refund_proof" name="refund_proof"
+                        accept="image/jpeg,image/png,image/jpg,image/webp"
                         class="hidden" required onchange="showFileName(this)">
                 </div>
                 <p id="file_name" class="text-[10px] text-[#15803D] mt-2 hidden flex items-center gap-1">
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                            clip-rule="evenodd" />
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                     </svg>
                     <span></span>
                 </p>
@@ -299,24 +371,21 @@
     </div>
 </div>
 
+{{-- ✅ Modal Tolak Refund --}}
 <div id="rejectModal"
     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
     <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl relative p-6">
         <button type="button" onclick="closeRejectModal()"
             class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clip-rule="evenodd" />
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
             </svg>
         </button>
 
         <div class="text-center mb-4">
             <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
                 <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                        d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
-                        clip-rule="evenodd" />
+                    <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
                 </svg>
             </div>
             <h2 class="text-[18px] font-bold text-[#111827]">Tolak Refund?</h2>
@@ -353,48 +422,57 @@
 
 @push('scripts')
 <script>
-    // Process Modal
+    // ✅ Process Modal — fetch detail dari API
     function openProcessModal(refundId) {
         fetch(`/admin/refunds/${refundId}/details`)
             .then(response => response.json())
             .then(data => {
+                // ✅ Guard: jika status needs_bank_info, tampilkan alert saja
+                if (data.status === 'needs_bank_info') {
+                    alert('⚠️ Refund ini belum bisa diproses. Pembeli belum mengisi informasi rekening bank.');
+                    return;
+                }
+
                 document.getElementById('refundDetails').innerHTML = `
-                <div class="bg-[#F9FAFB] px-4 py-3 rounded-xl border border-[#E5E7EB]">
-                    <p class="text-[10px] text-[#6B7280] mb-1">Nomor Refund</p>
-                    <p class="font-mono font-semibold text-[#DC2626]">${data.refund_number}</p>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <p class="text-[10px] text-[#6B7280] mb-1">Nomor Order</p>
-                        <p class="font-mono font-semibold text-[#111827]">${data.order_number}</p>
+                    <div class="bg-[#F9FAFB] px-4 py-3 rounded-xl border border-[#E5E7EB]">
+                        <p class="text-[10px] text-[#6B7280] mb-1">Nomor Refund</p>
+                        <p class="font-mono font-semibold text-[#DC2626]">${data.refund_number}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <p class="text-[10px] text-[#6B7280] mb-1">Nomor Order</p>
+                            <p class="font-mono font-semibold text-[#111827]">${data.order_number}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-[#6B7280] mb-1">Pembeli</p>
+                            <p class="font-semibold text-[#111827]">${data.user_name}</p>
+                        </div>
                     </div>
                     <div>
-                        <p class="text-[10px] text-[#6B7280] mb-1">Pembeli</p>
-                        <p class="font-semibold text-[#111827]">${data.user_name}</p>
+                        <p class="text-[10px] text-[#6B7280] mb-1">Rekening Tujuan</p>
+                        <p class="font-semibold text-[#111827]">${data.bank_name} - ${data.account_number}</p>
+                        <p class="text-[11px] text-[#6B7280]">a.n. ${data.account_holder}</p>
                     </div>
-                </div>
-                <div>
-                    <p class="text-[10px] text-[#6B7280] mb-1">Rekening Tujuan</p>
-                    <p class="font-semibold text-[#111827]">${data.bank_name} - ${data.account_number}</p>
-                    <p class="text-[11px] text-[#6B7280]">a.n. ${data.account_holder}</p>
-                </div>
-                <hr class="border-dashed border-[#E5E7EB]">
-                <div class="bg-gradient-to-br from-[#15803D] to-[#166534] px-4 py-4 rounded-xl text-white shadow-sm">
-                    <p class="text-[10px] text-white/80 mb-1">JUMLAH TRANSFER</p>
-                    <p class="text-[22px] font-bold">Rp ${data.refund_amount}</p>
-                    <p class="text-[10px] text-white/70 mt-1">Order: Rp ${data.order_amount} | Admin 5%: Rp ${data.admin_fee}</p>
-                </div>
-                ${data.cancellation_reason !== '-' ? `
-                <div class="bg-[#FEF3C7] p-3 rounded-lg border border-[#FCD34D]">
-                    <p class="text-[10px] font-semibold text-[#92400E] mb-1">Alasan Pembatalan:</p>
-                    <p class="text-[11px] text-[#92400E]">${data.cancellation_reason}</p>
-                </div>
-                ` : ''}
-            `;
+                    <hr class="border-dashed border-[#E5E7EB]">
+                    <div class="bg-gradient-to-br from-[#15803D] to-[#166534] px-4 py-4 rounded-xl text-white shadow-sm">
+                        <p class="text-[10px] text-white/80 mb-1">JUMLAH TRANSFER</p>
+                        <p class="text-[22px] font-bold">Rp ${data.refund_amount}</p>
+                        <p class="text-[10px] text-white/70 mt-1">Order: Rp ${data.order_amount} | Admin 5%: Rp ${data.admin_fee}</p>
+                    </div>
+                    ${data.cancellation_reason !== '-' ? `
+                    <div class="bg-[#FEF3C7] p-3 rounded-lg border border-[#FCD34D]">
+                        <p class="text-[10px] font-semibold text-[#92400E] mb-1">Alasan Pembatalan:</p>
+                        <p class="text-[11px] text-[#92400E]">${data.cancellation_reason}</p>
+                    </div>
+                    ` : ''}
+                `;
 
                 document.getElementById('processForm').action = `/admin/refunds/${refundId}/process`;
                 document.getElementById('processModal').classList.remove('hidden');
                 document.body.style.overflow = 'hidden';
+            })
+            .catch(() => {
+                alert('Gagal memuat detail refund. Silakan coba lagi.');
             });
     }
 
@@ -402,6 +480,7 @@
         document.getElementById('processModal').classList.add('hidden');
         document.getElementById('processForm').reset();
         document.getElementById('file_name').classList.add('hidden');
+        document.getElementById('refundDetails').innerHTML = '';
         document.body.style.overflow = 'auto';
     }
 
@@ -414,7 +493,7 @@
         }
     }
 
-    // Reject Modal
+    // ✅ Reject Modal — bisa dari tabel needs_bank_info maupun pending
     function openRejectModal(refundId, refundNumber) {
         document.getElementById('reject_refund_number').textContent = refundNumber;
         document.getElementById('rejectForm').action = `/admin/refunds/${refundId}/reject`;

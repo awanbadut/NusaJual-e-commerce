@@ -31,13 +31,13 @@ class Refund extends Model
     ];
 
     protected $casts = [
-        'order_amount' => 'decimal:2',
-        'admin_fee' => 'decimal:2',
+        'order_amount'  => 'decimal:2',
+        'admin_fee'     => 'decimal:2',
         'refund_amount' => 'decimal:2',
-        'requested_at' => 'datetime',
-        'approved_at' => 'datetime',
-        'processed_at' => 'datetime',
-        'rejected_at' => 'datetime',
+        'requested_at'  => 'datetime',
+        'approved_at'   => 'datetime',
+        'processed_at'  => 'datetime',
+        'rejected_at'   => 'datetime',
     ];
 
     // Relationships
@@ -62,6 +62,11 @@ class Refund extends Model
         return $this->status === 'pending';
     }
 
+    public function isNeedsBankInfo(): bool
+    {
+        return $this->status === 'needs_bank_info';
+    }
+
     public function isApproved(): bool
     {
         return $this->status === 'approved';
@@ -77,12 +82,20 @@ class Refund extends Model
         return $this->status === 'rejected';
     }
 
+    public function hasBankInfo(): bool
+    {
+        return !empty($this->bank_name)
+            && $this->bank_name !== '-'
+            && !empty($this->account_number)
+            && $this->account_number !== '-';
+    }
+
     /**
      * Calculate admin fee (5% dari total order)
      */
     public static function calculateAdminFee(float $orderAmount): float
     {
-        return $orderAmount * 0.05; // 5%
+        return $orderAmount * 0.05;
     }
 
     /**
@@ -90,8 +103,7 @@ class Refund extends Model
      */
     public static function calculateRefundAmount(float $orderAmount): float
     {
-        $adminFee = self::calculateAdminFee($orderAmount);
-        return $orderAmount - $adminFee;
+        return $orderAmount - self::calculateAdminFee($orderAmount);
     }
 
     /**

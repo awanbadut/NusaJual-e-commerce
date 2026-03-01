@@ -123,9 +123,12 @@ Route::middleware(['auth', 'buyer'])->group(function () {
     });
 
     // Orders
-    Route::get('/profile/orders', [BuyerProfileController::class, 'orders'])->name('profile.orders');
-    Route::post('/profile/orders/{id}/cancel', [BuyerProfileController::class, 'cancelOrder'])->name('profile.orders.cancel');
-    Route::post('/profile/orders/{id}/complete', [BuyerProfileController::class, 'completeOrder'])->name('profile.orders.complete');
+Route::get('/profile/orders', [BuyerProfileController::class, 'orders'])->name('profile.orders');
+Route::post('/profile/orders/{id}/cancel', [BuyerProfileController::class, 'cancelOrder'])->name('profile.orders.cancel');
+Route::post('/profile/orders/{id}/complete', [BuyerProfileController::class, 'completeOrder'])->name('profile.orders.complete');
+// ✅ Route baru: buyer isi rekening setelah seller cancel
+Route::post('/profile/orders/{id}/refund-bank', [BuyerProfileController::class, 'submitRefundBank'])->name('profile.orders.refund.bank');
+
 });
 
 
