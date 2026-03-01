@@ -13,116 +13,111 @@
 
     // Hitung total terjual
     if (is_object($item)) {
-        $totalSold = $item->orderItems()
-            ->whereHas('order', function($q) {
-                $q->where('status', 'completed');
-            })
-            ->sum('quantity');
+    $totalSold = $item->orderItems()
+    ->whereHas('order', function($q) {
+    $q->where('status', 'completed');
+    })
+    ->sum('quantity');
     } else {
-        $totalSold = $item['sold'] ?? 0;
+    $totalSold = $item['sold'] ?? 0;
     }
 
     if (is_object($item) && $item->primaryImage) {
-        $imgUrl = asset('storage/' . $item->primaryImage->image_path);
+    $imgUrl = asset('storage/' . $item->primaryImage->image_path);
     } else {
-        $imgUrl = 'https://placehold.co/400x300/brown/white?text=' . urlencode($cat);
+    $imgUrl = 'https://placehold.co/400x300/brown/white?text=' . urlencode($cat);
     }
     @endphp
 
-    <!-- Product Image -->
     <a href="{{ route('produk.show', $id) }}"
-        class="h-[178px] w-full bg-gray-100 overflow-hidden shrink-0 relative block">
+        class="w-full h-[120px] sm:h-[150px] md:h-[178px] bg-gray-100 overflow-hidden shrink-0 relative block">
         <img src="{{ $imgUrl }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-        
-        <!-- Badge Stock Warning -->
-        @if($stock <= 10 && $stock > 0)
-            <div class="absolute top-2 left-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+
+        @if($stock <= 10 && $stock> 0)
+            <div
+                class="absolute top-1.5 left-1.5 md:top-2 md:left-2 bg-yellow-500 text-white text-[8px] md:text-xs font-bold px-1.5 md:px-2 py-0.5 md:py-1 rounded-full shadow-md">
                 Stok Menipis
             </div>
-        @elseif($stock == 0)
-            <div class="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+            @elseif($stock == 0)
+            <div
+                class="absolute top-1.5 left-1.5 md:top-2 md:left-2 bg-red-600 text-white text-[8px] md:text-xs font-bold px-1.5 md:px-2 py-0.5 md:py-1 rounded-full shadow-md">
                 Habis
             </div>
-        @endif
+            @endif
     </a>
 
-    <div class="px-3 py-4 flex flex-col gap-2 flex-1">
+    <div class="p-2 md:px-3 md:py-4 flex flex-col gap-1 md:gap-2 flex-1">
 
-        <a href="{{ route('produk.show', $id) }}" class="flex flex-col gap-2 flex-1">
+        <a href="{{ route('produk.show', $id) }}" class="flex flex-col gap-1 md:gap-2 flex-1">
 
-            <!-- Category -->
             <div class="flex items-center">
-                <span class="text-sm font-medium text-gray-500">{{ $cat }}</span>
+                <span class="text-[9px] md:text-sm font-medium text-gray-500 line-clamp-1">{{ $cat }}</span>
             </div>
 
-            <!-- Product Name -->
-            <h3 class="text-xl font-bold text-[#2E3B27] leading-6 line-clamp-1 group-hover:text-[#0F4C20] transition">
+            <h3
+                class="text-[12px] md:text-xl font-bold text-[#2E3B27] leading-tight md:leading-6 line-clamp-2 md:line-clamp-1 group-hover:text-[#0F4C20] transition mb-1 md:mb-1.5">
                 {{ $name }}
             </h3>
 
-            <!-- Store Info -->
-            <div class="flex items-center justify-between w-full mb-1">
-                <span class="text-sm font-medium text-gray-500">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between w-full mb-0.5 md:mb-1">
+                <span class="text-[9px] md:text-sm font-medium text-gray-500 line-clamp-1">
                     {{ is_object($item) ? ($item->store->store_name ?? 'Mitra Jaya') : 'Mitra Jaya Makmur' }}
                 </span>
-                <div class="flex items-center gap-1 text-xs text-gray-400">
-                    <x-heroicon-s-map-pin class="w-4 h-4" />
-                    <span class="font-medium text-gray-500">
+                <div class="flex items-center gap-0.5 md:gap-1 text-[8px] md:text-xs text-gray-400 mt-0.5 md:mt-0">
+                    <x-heroicon-s-map-pin class="w-2.5 h-2.5 md:w-4 md:h-4 shrink-0" />
+                    <span class="font-medium text-gray-500 line-clamp-1">
                         {{ is_object($item) ? ($item->store->city ?? 'Indonesia') : 'Padang' }}
                     </span>
                 </div>
             </div>
 
-            <!-- Price -->
-            <div class="flex items-center gap-2.5 mt-auto">
+            <div class="flex items-center gap-2.5 mt-auto pt-1 md:pt-0">
                 <div class="flex items-baseline gap-[1px]">
-                    <span class="text-[#8B4513] font-bold text-base tracking-tight">
+                    <span class="text-[#8B4513] font-bold text-[13px] md:text-base tracking-tight">
                         Rp {{ number_format($price, 0, ',', '.') }}
                     </span>
-                    <span class="text-xs font-medium text-[#8B4513]">/{{ $unit }}</span>
+                    <span class="text-[8px] md:text-xs font-medium text-[#8B4513]">/{{ $unit }}</span>
                 </div>
             </div>
         </a>
 
-        <!-- Stock & Sold Info + Add to Cart -->
-        <div class="flex flex-col gap-2 mt-2 pt-2 border-t border-dashed border-gray-100">
-            
-            <!-- Stock & Sold Stats -->
-            <div class="flex items-center justify-between text-xs">
-                <!-- Stock Available -->
-                <div class="flex items-center gap-1 {{ $stock <= 10 ? 'text-yellow-600' : 'text-gray-600' }}">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+        <div class="flex flex-col gap-1.5 md:gap-2 mt-1 md:mt-2 pt-1.5 md:pt-2 border-t border-dashed border-gray-100">
+
+            <div class="flex items-center justify-between text-[9px] md:text-xs">
+                <div
+                    class="flex items-center gap-0.5 md:gap-1 {{ $stock <= 10 ? 'text-yellow-600' : 'text-gray-600' }}">
+                    <svg class="w-3 h-3 md:w-4 md:h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
                     </svg>
-                    <span class="font-semibold">{{ $stock > 0 ? number_format($stock, 0, ',', '.') : '0' }} {{ $unit }}</span>
+                    <span class="font-semibold">{{ $stock > 0 ? number_format($stock, 0, ',', '.') : '0' }} <span
+                            class="hidden sm:inline">{{ $unit }}</span></span>
                 </div>
 
-                <!-- Total Sold -->
-                <div class="flex items-center gap-1 text-green-600">
-                    <x-heroicon-s-shopping-bag class="w-4 h-4" />
-                    <span class="font-semibold">{{ number_format($totalSold, 0, ',', '.') }} terjual</span>
+                <div class="flex items-center gap-0.5 md:gap-1 text-green-600">
+                    <x-heroicon-s-shopping-bag class="w-3 h-3 md:w-4 md:h-4 shrink-0" />
+                    <span class="font-semibold">{{ number_format($totalSold, 0, ',', '.') }} <span
+                            class="hidden sm:inline">terjual</span></span>
                 </div>
             </div>
 
-            <!-- Add to Cart Button -->
             @if(is_object($item))
             <form action="{{ route('keranjang.store') }}" method="POST" class="w-full">
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $item->id }}">
                 <input type="hidden" name="qty" value="1">
 
-                <button type="submit"
-                    @disabled($stock == 0)
-                    class="w-full h-9 bg-[#104911] hover:bg-[#0b3a18] text-white text-sm font-bold rounded-lg flex items-center justify-center gap-2 transition shadow-sm disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400">
-                    <span>{{ $stock > 0 ? 'Tambah' : 'Stok Habis' }}</span>
-                    <x-heroicon-s-shopping-cart class="w-4 h-4" />
+                <button type="submit" @disabled($stock==0)
+                    class="w-full h-7 md:h-9 bg-[#104911] hover:bg-[#0b3a18] text-white text-[10px] md:text-sm font-bold rounded-lg flex items-center justify-center gap-1.5 md:gap-2 transition shadow-sm disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400">
+                    <span>{{ $stock > 0 ? 'Tambah' : 'Habis' }}</span>
+                    <x-heroicon-s-shopping-cart class="w-3 h-3 md:w-4 md:h-4 shrink-0" />
                 </button>
             </form>
             @else
             <div
-                class="w-full h-9 bg-[#104911] opacity-50 cursor-not-allowed text-white text-sm font-bold rounded-lg flex items-center justify-center gap-2">
+                class="w-full h-7 md:h-9 bg-[#104911] opacity-50 cursor-not-allowed text-white text-[10px] md:text-sm font-bold rounded-lg flex items-center justify-center gap-1.5 md:gap-2">
                 <span>Tambah</span>
-                <x-heroicon-s-shopping-cart class="w-4 h-4" />
+                <x-heroicon-s-shopping-cart class="w-3 h-3 md:w-4 md:h-4 shrink-0" />
             </div>
             @endif
         </div>

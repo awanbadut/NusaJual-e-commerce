@@ -8,39 +8,44 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('img/favicon.ico') }}">
     <script src="//unpkg.com/alpinejs" defer></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        /* Agar sticky bottom bar tidak menutupi footer saat di-scroll mentok */
+        body {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
 </head>
 
-<body class="bg-[#F8FCF8] font-sans antialiased text-gray-800">
+<body class="bg-[#F8FCF8] font-sans antialiased text-gray-800 relative">
 
     <x-navbar />
 
-    <!-- Breadcrumb -->
-    <div class="pt-24 pb-4 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div class="flex items-center gap-2 text-sm font-medium text-[#8B4513]">
+    <div class="pt-24 md:pt-24 pb-4 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="flex flex-wrap gap-2 text-xs md:text-sm font-medium text-[#8B4513]">
             <a href="{{ route('home') }}" class="hover:underline">Home</a>
-            <x-heroicon-s-chevron-right class="w-4 h-4 text-gray-400" />
+            <x-heroicon-s-chevron-right class="w-3 h-3 md:w-4 md:h-4 text-gray-400" />
             <a href="{{ route('katalog') }}" class="hover:underline">Katalog</a>
-            <x-heroicon-s-chevron-right class="w-4 h-4 text-gray-400" />
-            <a href="{{ route('katalog', ['category[]' => $product->category->name]) }}" class="hover:underline">
+            <x-heroicon-s-chevron-right class="w-3 h-3 md:w-4 md:h-4 text-gray-400" />
+            <a href="{{ route('katalog', ['category[]' => $product->category->name]) }}"
+                class="hover:underline line-clamp-1 max-w-[80px] md:max-w-none">
                 {{ $product->category->name }}
             </a>
-            <x-heroicon-s-chevron-right class="w-4 h-4 text-gray-400" />
-            <span class="text-[#0F4C20] font-bold truncate max-w-[150px]">{{ $product->name }}</span>
+            <x-heroicon-s-chevron-right class="w-3 h-3 md:w-4 md:h-4 text-gray-400" />
+            <span class="text-[#0F4C20] font-bold line-clamp-1 flex-1">{{ $product->name }}</span>
         </div>
     </div>
 
-    <!-- Hero Banner -->
-    <section class="px-4 sm:px-6 lg:px-8 mb-8">
+    <section class="px-4 sm:px-6 lg:px-8 mb-4 md:mb-8">
         <div class="max-w-7xl mx-auto">
             <div
-                class="relative w-full h-[180px] bg-[#F0EFE6] rounded-xl border border-[#496030] overflow-hidden flex flex-col items-center justify-center text-center p-6 shadow-sm">
+                class="relative w-full h-[100px] md:h-[180px] bg-[#F0EFE6] rounded-xl border border-[#496030] overflow-hidden flex flex-col items-center justify-center text-center p-4 md:p-6 shadow-sm">
                 <div class="absolute inset-0 opacity-10"
-                    style="background-image: url('{{ asset('img/pattern-kopi1.webp') }}'); background-size: 100%;">
+                    style="background-image: url('{{ asset('img/pattern-kopi1.webp') }}'); background-size: cover; background-position: center;">
                 </div>
-                <div class="relative z-10 flex flex-col gap-1">
-                    <h1 class="text-3xl md:text-4xl font-bold text-[#0F4C20]">Info Lengkap Produk</h1>
-                    <p class="text-base md:text-lg font-medium text-[#8B4513]">
-                        Semua yang perlu kamu tahu sebelum beli, kami jelasin di sini.
+                <div class="relative z-10 flex flex-col gap-0.5 md:gap-1">
+                    <h1 class="text-lg md:text-4xl font-bold text-[#0F4C20]">Info Lengkap Produk</h1>
+                    <p class="text-[10px] md:text-lg font-medium text-[#8B4513]">
+                        Semua yang perlu kamu tahu sebelum beli.
                     </p>
                 </div>
             </div>
@@ -48,190 +53,153 @@
     </section>
 
     @php
-    // Ambil semua gambar produk
     $gallery = $product->images->pluck('image_path')->map(fn($path) => asset('storage/'.$path))->toArray();
-
-    // Jika tidak ada gambar galeri, pakai gambar utama
     if(empty($gallery) && $product->primaryImage) {
-        $gallery[] = asset('storage/' . $product->primaryImage->image_path);
+    $gallery[] = asset('storage/' . $product->primaryImage->image_path);
     }
-
-    // Jika masih kosong, pakai placeholder
     if(empty($gallery)) {
-        $gallery[] = 'https://placehold.co/600x600/brown/white?text=' . urlencode($product->name);
+    $gallery[] = 'https://placehold.co/600x600/brown/white?text=' . urlencode($product->name);
     }
-
-    // Hitung total terjual
-    $totalSold = $product->orderItems()
-        ->whereHas('order', function($q) {
-            $q->where('status', 'completed');
-        })
-        ->sum('quantity');
+    $totalSold = $product->orderItems()->whereHas('order', function($q) { $q->where('status', 'completed');
+    })->sum('quantity');
     @endphp
 
-    <section class="pb-20 px-4 sm:px-6 lg:px-8" x-data="{ 
+    <section class="pb-16 md:pb-20 px-4 sm:px-6 lg:px-8" x-data="{ 
             images: {{ json_encode($gallery) }},
             active: 0,
             price: {{ $product->price }},
             qty: 1,
             maxStock: {{ $product->stock }},
-            get total() { 
-                return (this.price * this.qty).toLocaleString('id-ID'); 
-            },
-            next() { 
-                this.active = (this.active === this.images.length - 1) ? 0 : this.active + 1 
-            },
-            prev() { 
-                this.active = (this.active === 0) ? this.images.length - 1 : this.active - 1 
-            }
+            get total() { return (this.price * this.qty).toLocaleString('id-ID'); },
+            next() { this.active = (this.active === this.images.length - 1) ? 0 : this.active + 1 },
+            prev() { this.active = (this.active === 0) ? this.images.length - 1 : this.active - 1 }
         }">
 
-        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-12">
 
-            <!-- Left: Product Images -->
-            <div class="lg:col-span-7 flex flex-col gap-6">
+            <div class="lg:col-span-7 flex flex-col gap-4 md:gap-6">
 
-                <div class="flex flex-col-reverse md:flex-row gap-4 h-auto">
+                <div class="flex flex-col md:flex-row gap-3 md:gap-4 h-auto">
 
-                    <!-- Thumbnail Gallery -->
-                    <div
-                        class="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto no-scrollbar shrink-0 justify-center md:justify-start max-h-[500px]">
-                        <template x-for="(img, index) in images" :key="index">
-                            <button @click="active = index"
-                                class="w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden border-2 transition shrink-0"
-                                :class="active === index ? 'border-[#0F4C20] opacity-100' : 'border-transparent opacity-60 hover:opacity-100'">
-                                <img :src="img" class="w-full h-full object-cover">
-                            </button>
-                        </template>
-                    </div>
-
-                    <!-- Main Image -->
-                    <div class="flex-1 flex flex-col gap-4">
+                    <div class="flex-1 flex flex-col gap-4 order-1 md:order-2">
                         <div
                             class="relative w-full aspect-square md:aspect-auto md:h-[500px] bg-gray-100 rounded-xl overflow-hidden shadow-sm border border-gray-200 group">
-
                             <img :src="images[active]" class="w-full h-full object-cover transition-all duration-300">
 
-                            <!-- Previous Button -->
                             <button x-show="images.length > 1" @click="prev()"
-                                class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-[#0F4C20] p-2 rounded-full shadow-lg transition transform hover:scale-110 active:scale-95 opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10">
-                                <x-heroicon-s-chevron-left class="w-6 h-6" />
+                                class="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-[#0F4C20] p-1.5 md:p-2 rounded-full shadow-lg transition transform hover:scale-110 active:scale-95 opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10">
+                                <x-heroicon-s-chevron-left class="w-5 h-5 md:w-6 md:h-6" />
                             </button>
-
-                            <!-- Next Button -->
                             <button x-show="images.length > 1" @click="next()"
-                                class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-[#0F4C20] p-2 rounded-full shadow-lg transition transform hover:scale-110 active:scale-95 opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10">
-                                <x-heroicon-s-chevron-right class="w-6 h-6" />
+                                class="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-[#0F4C20] p-1.5 md:p-2 rounded-full shadow-lg transition transform hover:scale-110 active:scale-95 opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10">
+                                <x-heroicon-s-chevron-right class="w-5 h-5 md:w-6 md:h-6" />
                             </button>
 
-                            <!-- Dots Indicator -->
                             <div x-show="images.length > 1"
-                                class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
+                                class="absolute bottom-3 left-0 right-0 flex md:hidden justify-center gap-1.5 z-10">
                                 <template x-for="(img, index) in images" :key="index">
                                     <button @click="active = index"
-                                        class="h-2.5 rounded-full transition-all duration-300 shadow-sm"
-                                        :class="active === index ? 'bg-[#0F4C20] w-8' : 'bg-white/70 hover:bg-white w-2.5'">
+                                        class="h-1.5 rounded-full transition-all duration-300 shadow-sm"
+                                        :class="active === index ? 'bg-[#0F4C20] w-5' : 'bg-white/70 w-1.5'">
                                     </button>
                                 </template>
                             </div>
                         </div>
                     </div>
+
+                    <div
+                        class="flex md:flex-col gap-2 md:gap-3 overflow-x-auto md:overflow-y-auto no-scrollbar shrink-0 justify-start md:max-h-[500px] order-2 md:order-1">
+                        <template x-for="(img, index) in images" :key="index">
+                            <button @click="active = index"
+                                class="w-14 h-14 md:w-20 md:h-20 rounded-lg overflow-hidden border-2 transition shrink-0"
+                                :class="active === index ? 'border-[#0F4C20] opacity-100' : 'border-transparent opacity-60 hover:opacity-100'">
+                                <img :src="img" class="w-full h-full object-cover">
+                            </button>
+                        </template>
+                    </div>
                 </div>
 
-                <!-- Store Info Card -->
-                <div class="bg-[#F0F2EE] rounded-xl p-4 flex items-center justify-between border border-[#CCD5C5]">
-                    <div class="flex items-center gap-4">
+                <div
+                    class="bg-[#F0F2EE] rounded-xl p-3 md:p-4 flex flex-row items-center justify-between border border-[#CCD5C5]">
+                    <div class="flex items-center gap-3">
                         <img src="{{ $product->store->logo ? asset('storage/'.$product->store->logo) : 'https://placehold.co/100x100/green/white?text='.substr($product->store->store_name, 0, 1) }}"
-                            class="w-14 h-14 rounded-full border-2 border-white shadow-sm object-cover">
-                        <div>
-                            <h4 class="text-lg font-bold text-[#2E3B27]">{{ $product->store->store_name }}</h4>
-                            <div class="flex items-center gap-1 text-sm text-gray-600">
-                                <x-heroicon-s-map-pin class="w-4 h-4 text-gray-500" />
-                                <span>{{ $product->store->city ?? 'Indonesia' }}</span>
+                            class="w-10 h-10 md:w-14 md:h-14 rounded-full border-2 border-white shadow-sm object-cover shrink-0">
+                        <div class="flex flex-col">
+                            <h4 class="text-sm md:text-lg font-bold text-[#2E3B27] line-clamp-1">{{
+                                $product->store->store_name }}</h4>
+                            <div class="flex items-center gap-1 text-[10px] md:text-sm text-gray-600 mt-0.5">
+                                <x-heroicon-s-map-pin class="w-3 h-3 md:w-4 md:h-4 text-gray-500 shrink-0" />
+                                <span class="line-clamp-1">{{ $product->store->city ?? 'Indonesia' }}</span>
                             </div>
                         </div>
                     </div>
                     <a href="{{ route('profil-mitra', $product->store->id) }}"
-                        class="bg-white hover:bg-gray-50 text-[#0F4C20] border border-[#0F4C20] font-bold py-2 px-4 rounded-lg text-sm flex items-center gap-2 transition">
-                        Lihat Mitra
-                        <x-heroicon-s-arrow-right class="w-4 h-4" />
+                        class="bg-white hover:bg-gray-50 text-[#0F4C20] border border-[#0F4C20] font-bold py-1.5 md:py-2 px-3 md:px-4 rounded-lg text-[10px] md:text-sm flex items-center gap-1 md:gap-2 transition shrink-0">
+                        <span class="hidden sm:inline">Lihat Mitra</span>
+                        <span class="sm:hidden">Kunjungi</span>
+                        <x-heroicon-s-arrow-right class="w-3 h-3 md:w-4 md:h-4" />
                     </a>
                 </div>
 
             </div>
 
-            <!-- Right: Product Info -->
-            <div class="lg:col-span-5 flex flex-col gap-6">
+            <div class="lg:col-span-5 flex flex-col gap-5 md:gap-6">
 
-                <!-- Product Header -->
-                <div class="space-y-4 border-b border-gray-200 pb-6">
-                    <span class="inline-block px-3 py-1 bg-[#0F4C20] text-white text-xs font-bold rounded-full">
+                <div class="space-y-2 md:space-y-4 border-b border-gray-200 pb-4 md:pb-6">
+                    <span
+                        class="inline-block px-2.5 py-1 bg-[#0F4C20] text-white text-[10px] md:text-xs font-bold rounded-full">
                         {{ $product->category->name }}
                     </span>
 
-                    <h1 class="text-3xl md:text-4xl font-bold text-[#2E3B27] leading-tight">
+                    <h1 class="text-xl md:text-4xl font-bold text-[#2E3B27] leading-snug md:leading-tight">
                         {{ $product->name }}
                     </h1>
 
-                    <!-- Stats: Stock & Sold -->
-                    <div class="flex items-center gap-6 text-sm">
-                        <!-- Stock -->
-                        <div class="flex items-center gap-1.5 {{ $product->stock <= 10 ? 'text-yellow-600' : 'text-gray-600' }} font-medium">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
-                            </svg>
+                    <div class="flex items-center gap-4 md:gap-6 text-xs md:text-sm mt-1">
+                        <div
+                            class="flex items-center gap-1 {{ $product->stock <= 10 ? 'text-yellow-600' : 'text-gray-600' }} font-medium">
+                            <x-heroicon-o-archive-box class="w-4 h-4 md:w-5 md:h-5 shrink-0" />
                             <span class="font-semibold">{{ $product->stock }} {{ $product->unit }}</span>
                         </div>
-
-                        <!-- Sold -->
-                        <div class="flex items-center gap-1.5 text-green-600 font-medium">
-                            <x-heroicon-s-shopping-bag class="w-5 h-5" />
+                        <div class="flex items-center gap-1 text-green-600 font-medium">
+                            <x-heroicon-s-shopping-bag class="w-4 h-4 md:w-5 md:h-5 shrink-0" />
                             <span class="font-semibold">{{ $totalSold }} Terjual</span>
                         </div>
                     </div>
 
-                    <!-- Price -->
-                    <div class="flex items-baseline gap-1">
-                        <span class="text-3xl font-bold text-[#8B4513]">
+                    <div class="flex items-baseline gap-1 mt-2">
+                        <span class="text-2xl md:text-3xl font-bold text-[#8B4513]">
                             Rp {{ number_format($product->price, 0, ',', '.') }}
                         </span>
-                        <span class="text-lg text-gray-500 font-medium">/{{ $product->unit }}</span>
+                        <span class="text-xs md:text-lg text-gray-500 font-medium">/{{ $product->unit }}</span>
                     </div>
                 </div>
 
-                <!-- Description -->
-                <div class="space-y-2">
-                    <h3 class="text-lg font-bold text-gray-800">Deskripsi :</h3>
-                    <p class="text-gray-600 leading-relaxed text-sm md:text-base whitespace-pre-line">
+                <div class="space-y-1.5 md:space-y-2 pb-24 md:pb-0">
+                    <h3 class="text-sm md:text-lg font-bold text-gray-800">Deskripsi:</h3>
+                    <p class="text-gray-600 leading-relaxed text-xs md:text-base whitespace-pre-line">
                         {{ $product->description }}
                     </p>
                 </div>
 
-                <!-- Add to Cart Section -->
                 <div
-                    class="bg-white rounded-xl shadow-[0px_4px_10px_rgba(0,0,0,0.05)] border border-gray-100 p-5 space-y-5 sticky top-28">
-
+                    class="hidden md:block bg-white rounded-xl shadow-[0px_4px_10px_rgba(0,0,0,0.05)] border border-gray-100 p-5 space-y-5 sticky top-28">
                     <div class="flex justify-between items-center text-sm">
                         <span class="font-bold text-gray-600">Persediaan:</span>
                         <span class="font-bold text-[#0F4C20]">{{ $product->stock }} {{ $product->unit }}</span>
                     </div>
-
                     <hr class="border-dashed border-gray-200">
-
                     <div class="flex flex-col gap-4">
                         <div class="flex justify-between items-center">
                             <span class="text-sm font-bold text-gray-500">Total Harga:</span>
                             <span class="text-xl font-bold text-[#8B4513]">Rp <span x-text="total"></span></span>
                         </div>
 
-                        <!-- ✅ FORM SIMPLE (TANPA LOADING RIBET) -->
                         <form action="{{ route('keranjang.store') }}" method="POST" class="w-full">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                             <input type="hidden" name="qty" :value="qty">
-
                             <div class="flex gap-4">
-                                <!-- Quantity Counter -->
                                 <div
                                     class="flex items-center border-2 border-[#0F4C20] rounded-lg h-12 w-32 justify-between px-2 shrink-0">
                                     <button type="button" @click="if(qty > 1) qty--"
@@ -244,12 +212,11 @@
                                         <x-heroicon-s-plus class="w-5 h-5" />
                                     </button>
                                 </div>
-
-                                <!-- Add to Cart Button (SIMPLE) -->
-                                <button type="submit"
-                                    @disabled($product->stock == 0)
-                                    class="flex-1 bg-[#0F4C20] hover:bg-[#0b3a18] disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold rounded-lg h-12 flex items-center justify-center gap-2 transition-all duration-300 shadow-md active:scale-95">
-                                    <span>{{ $product->stock > 0 ? 'Tambah Keranjang' : 'Stok Habis' }}</span>
+                                <button type="submit" @disabled($product->stock == 0) class="flex-1 bg-[#0F4C20]
+                                    hover:bg-[#0b3a18] disabled:bg-gray-400 disabled:cursor-not-allowed text-white
+                                    font-bold rounded-lg h-12 flex items-center justify-center gap-2 transition-all
+                                    shadow-md active:scale-95">
+                                    <span>{{ $product->stock > 0 ? 'Tambah Keranjang' : 'Habis' }}</span>
                                     <x-heroicon-s-shopping-cart class="w-5 h-5" />
                                 </button>
                             </div>
@@ -258,28 +225,63 @@
                 </div>
 
             </div>
-
         </div>
+
+        <div
+            class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 flex flex-col gap-2 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <form action="{{ route('keranjang.store') }}" method="POST" class="w-full">
+                @csrf
+                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                <input type="hidden" name="qty" :value="qty">
+
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex flex-col flex-1">
+                        <span class="text-[10px] text-gray-500 font-medium leading-none">Total</span>
+                        <span class="text-sm font-extrabold text-[#8B4513] leading-tight mt-0.5">Rp <span
+                                x-text="total"></span></span>
+                    </div>
+
+                    <div
+                        class="flex items-center border border-[#0F4C20] rounded-lg h-9 w-[90px] justify-between px-1 shrink-0 bg-[#F8FCF8]">
+                        <button type="button" @click="if(qty > 1) qty--" class="text-[#0F4C20] p-1 active:scale-90">
+                            <x-heroicon-s-minus class="w-3.5 h-3.5" />
+                        </button>
+                        <span class="font-bold text-xs text-gray-800" x-text="qty"></span>
+                        <button type="button" @click="if(qty < maxStock) qty++"
+                            class="text-[#0F4C20] p-1 active:scale-90">
+                            <x-heroicon-s-plus class="w-3.5 h-3.5" />
+                        </button>
+                    </div>
+
+                    <button type="submit" @disabled($product->stock == 0) class="bg-[#0F4C20] active:bg-[#0b3a18]
+                        disabled:bg-gray-400 text-white font-bold rounded-lg h-9 px-4 flex items-center justify-center
+                        gap-1.5 shrink-0 transition-transform active:scale-95">
+                        <span class="text-xs">{{ $product->stock > 0 ? '+ Keranjang' : 'Habis' }}</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
     </section>
 
-    <!-- Related Products -->
-    <section class="py-12 bg-[#F8FCF8] border-t border-gray-200">
+    <section class="py-10 md:py-12 bg-[#F8FCF8] border-t border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-10">
-                <h2 class="text-2xl md:text-3xl font-extrabold text-[#0F4C20]">Rekomendasi Untukmu</h2>
-                <p class="text-[#8B4513] font-medium mt-1">Lihat Produk yang Serupa di Sini</p>
+            <div class="text-center mb-6 md:mb-10">
+                <h2 class="text-xl md:text-3xl font-extrabold text-[#0F4C20]">Rekomendasi Untukmu</h2>
+                <p class="text-[#8B4513] font-medium text-xs md:text-base mt-0.5 md:mt-1">Lihat Produk Serupa</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
                 @forelse($relatedProducts as $related)
                 <x-ui.product-card :item="$related" />
                 @empty
                 <div class="col-span-full flex flex-col items-center justify-center py-10 text-center">
                     <div class="bg-gray-100 p-4 rounded-full mb-3">
-                        <x-heroicon-o-cube class="w-8 h-8 text-gray-400" />
+                        <x-heroicon-o-cube class="w-6 h-6 md:w-8 md:h-8 text-gray-400" />
                     </div>
-                    <p class="text-gray-500 font-medium">Belum ada produk serupa di kategori ini.</p>
-                    <a href="{{ route('katalog') }}" class="text-[#0F4C20] text-sm font-bold hover:underline mt-1">
+                    <p class="text-gray-500 font-medium text-xs md:text-sm">Belum ada produk serupa di kategori ini.</p>
+                    <a href="{{ route('katalog') }}"
+                        class="text-[#0F4C20] text-xs md:text-sm font-bold hover:underline mt-1">
                         Cari produk lain di Katalog
                     </a>
                 </div>
