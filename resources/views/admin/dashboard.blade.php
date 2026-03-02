@@ -7,10 +7,10 @@
 @endpush
 
 @section('content')
-<div class="container mx-auto px-2 sm:px-6 py-4 sm:py-8 space-y-4 md:space-y-8">
+<div class="container mx-auto space-y-4 md:space-y-8">
 
     <div class="mb-2 md:mb-8">
-        <h1 class="text-xl md:text-[28px] font-black text-[#15803D] mb-0.5 md:mb-1 tracking-tight">Dashboard</h1>
+        <h1 class="text-xl md:text-[28px] font-bold text-[#15803D] mb-0.5 md:mb-1 tracking-tight">Dashboard</h1>
         <p class="text-[10px] md:text-[13px] text-[#78716C] font-medium">Pantau Pendapatan dan Progress Nusa Belanja</p>
     </div>
 

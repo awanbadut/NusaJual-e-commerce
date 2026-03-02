@@ -3,7 +3,7 @@
 @section('title', 'Manajemen Refund - Nusa Belanja Admin')
 
 @section('content')
-<div class="container mx-auto px-2 sm:px-4 py-4 md:py-6 space-y-4 md:space-y-6">
+<div class="container mx-auto space-y-4 md:space-y-6">
 
     {{-- Header --}}
     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-2 md:mb-6">
