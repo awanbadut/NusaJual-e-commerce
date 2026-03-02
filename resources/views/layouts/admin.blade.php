@@ -42,7 +42,7 @@
 
                     <div class="flex items-center justify-center">
                         <img src="{{ asset('img/logo/3.jpeg') }}" alt="Icon Nusa Belanja"
-                            class="h-10 w-auto object-contain">
+                            class="h-5 sm:h-7 md:h-8 w-auto object-contain">
                     </div>
                 </div>
 

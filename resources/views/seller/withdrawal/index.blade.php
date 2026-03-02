@@ -228,10 +228,12 @@
                         <p class="text-[10px] text-gray-400 mt-1">{{ $withdrawal->bankAccount->account_number }}</p>
                     </td>
                     <td class="px-4 py-3 md:px-5 md:py-4 text-right">
-                        <p class="font-black text-gray-900">Rp{{ number_format($withdrawal->amount, 0, ',', '.') }}</p>
+                        <p class="text-xs md:text-sm font-black text-[#0F4C20]">Rp{{ number_format($withdrawal->amount,
+                            0, ',', '.') }}</p>
                         <p class="text-[9px] text-red-500">Admin Fee: Rp{{ number_format($withdrawal->admin_fee, 0, ',',
                             '.') }}</p>
                     </td>
+
                     <td class="px-4 py-3 md:px-5 md:py-4 text-center">
                         @php
                         $wStatus = $withdrawal->status;

@@ -5,7 +5,7 @@
 @section('page-subtitle', '')
 
 @section('content')
-<div class="max-w-7xl px-2 sm:px-0">
+<div>
     <div class="mb-4 md:mb-6 flex items-center gap-3 md:gap-4">
         <a href="{{ route('seller.customers.index') }}"
             class="text-gray-400 hover:text-gray-900 transition p-1 bg-white rounded-lg border border-gray-100 shadow-sm">

@@ -31,7 +31,7 @@
                 <div class="p-1.5 bg-orange-50 rounded-lg text-orange-600">
                     <x-heroicon-o-clock class="w-4 h-4 md:w-5 md:h-5" />
                 </div>
-                <span class="text-[9px] md:text-xs font-bold text-gray-400 uppercase tracking-wider">Pending</span>
+                <span class="text-[9px] md:text-xs font-semibold text-gray-400 uppercase tracking-wider">Pending</span>
             </div>
             <p class="text-xl md:text-2xl font-black text-gray-900 leading-none">{{ $stats['pending'] }}</p>
             <p class="text-[9px] md:text-xs text-gray-400 mt-1 truncate">Menunggu bayar</p>
@@ -42,7 +42,7 @@
                 <div class="p-1.5 bg-yellow-50 rounded-lg text-yellow-600">
                     <x-heroicon-o-arrow-path class="w-4 h-4 md:w-5 md:h-5" />
                 </div>
-                <span class="text-[9px] md:text-xs font-bold text-gray-400 uppercase tracking-wider">Proses</span>
+                <span class="text-[9px] md:text-xs font-semibold text-gray-400 uppercase tracking-wider">Proses</span>
             </div>
             <p class="text-xl md:text-2xl font-black text-gray-900 leading-none">{{ $stats['processing'] }}</p>
             <p class="text-[9px] md:text-xs text-gray-400 mt-1 truncate">Sedang dikemas</p>
@@ -53,7 +53,7 @@
                 <div class="p-1.5 bg-purple-50 rounded-lg text-purple-600">
                     <x-heroicon-o-truck class="w-4 h-4 md:w-5 md:h-5" />
                 </div>
-                <span class="text-[9px] md:text-xs font-bold text-gray-400 uppercase tracking-wider">Shipped</span>
+                <span class="text-[9px] md:text-xs font-semibold text-gray-400 uppercase tracking-wider">Shipped</span>
             </div>
             <p class="text-xl md:text-2xl font-black text-gray-900 leading-none">{{ $stats['shipped'] }}</p>
             <p class="text-[9px] md:text-xs text-gray-400 mt-1 truncate">Dalam kurir</p>

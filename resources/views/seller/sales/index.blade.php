@@ -65,7 +65,8 @@
                     <div class="p-1.5 bg-green-50 rounded-lg text-green-600">
                         <x-heroicon-o-shopping-bag class="w-4 h-4 md:w-5 md:h-5" />
                     </div>
-                    <span class="text-[9px] md:text-xs font-bold text-gray-400 uppercase tracking-tight">Pesanan</span>
+                    <span
+                        class="text-[9px] md:text-xs font-semiboldr text-gray-400 uppercase tracking-tight">Pesanan</span>
                 </div>
                 <span class="text-[9px] font-bold {{ $ordersChange >= 0 ? 'text-green-600' : 'text-red-600' }}">
                     {{ $ordersChange >= 0 ? '+' : '' }}{{ number_format($ordersChange, 1) }}%
@@ -80,7 +81,8 @@
                     <div class="p-1.5 bg-yellow-50 rounded-lg text-yellow-600">
                         <x-heroicon-o-chart-bar class="w-4 h-4 md:w-5 md:h-5" />
                     </div>
-                    <span class="text-[9px] md:text-xs font-bold text-gray-400 uppercase tracking-tight">Average</span>
+                    <span
+                        class="text-[9px] md:text-xs font-semibold text-gray-400 uppercase tracking-tight">Average</span>
                 </div>
             </div>
             <p class="text-base md:text-xl font-black text-gray-900 mt-2 truncate">Rp{{ number_format($avgOrderValue, 0,
@@ -93,7 +95,7 @@
                     <div class="p-1.5 bg-blue-50 rounded-lg text-blue-600">
                         <x-heroicon-o-currency-dollar class="w-4 h-4 md:w-5 md:h-5" />
                     </div>
-                    <span class="text-[9px] md:text-xs font-bold text-gray-400 uppercase tracking-tight">Total
+                    <span class="text-[9px] md:text-xs fonto-semibold text-gray-400 uppercase tracking-tight">Total
                         Pendapatan</span>
                 </div>
                 <span class="text-[9px] font-bold {{ $revenueChange >= 0 ? 'text-green-600' : 'text-red-600' }}">

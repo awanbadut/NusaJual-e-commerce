@@ -5,7 +5,7 @@
             <div class="flex items-center">
                 <div class="flex items-center">
                     <img src="{{ asset('img/logo/3.jpeg') }}" alt="Nusa Belanja"
-                        class="h-8 md:h-12 w-auto object-contain" loading="eager">
+                        class="h-5 md:h-9 w-auto object-contain" loading="eager">
                 </div>
             </div>
 
