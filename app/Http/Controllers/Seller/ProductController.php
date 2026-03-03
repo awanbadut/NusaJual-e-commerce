@@ -176,7 +176,7 @@ class ProductController extends Controller
                     ProductImage::create([
                         'product_id' => $product->id,
                         'image_path' => $path,
-                        'is_primary' => false,
+                        'is_primary' => true,
                     ]);
                 }
             }

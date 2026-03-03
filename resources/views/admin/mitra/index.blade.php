@@ -3,7 +3,7 @@
 @section('title', 'Daftar Mitra - Admin Nusa Belanja')
 
 @section('content')
-<div class="container ">
+<div class="container gap-3 md:gap-5 flex flex-col">
     <div class="mb-2 md:mb-6">
         <h1 class="text-lg md:text-[28px] font-bold text-[#15803D] mb-0.5 md:mb-1 tracking-tight">Daftar Mitra</h1>
         <p class="text-[10px] md:text-[13px] text-[#78716C] font-medium">Pantau performa semua mitra kamu di sini</p>

@@ -180,44 +180,60 @@
                                                 x-text="'Sisa: ' + item.stock"></span>
                                         </div>
 
-                                        <div class="hidden sm:flex flex-col items-end shrink-0 ml-4">
-                                            <span class="text-sm font-bold text-[#0F4C20]"
-                                                x-text="formatRupiah(item.price * item.qty)"></span>
-                                        </div>
+
                                     </div>
 
-                                    <div
-                                        class="flex items-center justify-between mt-1 md:mt-3 border-t border-dashed border-gray-100 pt-2 md:pt-0 md:border-0 sm:justify-end sm:w-full">
+                                    <div class="flex flex-col items-end gap-1.5 sm:flex-row sm:items-center sm:gap-6">
 
-                                        <button @click="deleteItem(item.id)"
-                                            class="flex items-center gap-1 text-[10px] md:text-xs font-bold text-gray-400 hover:text-red-500 transition p-1">
-                                            <x-heroicon-o-trash class="w-4 h-4" />
-                                            <span>Hapus</span>
-                                        </button>
 
-                                        <div class="flex items-center gap-3">
-                                            <span class="text-xs text-gray-500 hidden md:block"
-                                                x-text="'(Stok: ' + item.stock + ')'"></span>
 
-                                            <div
-                                                class="flex items-center border border-gray-300 rounded-md md:rounded-lg h-7 md:h-9 bg-white">
-                                                <button @click="updateQty(item.id, item.qty - 1, mIndex, iIndex)"
-                                                    class="px-2 md:px-3 text-gray-500 hover:text-[#0F4C20] h-full rounded-l-md transition disabled:opacity-50"
-                                                    :disabled="item.qty <= 1">
-                                                    <x-heroicon-s-minus class="w-3 h-3 md:w-4 md:h-4" />
-                                                </button>
+                                        {{-- Wrapper Kanan: Harga (Atas) & Quantity (Bawah) --}}
+                                        <div class="flex flex-col items-end gap-1.5">
 
-                                                <input type="text"
-                                                    class="w-8 md:w-12 text-center text-[11px] md:text-sm font-bold text-gray-700 border-none focus:ring-0 p-0 bg-transparent"
-                                                    x-model="item.qty" readonly>
+                                            {{-- Harga (Dipindah ke sini agar di atas box) --}}
+                                            <span class="text-sm md:text-base font-bold text-[#0F4C20]"
+                                                x-text="formatRupiah(item.price * item.qty)">
+                                            </span>
 
-                                                <button @click="updateQty(item.id, item.qty + 1, mIndex, iIndex)"
-                                                    class="px-2 md:px-3 text-gray-500 hover:text-[#0F4C20] h-full rounded-r-md transition disabled:opacity-50"
-                                                    :disabled="item.qty >= item.stock">
-                                                    <x-heroicon-s-plus class="w-3 h-3 md:w-4 md:h-4" />
-                                                </button>
+                                            {{-- Baris Quantity & Stok --}}
+                                            <div class="flex items-center gap-3">
+                                                {{-- Tombol Hapus (Tetap di kiri atau sejajar) --}}
+                                                <div class="flex items-center gap-2"> {{-- Gunakan gap-2 agar ada
+                                                    sedikit spasi yang rapi --}}
+
+                                                    <button @click="deleteItem(item.id)"
+                                                        class="flex items-center gap-1 text-[10px] md:text-xs font-bold text-gray-400 hover:text-red-500 transition">
+                                                        {{-- HAPUS: mr-auto dan sm:mr-4 dari class di atas --}}
+                                                        <x-heroicon-o-trash class="w-4 h-4" />
+                                                        <span class="hidden sm:inline">Hapus</span>
+                                                    </button>
+
+                                                    <span class="text-xs text-gray-500 hidden md:block"
+                                                        x-text="'(Stok: ' + item.stock + ')'"></span>
+
+                                                </div>
+
+                                                <div
+                                                    class="flex items-center border border-gray-300 rounded-md md:rounded-lg h-7 md:h-9 bg-white">
+                                                    <button @click="updateQty(item.id, item.qty - 1, mIndex, iIndex)"
+                                                        class="px-2 md:px-3 text-gray-500 hover:text-[#0F4C20] h-full rounded-l-md transition disabled:opacity-50"
+                                                        :disabled="item.qty <= 1">
+                                                        <x-heroicon-s-minus class="w-3 h-3 md:w-4 md:h-4" />
+                                                    </button>
+
+                                                    <input type="text"
+                                                        class="w-8 md:w-12 text-center text-[11px] md:text-sm font-bold text-gray-700 border-none focus:ring-0 p-0 bg-transparent"
+                                                        x-model="item.qty" readonly>
+
+                                                    <button @click="updateQty(item.id, item.qty + 1, mIndex, iIndex)"
+                                                        class="px-2 md:px-3 text-gray-500 hover:text-[#0F4C20] h-full rounded-r-md transition disabled:opacity-50"
+                                                        :disabled="item.qty >= item.stock">
+                                                        <x-heroicon-s-plus class="w-3 h-3 md:w-4 md:h-4" />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
+
                                     </div>
 
                                 </div>
