@@ -137,7 +137,7 @@
                             </span>
                         </div>
                         @endif
-                    </div>
+                   </div>
                 </div>
 
                 <div
@@ -715,8 +715,6 @@
                                         </div>
                                     </div>
                                 @endif
-
-
                                     <div class="flex flex-col-reverse sm:flex-row gap-2 md:gap-3">
                                         <button type="button" @click="showModal = false"
                                             class="w-full py-2 border border-gray-300 rounded-lg text-gray-700 font-bold text-xs md:text-sm hover:bg-gray-50 transition">Batal</button>

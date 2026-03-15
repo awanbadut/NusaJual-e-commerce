@@ -151,7 +151,7 @@ class SellerAuthController extends Controller
             DB::rollBack();
 
             // Uncomment baris ini jika ingin melihat detail error di layar saat testing
-            // dd($e->getMessage()); 
+            //dd($e->getMessage()); 
 
             return back()->withErrors([
                 'error' => 'Terjadi kesalahan sistem. Silakan coba lagi.',
