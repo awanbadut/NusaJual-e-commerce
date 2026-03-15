@@ -684,37 +684,72 @@
                                     </div>
 
                                     @if($needsRefund)
-                                    <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg space-y-3">
-                                        <p class="text-10px md:text-xs font-semibold text-yellow-800">
-                                            ⚠️ Pesanan sudah dibayar. Isi data rekening untuk proses refund (dipotong biaya admin 5%).
-                                        </p>
-                                        <div>
-                                            <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Bank <span class="text-red-500">*</span></label>
-                                            <select name="bank_name" required class="w-full px-2.5 py-2 border border-gray-300 rounded-lg text-xs focus:ring-yellow-500">
-                                                <option value="">-- Pilih Bank --</option>
-                                                <option value="BCA">BCA</option>
-                                                <option value="Mandiri">Mandiri</option>
-                                                <option value="BNI">BNI</option>
-                                                <option value="BRI">BRI</option>
-                                                <option value="BSI">BSI</option>
-                                                <option value="CIMB Niaga">CIMB Niaga</option>
-                                                <option value="GoPay">GoPay</option>
-                                                <option value="OVO">OVO</option>
-                                                <option value="Dana">Dana</option>
-                                            </select>
+                                    <div class="mb-4 space-y-3">
+                                        {{-- Alert Info --}}
+                                        <div class="p-3 bg-orange-50 border border-orange-200 rounded-lg flex items-start gap-2">
+                                            <svg class="w-4 h-4 text-orange-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <div>
+                                                <p class="text-xs font-bold text-orange-800">Pengembalian Dana</p>
+                                                <p class="text-10px text-orange-700 mt-0.5">Pesanan sudah dibayar. Dana akan dikembalikan setelah dikurangi biaya admin.</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <label class="block text-xs font-semibold text-gray-700 mb-1">Nomor Rekening <span class="text-red-500">*</span></label>
-                                            <input type="text" name="account_number" required placeholder="Contoh: 1234567890"
-                                                class="w-full px-2.5 py-2 border border-gray-300 rounded-lg text-xs focus:ring-yellow-500">
+
+                                        {{-- Ringkasan Harga --}}
+                                        <div class="p-3 bg-white border border-gray-200 rounded-lg space-y-1.5 text-xs">
+                                            <div class="flex justify-between text-gray-600">
+                                                <span>Total Pesanan</span>
+                                                <span class="font-semibold text-gray-800">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                                            </div>
+                                            <div class="flex justify-between text-gray-600">
+                                                <span>Biaya Admin (5%)</span>
+                                                <span class="font-semibold text-red-500">- Rp {{ number_format($order->total_amount * 0.05, 0, ',', '.') }}</span>
+                                            </div>
+                                            <hr class="border-gray-100">
+                                            <div class="flex justify-between">
+                                                <span class="font-bold text-gray-800">Dana Dikembalikan</span>
+                                                <span class="font-bold text-green-600">Rp {{ number_format($order->total_amount * 0.95, 0, ',', '.') }}</span>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Pemilik Rekening <span class="text-red-500">*</span></label>
-                                            <input type="text" name="account_holder" required value="{{ Auth::user()->name }}"
-                                                class="w-full px-2.5 py-2 border border-gray-300 rounded-lg text-xs focus:ring-yellow-500">
+
+                                        {{-- Form Rekening --}}
+                                        <div class="space-y-2.5">
+                                            <p class="text-xs font-bold text-gray-700 flex items-center gap-1.5">
+                                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                                </svg>
+                                                Rekening Pengembalian Dana
+                                            </p>
+                                            <div>
+                                                <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Bank <span class="text-red-500">*</span></label>
+                                                <select name="bank_name" required class="w-full px-2.5 py-2 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-red-400">
+                                                    <option value="">-- Pilih Bank --</option>
+                                                    <option value="BCA">BCA</option>
+                                                    <option value="Mandiri">Mandiri</option>
+                                                    <option value="BNI">BNI</option>
+                                                    <option value="BRI">BRI</option>
+                                                    <option value="BSI">BSI</option>
+                                                    <option value="CIMB Niaga">CIMB Niaga</option>
+                                                    <option value="GoPay">GoPay</option>
+                                                    <option value="OVO">OVO</option>
+                                                    <option value="Dana">Dana</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-semibold text-gray-700 mb-1">Nomor Rekening <span class="text-red-500">*</span></label>
+                                                <input type="text" name="account_number" required placeholder="Contoh: 1234567890"
+                                                    class="w-full px-2.5 py-2 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-red-400">
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Pemilik Rekening <span class="text-red-500">*</span></label>
+                                                <input type="text" name="account_holder" required value="{{ Auth::user()->name }}"
+                                                    class="w-full px-2.5 py-2 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-red-400">
+                                            </div>
                                         </div>
                                     </div>
                                 @endif
+
                                     <div class="flex flex-col-reverse sm:flex-row gap-2 md:gap-3">
                                         <button type="button" @click="showModal = false"
                                             class="w-full py-2 border border-gray-300 rounded-lg text-gray-700 font-bold text-xs md:text-sm hover:bg-gray-50 transition">Batal</button>
