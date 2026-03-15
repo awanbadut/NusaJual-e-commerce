@@ -137,7 +137,7 @@
                             </span>
                         </div>
                         @endif
-                    </div>
+                   </div>
                 </div>
 
                 <div
@@ -684,11 +684,38 @@
                                     </div>
 
                                     @if($needsRefund)
-                                    <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                        <p class="text-[10px] md:text-xs font-semibold text-yellow-800">Dana akan
-                                            dikembalikan dipotong biaya admin 5%.</p>
-                                    </div>
-                                    @endif
+    <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg space-y-3">
+        <p class="text-10px md:text-xs font-semibold text-yellow-800">
+            ⚠️ Pesanan sudah dibayar. Isi data rekening untuk proses refund (dipotong biaya admin 5%).
+        </p>
+        <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Bank <span class="text-red-500">*</span></label>
+            <select name="bank_name" required class="w-full px-2.5 py-2 border border-gray-300 rounded-lg text-xs focus:ring-yellow-500">
+                <option value="">-- Pilih Bank --</option>
+                <option value="BCA">BCA</option>
+                <option value="Mandiri">Mandiri</option>
+                <option value="BNI">BNI</option>
+                <option value="BRI">BRI</option>
+                <option value="BSI">BSI</option>
+                <option value="CIMB Niaga">CIMB Niaga</option>
+                <option value="GoPay">GoPay</option>
+                <option value="OVO">OVO</option>
+                <option value="Dana">Dana</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Nomor Rekening <span class="text-red-500">*</span></label>
+            <input type="text" name="account_number" required placeholder="Contoh: 1234567890"
+                class="w-full px-2.5 py-2 border border-gray-300 rounded-lg text-xs focus:ring-yellow-500">
+        </div>
+        <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Pemilik Rekening <span class="text-red-500">*</span></label>
+            <input type="text" name="account_holder" required value="{{ Auth::user()->name }}"
+                class="w-full px-2.5 py-2 border border-gray-300 rounded-lg text-xs focus:ring-yellow-500">
+        </div>
+    </div>
+@endif
+
 
                                     <div class="flex flex-col-reverse sm:flex-row gap-2 md:gap-3">
                                         <button type="button" @click="showModal = false"
