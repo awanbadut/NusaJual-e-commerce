@@ -99,7 +99,7 @@
                             <div class="flex items-center gap-2.5 md:gap-3">
                                 <div
                                     class="w-9 h-9 md:w-12 md:h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 border border-gray-200">
-                                    @if($product->primaryImage)
+                                    @if($product->primaryImage && $product->primaryImage->image_path)
                                     <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}"
                                         alt="{{ $product->name }}" class="w-full h-full object-cover">
                                     @else
