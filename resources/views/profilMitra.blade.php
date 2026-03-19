@@ -61,14 +61,21 @@
                     </div>
                 </div>
 
-                <div class="flex w-full md:w-auto shrink-0 mt-1 md:mt-0">
-                    <a href="{{ $store->whatsapp_url }}" target="_blank"
-                        class="w-full flex justify-center items-center gap-2 px-4 py-2.5 md:py-2.5 rounded-lg bg-[#0F4C20] text-white font-bold text-xs md:text-sm hover:bg-[#0b3a18] transition shadow-sm">
-                        <img src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png"
-                            class="w-4 h-4 md:w-5 md:h-5">
-                        Hubungi Penjual
-                    </a>
-                </div>
+                @if($store->whatsapp_url !== '#')
+<a href="{{ $store->whatsapp_url }}" target="_blank"
+    class="w-full flex justify-center items-center gap-2 px-4 py-2.5 rounded-lg bg-[#0F4C20] text-white font-bold text-xs md:text-sm hover:bg-[#0b3a18] transition shadow-sm">
+    <img src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png" class="w-4 h-4 md:w-5 md:h-5">
+    Hubungi Penjual
+</a>
+@else
+<span class="w-full flex justify-center items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-400 font-bold text-xs md:text-sm cursor-not-allowed">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.948V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 7V5z"/>
+    </svg>
+    Kontak Belum Tersedia
+</span>
+@endif
 
             </div>
         </div>

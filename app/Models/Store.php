@@ -306,22 +306,30 @@ class Store extends Model
      * Accessor untuk memformat nomor HP ke standar WhatsApp
      * Panggil di blade dengan: $store->whatsapp_url
      */
-    public function getWhatsappUrlAttribute()
-    {
-        // 1. Ambil nomor phone dari database
-        $phone = $this->phone;
+    public function getWhatsappUrlAttribute(): string
+{
+    // ✅ Prioritas ambil dari users.phone, fallback ke stores.phone
+    $raw = $this->relationLoaded('user')
+        ? ($this->user->phone ?? $this->phone ?? '')
+        : ($this->phone ?? '');
 
-        // 2. Hilangkan karakter selain angka (spasi, dash, plus)
-        $formattedPhone = preg_replace('/[^0-9]/', '', $phone);
+    // Hilangkan semua karakter bukan angka
+    $phone = preg_replace('/[^0-9]/', '', $raw);
 
-        // 3. Jika nomor dimulai dengan '0', ganti jadi '62'
-        if (str_starts_with($formattedPhone, '0')) {
-            $formattedPhone = '62' . substr($formattedPhone, 1);
-        }
-
-        // 4. Buat link WA dengan pesan template
-        $message = rawurlencode("Halo " . $this->store_name . ", saya ingin bertanya mengenai produk Anda.");
-
-        return "https://wa.me/{$formattedPhone}?text={$message}";
+    // Jika kosong, return # agar tidak error di blade
+    if (empty($phone)) {
+        return '#';
     }
+
+    // Normalisasi ke format 62xxx
+    if (str_starts_with($phone, '0')) {
+        $phone = '62' . substr($phone, 1);
+    } elseif (!str_starts_with($phone, '62')) {
+        $phone = '62' . $phone;
+    }
+
+    $message = rawurlencode('Halo ' . $this->store_name . ', saya ingin bertanya mengenai produk Anda.');
+
+    return 'https://wa.me/' . $phone . '?text=' . $message;
+}
 }

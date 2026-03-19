@@ -13,7 +13,7 @@ class StoreController extends Controller
     public function show(Request $request, $id)
     {
         // 1. Ambil Data Toko
-        $store = Store::withCount('products')->findOrFail($id);
+        $store = Store::with('user')->withCount('products')->findOrFail($id);
 
         // 2. Query Produk (Hanya milik toko ini)
         $query = Product::with(['category', 'primaryImage'])
