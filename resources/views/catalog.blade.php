@@ -14,10 +14,10 @@
 
     <x-navbar />
 
+    {{-- Hero Banner --}}
     <section class="pt-24 pb-6 px-4 md:px-6 lg:px-8">
         <div class="max-w-[1440px] mx-auto">
-            <div
-                class="relative w-full h-[180px] md:h-[320px] bg-[#F0EFE6] rounded-xl border border-[#496030] overflow-hidden flex flex-col items-center justify-center text-center p-4 md:p-6 shadow-sm">
+            <div class="relative w-full h-[180px] md:h-[320px] bg-[#F0EFE6] rounded-xl border border-[#496030] overflow-hidden flex flex-col items-center justify-center text-center p-4 md:p-6 shadow-sm">
                 <div class="absolute inset-0 opacity-10"
                     style="background-image: url('img/pattern-kopi1.webp'); background-size: cover; background-position: center;">
                 </div>
@@ -36,6 +36,7 @@
     <section class="pb-16 md:pb-20 px-4 md:px-6 lg:px-8" x-data="{ isFilterOpen: false }">
         <div class="max-w-[1440px] mx-auto flex flex-col lg:flex-row gap-6 md:gap-8">
 
+            {{-- ====== SIDEBAR DESKTOP ====== --}}
             <div class="hidden lg:block lg:w-1/4 shrink-0">
                 <x-ui.sidebarfilter title="Filter Produk">
                     <form action="{{ route('katalog') }}" method="GET" id="filter-form-desktop">
@@ -43,55 +44,84 @@
                         <input type="hidden" name="search" value="{{ request('search') }}">
                         @endif
 
+                        {{-- Kategori dari Database --}}
                         <div class="space-y-2">
                             <h4 class="text-sm font-bold text-gray-800">Pilih Kategori</h4>
+
+                            @if($categoriesList->isEmpty())
+                            <p class="text-xs text-gray-400 italic">Belum ada kategori.</p>
+                            @else
                             <div class="space-y-2">
-                                @foreach($categoriesList as $catName)
+                                @foreach($categoriesList as $category)
                                 <label class="flex items-center gap-2.5 cursor-pointer group">
-                                    <input type="checkbox" class="peer hidden" name="category[]" value="{{ $catName }}"
-                                        @checked(in_array($catName, request('category', [])))
+                                    <input type="checkbox"
+                                        class="peer hidden"
+                                        name="category[]"
+                                        value="{{ $category->id }}"
+                                        @checked(in_array($category->id, (array) request('category', [])))
                                         onchange="document.getElementById('filter-form-desktop').submit()">
-                                    <div
-                                        class="w-4 h-4 rounded border-2 border-gray-300 bg-white peer-checked:bg-[#0F4C20] peer-checked:border-[#0F4C20] transition flex items-center justify-center text-white shrink-0">
+
+                                    <div class="w-4 h-4 rounded border-2 border-gray-300 bg-white peer-checked:bg-[#0F4C20] peer-checked:border-[#0F4C20] transition flex items-center justify-center text-white shrink-0">
                                         <x-heroicon-s-check class="w-3 h-3" />
                                     </div>
-                                    <span
-                                        class="text-sm font-medium text-gray-600 peer-checked:text-[#0F4C20] peer-checked:font-bold transition">
-                                        {{ $catName }}
+
+                                    @if($category->image)
+                                    <img src="{{ asset('storage/' . $category->image) }}"
+                                        alt="{{ $category->name }}"
+                                        class="w-6 h-6 rounded-full object-cover shrink-0 border border-gray-200">
+                                    @endif
+
+                                    <span class="text-sm font-medium text-gray-600 peer-checked:text-[#0F4C20] peer-checked:font-bold transition">
+                                        {{ $category->name }}
                                     </span>
                                 </label>
                                 @endforeach
                             </div>
+                            @endif
                         </div>
 
                         <hr class="border-gray-100 my-4">
 
+                        {{-- Sort Harga --}}
                         <div class="space-y-2">
                             <h4 class="text-sm font-bold text-gray-800">Sesuaikan Harga</h4>
                             <div class="space-y-2">
                                 @foreach(['Harga Tertinggi', 'Harga Terjangkau'] as $priceSort)
                                 <label class="flex items-center gap-2.5 cursor-pointer group">
-                                    <input type="radio" name="sort_price" class="peer hidden" value="{{ $priceSort }}"
-                                        @checked(request('sort_price')==$priceSort)
+                                    <input type="radio"
+                                        name="sort_price"
+                                        class="peer hidden"
+                                        value="{{ $priceSort }}"
+                                        @checked(request('sort_price') == $priceSort)
                                         onchange="document.getElementById('filter-form-desktop').submit()">
-                                    <div
-                                        class="w-4 h-4 rounded-full border-2 border-gray-300 bg-white peer-checked:border-[#0F4C20] peer-checked:bg-white flex items-center justify-center shrink-0">
-                                        <div
-                                            class="w-2 h-2 rounded-full bg-[#0F4C20] opacity-0 group-has-[:checked]:opacity-100 transition">
-                                        </div>
+                                    <div class="w-4 h-4 rounded-full border-2 border-gray-300 bg-white peer-checked:border-[#0F4C20] peer-checked:bg-white flex items-center justify-center shrink-0">
+                                        <div class="w-2 h-2 rounded-full bg-[#0F4C20] opacity-0 group-has-[:checked]:opacity-100 transition"></div>
                                     </div>
-                                    <span
-                                        class="text-sm font-medium text-gray-600 peer-checked:text-[#0F4C20] peer-checked:font-bold transition">
+                                    <span class="text-sm font-medium text-gray-600 peer-checked:text-[#0F4C20] peer-checked:font-bold transition">
                                         {{ $priceSort }}
                                     </span>
                                 </label>
                                 @endforeach
                             </div>
                         </div>
+
+                        {{-- Reset Filter --}}
+                        @if(request()->hasAny(['category', 'sort_price']))
+                        <hr class="border-gray-100 my-4">
+                        <a href="{{ route('katalog', request()->only('search')) }}"
+                            class="flex items-center justify-center gap-2 w-full py-2 rounded-lg border border-red-200 text-red-600 text-sm font-semibold hover:bg-red-50 transition">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                            </svg>
+                            Reset Filter
+                        </a>
+                        @endif
+
                     </form>
                 </x-ui.sidebarfilter>
             </div>
 
+            {{-- ====== KONTEN PRODUK ====== --}}
             <div class="flex-1 w-full">
 
                 <div class="flex flex-col gap-4 mb-6">
@@ -111,7 +141,7 @@
                         <div class="flex w-full md:w-auto gap-2">
                             <form action="{{ route('katalog') }}" method="GET" class="relative flex-1 md:w-[320px]">
                                 @if(request('category'))
-                                @foreach(request('category') as $cat)
+                                @foreach((array) request('category') as $cat)
                                 <input type="hidden" name="category[]" value="{{ $cat }}">
                                 @endforeach
                                 @endif
@@ -132,25 +162,30 @@
 
                             <button @click="isFilterOpen = true" type="button"
                                 class="lg:hidden flex items-center justify-center gap-2 bg-white border-2 border-[#0F4C20] text-[#0F4C20] px-3 py-2.5 rounded-lg font-bold text-xs shrink-0 active:bg-gray-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor" class="w-4 h-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="2" stroke="currentColor" class="w-4 h-4">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
                                 </svg>
                                 Filter
+                                {{-- Badge filter aktif --}}
+                                @if(request()->hasAny(['category', 'sort_price']))
+                                <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#0F4C20] text-white text-[9px] font-bold">
+                                    {{ count((array) request('category', [])) + (request('sort_price') ? 1 : 0) }}
+                                </span>
+                                @endif
                             </button>
                         </div>
                     </div>
 
+                    {{-- Active Filter Tags --}}
                     @if(request('category') || request('sort_price') || request('search'))
-                    <div class="flex flex-wrap items-center gap-2 md:gap-3 animate-fade-in">
+                    <div class="flex flex-wrap items-center gap-2 md:gap-3">
                         <span class="text-[10px] md:text-sm font-medium text-gray-600">Pilihanmu:</span>
 
                         @if(request('search'))
-                        <div
-                            class="inline-flex items-center gap-1.5 px-2 md:px-3 py-1 bg-white border border-[#0F4C20] rounded-full shadow-sm">
-                            <span class="text-[9px] md:text-[11px] font-bold text-[#0F4C20] uppercase tracking-wide">"{{
-                                request('search') }}"</span>
+                        <div class="inline-flex items-center gap-1.5 px-2 md:px-3 py-1 bg-white border border-[#0F4C20] rounded-full shadow-sm">
+                            <span class="text-[9px] md:text-[11px] font-bold text-[#0F4C20] uppercase tracking-wide">"{{ request('search') }}"</span>
                             <a href="{{ route('katalog', request()->except('search')) }}"
                                 class="text-[#0F4C20] hover:text-red-500 transition">
                                 <x-heroicon-s-x-mark class="w-3 h-3 md:w-4 md:h-4" />
@@ -158,25 +193,36 @@
                         </div>
                         @endif
 
+                        {{-- ✅ Tag kategori tampilkan nama, bukan ID --}}
                         @if(request('category'))
-                        @foreach(request('category') as $cat)
-                        <div
-                            class="inline-flex items-center gap-1.5 px-2 md:px-3 py-1 bg-white border border-[#0F4C20] rounded-full shadow-sm">
-                            <span class="text-[9px] md:text-[11px] font-bold text-[#0F4C20] uppercase tracking-wide">{{
-                                $cat }}</span>
-                            <a href="{{ route('katalog', array_merge(request()->except('category'), request()->has('search') ? ['search' => request('search')] : [], request()->has('sort_price') ? ['sort_price' => request('sort_price')] : [])) }}"
+                        @foreach((array) request('category') as $catId)
+                        @php
+                            $catObj = $categoriesList->firstWhere('id', $catId);
+                        @endphp
+                        @if($catObj)
+                        <div class="inline-flex items-center gap-1.5 px-2 md:px-3 py-1 bg-white border border-[#0F4C20] rounded-full shadow-sm">
+                            @if($catObj->image)
+                            <img src="{{ asset('storage/' . $catObj->image) }}"
+                                class="w-4 h-4 rounded-full object-cover">
+                            @endif
+                            <span class="text-[9px] md:text-[11px] font-bold text-[#0F4C20] uppercase tracking-wide">
+                                {{ $catObj->name }}
+                            </span>
+                            <a href="{{ route('katalog', array_merge(
+                                    request()->except('category'),
+                                    ['category' => array_filter((array) request('category'), fn($c) => $c != $catId)]
+                                )) }}"
                                 class="text-[#0F4C20] hover:text-red-500 transition">
                                 <x-heroicon-s-x-mark class="w-3 h-3 md:w-4 md:h-4" />
                             </a>
                         </div>
+                        @endif
                         @endforeach
                         @endif
 
                         @if(request('sort_price'))
-                        <div
-                            class="inline-flex items-center gap-1.5 px-2 md:px-3 py-1 bg-white border border-[#0F4C20] rounded-full shadow-sm">
-                            <span class="text-[9px] md:text-[11px] font-bold text-[#0F4C20] uppercase tracking-wide">{{
-                                request('sort_price') }}</span>
+                        <div class="inline-flex items-center gap-1.5 px-2 md:px-3 py-1 bg-white border border-[#0F4C20] rounded-full shadow-sm">
+                            <span class="text-[9px] md:text-[11px] font-bold text-[#0F4C20] uppercase tracking-wide">{{ request('sort_price') }}</span>
                             <a href="{{ route('katalog', request()->except('sort_price')) }}"
                                 class="text-[#0F4C20] hover:text-red-500 transition">
                                 <x-heroicon-s-x-mark class="w-3 h-3 md:w-4 md:h-4" />
@@ -192,6 +238,7 @@
                     @endif
                 </div>
 
+                {{-- Grid Produk --}}
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3 md:gap-6">
                     @forelse($products as $product)
                     <x-ui.product-card :item="$product" />
@@ -209,8 +256,9 @@
                             @endif
                         </p>
                         <a href="{{ route('katalog') }}"
-                            class="text-[#0F4C20] font-bold text-xs md:text-sm mt-3 inline-block hover:underline">Reset
-                            Filter</a>
+                            class="text-[#0F4C20] font-bold text-xs md:text-sm mt-3 inline-block hover:underline">
+                            Reset Filter
+                        </a>
                     </div>
                     @endforelse
                 </div>
@@ -222,16 +270,25 @@
             </div>
         </div>
 
+        {{-- ====== FILTER MOBILE (Bottom Sheet) ====== --}}
         <div x-show="isFilterOpen" style="display: none;"
             class="fixed inset-0 z-[100] lg:hidden flex justify-end flex-col">
-            <div x-show="isFilterOpen" x-transition.opacity.duration.300ms @click="isFilterOpen = false"
-                class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
 
-            <div x-show="isFilterOpen" x-transition:enter="transition ease-out duration-300"
-                x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
-                x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0"
+            <div x-show="isFilterOpen"
+                x-transition.opacity.duration.300ms
+                @click="isFilterOpen = false"
+                class="absolute inset-0 bg-black/50 backdrop-blur-sm">
+            </div>
+
+            <div x-show="isFilterOpen"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="translate-y-full"
+                x-transition:enter-end="translate-y-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="translate-y-0"
                 x-transition:leave-end="translate-y-full"
                 class="relative bg-white w-full max-h-[90vh] rounded-t-3xl shadow-2xl flex flex-col overflow-hidden">
+
                 <div class="flex items-center justify-between p-4 border-b border-gray-100 shrink-0">
                     <h3 class="font-bold text-lg text-gray-800">Filter Produk</h3>
                     <button @click="isFilterOpen = false"
@@ -247,52 +304,63 @@
                         <input type="hidden" name="search" value="{{ request('search') }}">
                         @endif
 
+                        {{-- Kategori Mobile --}}
                         <div class="space-y-3">
                             <h4 class="font-bold text-gray-800">Kategori</h4>
+
+                            @if($categoriesList->isEmpty())
+                            <p class="text-xs text-gray-400 italic">Belum ada kategori.</p>
+                            @else
                             <div class="grid grid-cols-2 gap-3">
-                                @foreach($categoriesList as $catName)
-                                <label
-                                    class="flex items-center justify-between p-3 border rounded-xl cursor-pointer group has-[:checked]:border-[#0F4C20] has-[:checked]:bg-[#f4fbf4] transition">
-                                    <span
-                                        class="text-sm font-medium text-gray-700 group-has-[:checked]:text-[#0F4C20] group-has-[:checked]:font-bold">{{
-                                        $catName }}</span>
+                                @foreach($categoriesList as $category)
+                                <label class="flex items-center justify-between p-3 border rounded-xl cursor-pointer group has-[:checked]:border-[#0F4C20] has-[:checked]:bg-[#f4fbf4] transition">
 
-                                    <input type="checkbox" class="hidden" name="category[]" value="{{ $catName }}"
-                                        @checked(in_array($catName, request('category', [])))>
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        @if($category->image)
+                                        <img src="{{ asset('storage/' . $category->image) }}"
+                                            alt="{{ $category->name }}"
+                                            class="w-7 h-7 rounded-full object-cover shrink-0 border border-gray-200">
+                                        @endif
+                                        <span class="text-sm font-medium text-gray-700 group-has-[:checked]:text-[#0F4C20] group-has-[:checked]:font-bold truncate">
+                                            {{ $category->name }}
+                                        </span>
+                                    </div>
 
-                                    <div
-                                        class="w-5 h-5 rounded border-2 border-gray-300 bg-white group-has-[:checked]:bg-[#0F4C20] group-has-[:checked]:border-[#0F4C20] transition flex items-center justify-center text-white shrink-0">
-                                        <x-heroicon-s-check
-                                            class="w-3.5 h-3.5 opacity-0 group-has-[:checked]:opacity-100 transition-opacity duration-200" />
+                                    <input type="checkbox"
+                                        class="hidden"
+                                        name="category[]"
+                                        value="{{ $category->id }}"
+                                        @checked(in_array($category->id, (array) request('category', [])))>
+
+                                    <div class="w-5 h-5 rounded border-2 border-gray-300 bg-white group-has-[:checked]:bg-[#0F4C20] group-has-[:checked]:border-[#0F4C20] transition flex items-center justify-center text-white shrink-0 ml-2">
+                                        <x-heroicon-s-check class="w-3.5 h-3.5 opacity-0 group-has-[:checked]:opacity-100 transition-opacity duration-200" />
                                     </div>
                                 </label>
                                 @endforeach
                             </div>
+                            @endif
                         </div>
 
+                        {{-- Harga Mobile --}}
                         <div class="space-y-3">
                             <h4 class="font-bold text-gray-800">Harga</h4>
                             <div class="grid grid-cols-1 gap-3">
                                 @foreach(['Harga Tertinggi', 'Harga Terjangkau'] as $priceSort)
-                                <label
-                                    class="flex items-center justify-between p-3 border rounded-xl cursor-pointer group has-[:checked]:border-[#0F4C20] has-[:checked]:bg-[#f4fbf4] transition">
-                                    <span
-                                        class="text-sm font-medium text-gray-700 group-has-[:checked]:text-[#0F4C20] group-has-[:checked]:font-bold">{{
-                                        $priceSort }}</span>
-
-                                    <input type="radio" class="hidden" name="sort_price" value="{{ $priceSort }}"
-                                        @checked(request('sort_price')==$priceSort)>
-
-                                    <div
-                                        class="w-5 h-5 rounded-full border-2 border-gray-300 bg-white group-has-[:checked]:border-[#0F4C20] flex items-center justify-center shrink-0 transition">
-                                        <div
-                                            class="w-2.5 h-2.5 rounded-full bg-[#0F4C20] opacity-0 group-has-[:checked]:opacity-100 transition-opacity duration-200">
-                                        </div>
+                                <label class="flex items-center justify-between p-3 border rounded-xl cursor-pointer group has-[:checked]:border-[#0F4C20] has-[:checked]:bg-[#f4fbf4] transition">
+                                    <span class="text-sm font-medium text-gray-700 group-has-[:checked]:text-[#0F4C20] group-has-[:checked]:font-bold">
+                                        {{ $priceSort }}
+                                    </span>
+                                    <input type="radio" class="hidden" name="sort_price"
+                                        value="{{ $priceSort }}"
+                                        @checked(request('sort_price') == $priceSort)>
+                                    <div class="w-5 h-5 rounded-full border-2 border-gray-300 bg-white group-has-[:checked]:border-[#0F4C20] flex items-center justify-center shrink-0 transition">
+                                        <div class="w-2.5 h-2.5 rounded-full bg-[#0F4C20] opacity-0 group-has-[:checked]:opacity-100 transition-opacity duration-200"></div>
                                     </div>
                                 </label>
                                 @endforeach
                             </div>
                         </div>
+
                     </form>
                 </div>
 
@@ -301,7 +369,8 @@
                         class="w-full flex items-center justify-center py-3.5 rounded-xl border border-gray-300 text-gray-600 font-bold text-sm hover:bg-gray-50 transition">
                         Reset
                     </a>
-                    <button type="button" onclick="document.getElementById('filter-form-mobile').submit()"
+                    <button type="button"
+                        onclick="document.getElementById('filter-form-mobile').submit()"
                         class="w-full py-3.5 rounded-xl bg-[#0F4C20] hover:bg-[#0a3616] transition text-white font-bold text-sm shadow-md">
                         Terapkan
                     </button>

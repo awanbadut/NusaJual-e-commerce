@@ -297,4 +297,14 @@ Route::prefix('withdrawals')->name('withdrawals.')->group(function () {
         Route::patch('/bank/{id}/toggle', [App\Http\Controllers\Admin\ProfileController::class, 'toggleBank'])->name('bank.toggle');
         Route::delete('/bank/{id}', [App\Http\Controllers\Admin\ProfileController::class, 'destroyBank'])->name('bank.destroy');
     });
+
+
+    // Category Management
+    Route::prefix('categories')->name('categories.')->group(function () {
+    Route::get('/',                           [App\Http\Controllers\Admin\CategoryController::class, 'index'])        ->name('index');
+    Route::post('/',                          [App\Http\Controllers\Admin\CategoryController::class, 'store'])        ->name('store');
+    Route::put('/{category}',                 [App\Http\Controllers\Admin\CategoryController::class, 'update'])       ->name('update');
+    Route::delete('/{category}',              [App\Http\Controllers\Admin\CategoryController::class, 'destroy'])      ->name('destroy');
+    Route::patch('/{category}/toggle-active', [App\Http\Controllers\Admin\CategoryController::class, 'toggleActive']) ->name('toggleActive');
+});
 });

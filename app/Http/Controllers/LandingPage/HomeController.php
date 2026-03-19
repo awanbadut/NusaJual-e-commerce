@@ -13,7 +13,10 @@ class HomeController extends Controller
     public function index()
     {
         // 1. Kategori (Tetap)
-        $categories = Category::withCount('products')->limit(5)->get();
+        $categories = Category::where('is_active', true)
+    ->withCount('products')
+    ->orderBy('name')
+    ->get();
 
         // 2. Mitra/Toko (DIUBAH)
         // Ambil 8 mitra dengan produk terbanyak

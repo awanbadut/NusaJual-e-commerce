@@ -14,6 +14,12 @@ class Category extends Model
         'name',
         'slug',
         'description',
+        'image',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     protected static function boot()
@@ -25,10 +31,26 @@ class Category extends Model
                 $category->slug = Str::slug($category->name);
             }
         });
+
+        // ✅ Update slug otomatis saat nama diubah
+        static::updating(function ($category) {
+            if ($category->isDirty('name')) {
+                $category->slug = Str::slug($category->name);
+            }
+        });
     }
 
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    // Accessor URL gambar
+    public function getImageUrlAttribute(): string
+    {
+        if ($this->image) {
+            return asset('storage/' . $this->image);
+        }
+        return 'https://placehold.co/300x200?text=' . urlencode($this->name);
     }
 }

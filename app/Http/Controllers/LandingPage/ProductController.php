@@ -62,7 +62,7 @@ class ProductController extends Controller
         });
 
         // Ambil List Kategori untuk Sidebar
-        $categoriesList = Category::has('products')->pluck('name');
+        $categoriesList = Category::where('is_active', true)->orderBy('name')->get();
 
         return view('catalog', compact('products', 'categoriesList'));
     }

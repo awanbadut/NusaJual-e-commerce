@@ -193,37 +193,54 @@
 
     <!-- Kategori Section (SAMA - tidak perlu diubah) -->
     <section class="py-12 md:py-24 px-4 bg-white">
-        <div class="max-w-7xl mx-auto text-center mb-14 md:mb-20 flex flex-col items-center gap-1 md:gap-2">
-            <h2 class="text-xl md:text-4xl font-extrabold text-[#0F4C20]">Hasil Bumi Pilihan Kita</h2>
-            <p class="text-sm md:text-lg text-[#8B4513] font-medium">Siap memenuhi kebutuhan harian Anda</p>
-        </div>
+    <div class="max-w-7xl mx-auto text-center mb-14 md:mb-20 flex flex-col items-center gap-1 md:gap-2">
+        <h2 class="text-xl md:text-4xl font-extrabold text-[#0F4C20]">Hasil Bumi Pilihan Kita</h2>
+        <p class="text-sm md:text-lg text-[#8B4513] font-medium">Siap memenuhi kebutuhan harian Anda</p>
+    </div>
 
-        <div
-            class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap md:justify-center gap-3 md:gap-x-8 md:gap-y-16">
-            @foreach($categories as $category)
-            <a href="{{ route('katalog', ['category' => $category->slug]) }}"
-                class="relative flex flex-col items-center bg-[#fefefb] border border-[#e3fb9a] rounded-xl p-3 md:p-4 shadow-sm hover:shadow-md transition duration-300 cursor-pointer group mt-8 md:mt-10 w-full md:w-48">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap md:justify-center gap-3 md:gap-x-8 md:gap-y-16">
 
-                <div
-                    class="w-16 h-16 md:w-[129px] md:h-[129px] rounded-full overflow-hidden border-2 md:border-[4px] border-white shadow-sm absolute -top-8 md:-top-[64px] bg-gray-100 group-hover:scale-105 transition-transform">
-                    <img src="{{ asset('img/' . $category->slug . '.webp') }}" alt="{{ $category->name }}"
-                        class="w-full h-full object-cover">
+        @forelse($categories as $category)
+        {{-- ✅ Link pakai category ID --}}
+        <a href="{{ route('katalog', ['category[]' => $category->id]) }}"
+            class="relative flex flex-col items-center bg-[#fefefb] border border-[#e3fb9a] rounded-xl p-3 md:p-4 shadow-sm hover:shadow-md transition duration-300 cursor-pointer group mt-8 md:mt-10 w-full md:w-48">
+
+            {{-- ✅ Gambar dari storage database, fallback ke placeholder --}}
+            <div class="w-16 h-16 md:w-[129px] md:h-[129px] rounded-full overflow-hidden border-2 md:border-[4px] border-white shadow-sm absolute -top-8 md:-top-[64px] bg-gray-100 group-hover:scale-105 transition-transform">
+                @if($category->image)
+                <img src="{{ asset('storage/' . $category->image) }}"
+                    alt="{{ $category->name }}"
+                    class="w-full h-full object-cover">
+                @else
+                {{-- Placeholder jika belum ada gambar --}}
+                <div class="w-full h-full bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                    <svg class="w-8 h-8 md:w-14 md:h-14 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
                 </div>
+                @endif
+            </div>
 
-                <div class="h-8 md:h-[60px]"></div>
+            <div class="h-8 md:h-[60px]"></div>
 
-                <div class="flex flex-col items-center w-full text-center mt-1">
-                    <h4 class="text-xs md:text-lg font-bold text-[#0a0a0a] line-clamp-1 w-full leading-tight">
-                        {{ $category->name }}
-                    </h4>
-                    <span class="text-[10px] md:text-sm font-semibold text-[#87470c] opacity-80 mt-0.5">
-                        {{ $category->products_count }} Item
-                    </span>
-                </div>
-            </a>
-            @endforeach
+            <div class="flex flex-col items-center w-full text-center mt-1">
+                <h4 class="text-xs md:text-lg font-bold text-[#0a0a0a] line-clamp-1 w-full leading-tight">
+                    {{ $category->name }}
+                </h4>
+                <span class="text-[10px] md:text-sm font-semibold text-[#87470c] opacity-80 mt-0.5">
+                    {{ $category->products_count }} Item
+                </span>
+            </div>
+        </a>
+        @empty
+        <div class="col-span-full text-center py-10 text-gray-400">
+            <p class="text-sm">Belum ada kategori tersedia.</p>
         </div>
-    </section>
+        @endforelse
+
+    </div>
+</section>
 
     <!-- ✅ PRODUK SECTION - UPDATE DI SINI -->
     <section class="py-12 sm:py-16 px-2 sm:px-4 bg-[#F8FCF8]">
