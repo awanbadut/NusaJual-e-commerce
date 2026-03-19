@@ -107,6 +107,7 @@
                 <h3 class="font-bold text-[#111827] text-[13px] line-clamp-1 mb-3">{{ $category->name }}</h3>
 
                 <div class="flex gap-1.5">
+
                     {{-- Tombol Edit --}}
                     <button
                         onclick="openEditModal(
@@ -115,8 +116,12 @@
                             {{ $category->is_active ? 'true' : 'false' }},
                             '{{ $category->image ? asset('storage/'.$category->image) : '' }}'
                         )"
-                        class="flex-1 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white text-[11px] font-bold border border-blue-200 transition text-center">
-                        ✏️ Edit
+                        title="Edit"
+                        class="flex-1 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white text-[11px] font-bold border border-blue-200 transition flex items-center justify-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                        </svg>
+                        Edit
                     </button>
 
                     {{-- Toggle Aktif/Nonaktif --}}
@@ -124,11 +129,21 @@
                         @csrf @method('PATCH')
                         <button type="submit"
                             title="{{ $category->is_active ? 'Nonaktifkan' : 'Aktifkan' }}"
-                            class="py-1.5 px-2.5 rounded-lg border text-[13px] transition
+                            class="py-1.5 px-2.5 rounded-lg border transition
                                 {{ $category->is_active
                                     ? 'bg-yellow-50 text-yellow-600 border-yellow-200 hover:bg-yellow-500 hover:text-white'
                                     : 'bg-green-50 text-green-600 border-green-200 hover:bg-green-500 hover:text-white' }}">
-                            {{ $category->is_active ? '⏸' : '▶' }}
+                            @if($category->is_active)
+                            {{-- Pause icon --}}
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            @else
+                            {{-- Play icon --}}
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                            </svg>
+                            @endif
                         </button>
                     </form>
 
@@ -139,14 +154,18 @@
                         @csrf @method('DELETE')
                         <button type="submit"
                             title="Hapus"
-                            class="py-1.5 px-2.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white text-[13px] border border-red-200 transition">
-                            🗑
+                            class="py-1.5 px-2.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border border-red-200 transition">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
                         </button>
                     </form>
                     @else
                     <span title="Tidak bisa dihapus, masih ada produk"
-                        class="py-1.5 px-2.5 rounded-lg bg-gray-100 text-gray-300 text-[13px] border border-gray-200 cursor-not-allowed">
-                        🗑
+                        class="py-1.5 px-2.5 rounded-lg bg-gray-100 text-gray-300 border border-gray-200 cursor-not-allowed flex items-center">
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
                     </span>
                     @endif
                 </div>
@@ -160,8 +179,11 @@
             <p class="font-bold text-[15px] text-gray-400 mb-1">Belum ada kategori</p>
             <p class="text-[13px] text-gray-300 mb-5">Tambahkan kategori pertama untuk memulai</p>
             <button onclick="openAddModal()"
-                class="px-6 py-2.5 bg-[#15803D] text-white rounded-xl text-sm font-bold hover:bg-[#166534] transition">
-                + Tambah Kategori
+                class="inline-flex items-center gap-2 px-6 py-2.5 bg-[#15803D] text-white rounded-xl text-sm font-bold hover:bg-[#166534] transition">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"/>
+                </svg>
+                Tambah Kategori
             </button>
         </div>
         @endforelse
@@ -223,8 +245,6 @@
                 <div id="add_upload_area"
                     class="border-2 border-dashed border-[#D1D5DB] rounded-xl overflow-hidden hover:border-[#15803D] transition cursor-pointer"
                     onclick="document.getElementById('add_image').click()">
-
-                    {{-- Default state --}}
                     <div id="add_upload_placeholder" class="p-6 text-center">
                         <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
                             <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -234,16 +254,12 @@
                         <p class="text-[12px] font-semibold text-[#374151]">Klik untuk upload gambar</p>
                         <p class="text-[11px] text-[#9CA3AF] mt-0.5">atau drag & drop di sini</p>
                     </div>
-
-                    {{-- Preview state --}}
                     <img id="add_image_preview" src="" alt="Preview"
                         class="hidden w-full h-44 object-cover">
                 </div>
 
                 <input type="file" id="add_image" name="image" accept="image/*" class="hidden"
                     onchange="handleImagePreview(this, 'add_image_preview', 'add_upload_placeholder')">
-
-                <p id="add_file_name" class="text-[11px] text-[#15803D] mt-1.5 hidden">✓ <span></span></p>
             </div>
 
             {{-- Status Aktif --}}
@@ -264,8 +280,11 @@
                     Batal
                 </button>
                 <button type="submit"
-                    class="flex-1 px-4 py-3 bg-[#15803D] text-white rounded-xl text-[13px] font-bold hover:bg-[#166534] transition shadow-sm">
-                    ✓ Tambah Kategori
+                    class="flex-1 px-4 py-3 bg-[#15803D] text-white rounded-xl text-[13px] font-bold hover:bg-[#166534] transition shadow-sm flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    Tambah Kategori
                 </button>
             </div>
         </form>
@@ -316,7 +335,10 @@
                     <label class="absolute bottom-3 right-3 flex items-center gap-2 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-[11px] font-bold text-red-600 cursor-pointer border border-red-200 hover:bg-red-50 transition shadow-sm">
                         <input type="checkbox" name="remove_image" value="1"
                             class="w-3.5 h-3.5 rounded border-gray-300 text-red-500">
-                        🗑 Hapus gambar
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        Hapus gambar
                     </label>
                 </div>
             </div>
@@ -324,7 +346,7 @@
             {{-- Upload Gambar Baru --}}
             <div>
                 <label class="block text-[12px] font-bold text-[#111827] mb-1.5">
-                    <span id="edit_image_label">Ganti Gambar</span>
+                    Ganti Gambar
                     <span class="text-[11px] font-normal text-[#6B7280] ml-1">(Opsional)</span>
                 </label>
 
@@ -362,8 +384,11 @@
                     Batal
                 </button>
                 <button type="submit"
-                    class="flex-1 px-4 py-3 bg-blue-600 text-white rounded-xl text-[13px] font-bold hover:bg-blue-700 transition shadow-sm">
-                    💾 Simpan Perubahan
+                    class="flex-1 px-4 py-3 bg-blue-600 text-white rounded-xl text-[13px] font-bold hover:bg-blue-700 transition shadow-sm flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/>
+                    </svg>
+                    Simpan Perubahan
                 </button>
             </div>
         </form>
@@ -374,25 +399,20 @@
 
 @push('scripts')
 <script>
-    // ========== ADD MODAL ==========
     function openAddModal() {
         document.getElementById('addModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
-
     function closeAddModal() {
         document.getElementById('addModal').classList.add('hidden');
         document.body.style.overflow = 'auto';
     }
 
-    // ========== EDIT MODAL ==========
     function openEditModal(id, name, isActive, imageUrl) {
-        // Isi data
-        document.getElementById('edit_name').value        = name;
-        document.getElementById('edit_is_active').checked = isActive;
-        document.getElementById('editForm').action        = `/admin/categories/${id}`;
+        document.getElementById('edit_name').value         = name;
+        document.getElementById('edit_is_active').checked  = isActive;
+        document.getElementById('editForm').action         = `/admin/categories/${id}`;
 
-        // Tampilkan gambar saat ini
         const currentWrapper = document.getElementById('edit_current_wrapper');
         const currentImg     = document.getElementById('edit_current_image');
         if (imageUrl && imageUrl !== '') {
@@ -402,7 +422,6 @@
             currentWrapper.classList.add('hidden');
         }
 
-        // Reset upload baru
         document.getElementById('edit_image_input').value = '';
         document.getElementById('edit_image_preview').classList.add('hidden');
         document.getElementById('edit_image_preview').src = '';
@@ -411,20 +430,17 @@
         document.getElementById('editModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
-
     function closeEditModal() {
         document.getElementById('editModal').classList.add('hidden');
         document.body.style.overflow = 'auto';
     }
 
-    // ========== PREVIEW GAMBAR ==========
     function handleImagePreview(input, previewId, placeholderId) {
         const file = input.files[0];
         if (!file) return;
 
-        // Validasi ukuran
         if (file.size > 2 * 1024 * 1024) {
-            alert('⚠️ Ukuran file terlalu besar! Maksimal 2MB.');
+            alert('Ukuran file terlalu besar! Maksimal 2MB.');
             input.value = '';
             return;
         }
@@ -433,7 +449,6 @@
         reader.onload = (e) => {
             const preview     = document.getElementById(previewId);
             const placeholder = document.getElementById(placeholderId);
-
             preview.src = e.target.result;
             preview.classList.remove('hidden');
             if (placeholder) placeholder.classList.add('hidden');
@@ -441,7 +456,6 @@
         reader.readAsDataURL(file);
     }
 
-    // Tutup modal klik di luar
     document.getElementById('addModal').addEventListener('click', function(e) {
         if (e.target === this) closeAddModal();
     });
